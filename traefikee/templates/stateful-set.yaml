@@ -257,7 +257,7 @@ spec:
           emptyDir: {}
         - name: "join-token"
           secret:
-            secretName: {{ .Values.cluster }}s-tokens
+            secretName: {{ .Values.cluster }}-tokens
   volumeClaimTemplates:
     - metadata:
         name: plugin-data

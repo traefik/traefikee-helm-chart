@@ -100,7 +100,7 @@ spec:
             - "proxy"
             - "--role=ingress"
             - "--name=$(POD_NAME)"
-            - {{ printf "--discovery.dns.domain=%s-ctrl-svc.$(POD_NAMESPACE)" .Values.cluster -}}
+            - {{ printf "--discovery.dns.domain=%s-ctrl-svc.$(POD_NAMESPACE)" .Values.cluster }}
             - "--jointoken.file.path=/var/run/secrets"
             - "--log.level="
             - "--log.filepath="

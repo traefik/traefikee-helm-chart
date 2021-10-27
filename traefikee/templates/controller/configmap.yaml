@@ -1,5 +1,12 @@
 {{ $configMap := (lookup "v1" "ConfigMap" .Release.Namespace (printf "%s-static-config" .Values.cluster)) }}
-{{- if or (not $configMap) (and ($configMap) (eq (get ($configMap).metadata.labels "app.kubernetes.io/managed-by") "Helm")) }}
+{{ $updateConfigMap := false }}
+{{- if not $configMap }}
+  {{ $updateConfigMap = true }}
+{{ else if eq (get ($configMap).metadata.labels "app.kubernetes.io/managed-by") "Helm" }}
+  {{ $updateConfigMap = true }}
+{{ end }}
+
+{{- if $updateConfigMap }}
 ---
 apiVersion: v1
 kind: ConfigMap
