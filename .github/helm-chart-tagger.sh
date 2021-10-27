@@ -24,5 +24,5 @@ curl \
     -H "authorization: Bearer ${GITHUB_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'Accept: application/vnd.github.v3+json' \
-    https://api.github.com/repos/traefik/hub-helm-chart/git/refs \
+    https://api.github.com/repos/traefik/traefikee-helm-chart/git/refs \
     -d "{\"ref\":\"refs/tags/${VERSION}\",\"sha\":\"${HASH}\"}"
