@@ -2,9 +2,12 @@ suite: crd test
 tests:
   - it: can disable CRDs
     set:
-      proxy:
-        installCRDs:
-          enabled: false
+      proxy.installCRDs: false
+    template: crds/ingress-route.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+  - it: enable CRDs by default
     template: crds/ingress-route.yaml
     asserts:
       - isKind:
