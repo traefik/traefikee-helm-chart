@@ -115,7 +115,7 @@ spec:
             - "--discovery.dns.bootstrapexpected={{ .Values.proxy.controllers }}"
             - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
             - "--jointoken.kubernetes.prefix={{ .Values.cluster }}"
-            - "--jointoken.kubernetes.namespace={{ .Values.cluster }}"
+            - "--jointoken.kubernetes.namespace={{ .Release.Namespace }}"
             - "--license=$(LICENSE)"
             - "--api.autocerts"
             - "--configFile=/var/run/traefikee/config/{{ .Values.proxy.staticConfig }}"
