@@ -1,0 +1,18 @@
+apiVersion: v2
+name: traefikee
+version: 0.1.0
+appVersion: "2.5.0"
+# Because of https://github.com/helm/helm/issues/3810 the pre-release version suffix has to be define.
+# This allows the installation on Kubernetes cluster with a pre-release version (e.g. v1.19.9-gke.1900)
+kubeVersion: ">= 1.14.0-0"
+type: application
+home: https://traefik.io/
+maintainers:
+  - name: charlie-haley
+keywords:
+  - traefikee
+dependencies:
+  - name: traefik-mesh
+    version: "4.0.*"
+    repository: https://helm.traefik.io/mesh
+    condition: mesh.enabled

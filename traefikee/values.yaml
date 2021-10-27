@@ -1,0 +1,17 @@
+# Default values for Traefik EE
+cluster: "default"
+
+proxy:
+  image:
+    name: traefikee
+    repository: traefik
+    # defaults to appVersion
+    tag: ""
+    pullPolicy: IfNotPresent
+  proxies: 2
+  controllers: 1
+  installCRDs: false
+  staticConfig: "static.yaml"
+
+mesh:
+  enabled: false
