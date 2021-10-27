@@ -3,10 +3,10 @@ tests:
   - it: should create a default rbac object
     asserts:
       - isKind:
-          of: ClusterRole
+          of: ClusterRoleBinding
         template: rbac/cluster-role-binding.yaml
       - isKind:
-          of: ClusterRoleBinding
+          of: ClusterRole
         template: rbac/cluster-role.yaml
       - isKind:
           of: ServiceAccount
