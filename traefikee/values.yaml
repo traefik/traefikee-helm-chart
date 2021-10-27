@@ -10,7 +10,7 @@ proxy:
     pullPolicy: IfNotPresent
   proxies: 2
   controllers: 1
-  installCRDs: false
+  installCRDs: true
   staticConfig:
     enabled: true
     file: "static.yaml"
