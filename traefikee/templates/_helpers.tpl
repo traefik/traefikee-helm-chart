@@ -29,3 +29,11 @@ Create chart name and version as used by the chart label.
 {{- define "traefikee-helm-chart.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
+
+
+{{/*
+Generates image name.
+*/}}
+{{- define "traefikee-helm-chart.image-name" -}}
+{{- printf "%s/%s:%s" .Values.proxy.image.repository .Values.proxy.image.name (.Values.proxy.image.tag | default (printf "v%s" .Chart.AppVersion)) }}
+{{- end }}

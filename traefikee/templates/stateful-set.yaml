@@ -62,7 +62,7 @@ spec:
               cpu: "1000m"
       containers:
         - name: {{ .Values.cluster }}-controller
-          image: "{{ .Values.proxy.image.repository }}:{{ .Values.proxy.image.tag | default .Chart.AppVersion }}"
+          image: {{ template "traefikee-helm-chart.image-name" . }}
           imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
           env:
             - name: POD_NAME
