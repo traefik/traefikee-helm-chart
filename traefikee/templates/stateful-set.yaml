@@ -118,7 +118,7 @@ spec:
             - "--jointoken.kubernetes.namespace={{ .Values.cluster }}"
             - "--license=$(LICENSE)"
             - "--api.autocerts"
-            - "--configFile=/var/run/traefikee/config/{{ .Values.staticConfig }}"
+            - "--configFile=/var/run/traefikee/config/{{ .Values.proxy.staticConfig }}"
             - "--log.level="
             - "--log.filepath="
             - "--log.format="
