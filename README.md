@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This chart installs the Traefik EE on a Kubernetes cluster, there's also an optional subchart of [Traefik Mesh](https://github.com/traefik/mesh-helm-chart).
+This chart installs the Traefik EE on a Kubernetes cluster, an optional subchart of [Traefik Mesh](https://github.com/traefik/mesh-helm-chart) is also bundled.
 
 ## Installation
 
