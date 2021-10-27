@@ -1,6 +1,4 @@
-{{- define "plugin-token" -}}
-{{- randAlphaNum 10 | nospace | b64enc -}}
-{{- end -}}
+{{ $token := randAlphaNum 10 | nospace | b64enc}}
 
 ---
 apiVersion: apps/v1
@@ -125,7 +123,7 @@ spec:
             - "--log.filepath="
             - "--log.format="
             - "--plugin.url=https://{{ .Values.cluster }}-plugin-registry-svc.{{ .Release.Namespace }}.svc.cluster.local"
-            #- "--plugin.token="{{ include "plugin-token" .}}
+            - "--plugin.token={{ $token }}"
       volumes:
         - name: sockets
           emptyDir: {}
@@ -248,7 +246,7 @@ spec:
             - "plugin-registry"
             - "--name=$(POD_NAME)"
             - "--plugindir=/var/lib/plugins"
-            - "--token={{ include "plugin-token" .}}"
+            - "--token={{ $token }}"
             - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
             - "--jointoken.file.path=/var/run/secrets"
             - "--log.level="
