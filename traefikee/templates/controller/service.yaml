@@ -11,3 +11,4 @@ spec:
     app: traefikee
     component: controllers
   clusterIP: None
+  publishNotReadyAddresses: true
