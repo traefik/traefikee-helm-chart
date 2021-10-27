@@ -1,0 +1,37 @@
+suite: controller test
+tests:
+  - it: can enable static config
+    template: stateful-set.yaml
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: metadata.name
+          value: default-controller
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[2].name
+          value: staticconfig
+  - it: can disable static config
+    set:
+      proxy:
+        staticConfig:
+          enabled: false
+    template: stateful-set.yaml
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: metadata.name
+          value: default-controller
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: staticconfig
+            mountPath: /var/run/traefikee/config
+          count: 1
