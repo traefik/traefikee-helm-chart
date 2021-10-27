@@ -36,6 +36,11 @@ By default, Traefik EE will be installed into the `default` namespace. If you wa
 helm install traefikee traefikee/traefikee --namespace traefikee --create-namespace
 ```
 
+Then just create the license key we provided:
+```bash
+kubectl create secret -n traefikee generic default --from-literal=license=xxxxxxx
+```
+
 ### Launch unit tests
 
 You need the helm-plugin: https://github.com/rancher/helm-unittest
