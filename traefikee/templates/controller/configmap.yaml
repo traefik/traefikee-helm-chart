@@ -1,4 +1,5 @@
-{{- if not (lookup "v1" "ConfigMap" .Release.Namespace (printf "%s-static-config" .Values.cluster)) }}
+{{ $configMap := (lookup "v1" "ConfigMap" .Release.Namespace (printf "%s-static-config" .Values.cluster)) }}
+{{- if or (not $configMap) (and ($configMap) (eq (get ($configMap).metadata.labels "app.kubernetes.io/managed-by") "Helm")) }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -21,4 +22,4 @@ data:
       dashboard: true
     metrics:
       prometheus: {}
-  {{- end }}
+{{- end }}
