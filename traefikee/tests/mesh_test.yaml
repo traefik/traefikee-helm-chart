@@ -1,0 +1,16 @@
+suite: mesh test
+tests:
+  - it: should install mesh
+    set:
+      mesh.enabled: true
+    template: charts/traefik-mesh/templates/controller/controller-deployment.yaml
+    asserts:
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: metadata.name
+          value: traefik-mesh-controller
+      - hasDocuments:
+          count: 1
