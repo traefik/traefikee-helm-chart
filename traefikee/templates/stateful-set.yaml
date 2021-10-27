@@ -105,8 +105,10 @@ spec:
               mountPath: /var/lib/traefikee
             - name: sockets
               mountPath: /var/run/traefikee
+            {{ if .Values.proxy.staticConfig.enabled }}
             - name: staticconfig
               mountPath: /var/run/traefikee/config
+            {{ end }}
           command:
             - "/traefikee"
             - "controller"
@@ -118,7 +120,9 @@ spec:
             - "--jointoken.kubernetes.namespace={{ .Release.Namespace }}"
             - "--license=$(LICENSE)"
             - "--api.autocerts"
-            - "--configFile=/var/run/traefikee/config/{{ .Values.proxy.staticConfig }}"
+            {{ if .Values.proxy.staticConfig.enabled }}
+            - "--configFile=/var/run/traefikee/config/{{ .Values.proxy.staticConfig.file }}"
+            {{ end }}
             - "--log.level="
             - "--log.filepath="
             - "--log.format="
@@ -127,9 +131,11 @@ spec:
       volumes:
         - name: sockets
           emptyDir: {}
+        {{ if .Values.proxy.staticConfig.enabled }}
         - name: staticconfig
           configMap:
             name: {{ .Values.cluster }}-static-config
+        {{ end }}
   volumeClaimTemplates:
     - metadata:
         name: data

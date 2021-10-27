@@ -11,7 +11,9 @@ proxy:
   proxies: 2
   controllers: 1
   installCRDs: false
-  staticConfig: "static.yaml"
+  staticConfig:
+    enabled: true
+    file: "static.yaml"
 
 mesh:
   enabled: false
