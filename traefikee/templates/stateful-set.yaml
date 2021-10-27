@@ -112,7 +112,7 @@ spec:
             - "controller"
             - "--name=$(POD_NAME)"
             - "--advertise=$(POD_NAME).{{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE):4242"
-            - "--discovery.dns.bootstrapexpected={{ .Values.proxy.Controllers }}"
+            - "--discovery.dns.bootstrapexpected={{ .Values.proxy.controllers }}"
             - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
             - "--jointoken.kubernetes.prefix={{ .Values.cluster }}"
             - "--jointoken.kubernetes.namespace={{ .Values.cluster }}"
