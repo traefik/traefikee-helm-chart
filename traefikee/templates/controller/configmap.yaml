@@ -1,0 +1,24 @@
+{{- if not (lookup "v1" "ConfigMap" .Release.Namespace (printf "%s-static-config" .Values.cluster)) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.cluster }}-static-config
+  namespace: {{.Release.Namespace}}
+data:
+  {{.Values.proxy.staticConfig}}: |
+    entryPoints:
+      web:
+        address: ":80"
+        http:
+          redirections:
+            entryPoint:
+              to: "websecure"
+              scheme: "https"
+      websecure:
+        address: ":443"
+    api:
+      dashboard: true
+    metrics:
+      prometheus: {}
+  {{- end }}
