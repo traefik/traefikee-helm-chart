@@ -14,4 +14,4 @@ proxy:
   staticConfig: "static.yaml"
 
 mesh:
-  enabled: false
+  enabled: true
