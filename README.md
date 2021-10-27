@@ -45,7 +45,7 @@ Create tokens so proxy and plugin registry join the cluster:
 ```bash
 kubectl exec -it -n traefikee default-controller-0 /traefikee tokens > /tmp/token
 source /tmp/token
-kubectl create secret -n traefikee generic default-tokens --from-literal=controller=$TRAEFIKEE_CONTROLLER_TOKEN --from-literal=proxy=$TRAEFIKEE_PROXY_TOKEN
+kubectl create secret -n traefikee generic default-tokens --from-literal=controller=$(echo $TRAEFIKEE_CONTROLLER_TOKEN | tr -d '\r') --from-literal=proxy=$(echo $TRAEFIKEE_PROXY_TOKEN | tr -d '\r')
 ```
 
 ### Launch unit tests
