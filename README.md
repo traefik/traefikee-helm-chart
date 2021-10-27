@@ -41,6 +41,13 @@ Then just create the license key we provided:
 kubectl create secret -n traefikee generic default --from-literal=license=xxxxxxx
 ```
 
+Create tokens so proxy and plugin registry join the cluster:
+```bash
+kubectl exec -it -n traefikee default-controller-0 /traefikee tokens > /tmp/token
+source /tmp/token
+kubectl create secret -n traefikee generic default-tokens --from-literal=controller=$TRAEFIKEE_CONTROLLER_TOKEN --from-literal=proxy=$TRAEFIKEE_PROXY_TOKEN
+```
+
 ### Launch unit tests
 
 You need the helm-plugin: https://github.com/rancher/helm-unittest
