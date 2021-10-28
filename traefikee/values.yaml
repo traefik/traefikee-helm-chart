@@ -9,7 +9,6 @@ proxy:
     pullPolicy: IfNotPresent
   proxies: 2
   controllers: 1
-  installCRDs: true
   # TODO: withoutresources
   staticConfig:
     enabled: true

@@ -14,7 +14,7 @@ tests:
           value: traefik-mesh-controller
       - hasDocuments:
           count: 1
-  - it: should pacth DNS
+  - it: should patch DNS
     set:
       traefik-mesh.enabled: true
     template: mesh/job.yaml
@@ -28,7 +28,7 @@ tests:
           value: patch-dns
       - hasDocuments:
           count: 1
-  - it: should not pacth DNS when mesh disabled
+  - it: should not patch DNS when mesh disabled
     set:
       traefik-mesh.enabled: false
     template: mesh/job.yaml
