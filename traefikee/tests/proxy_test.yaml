@@ -17,8 +17,7 @@ tests:
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
-      proxy.image.name: "myspecialimage"
-      proxy.image.repository: "mycustompublisher"
+      proxy.image.name: "mycustompublisher/myspecialimage"
       proxy.image.tag: "myspecialversion"
       proxy.image.pullPolicy: Never
       proxies: 2

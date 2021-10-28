@@ -19,4 +19,4 @@ dependencies:
   - name: traefik-mesh
     version: "4.0.*"
     repository: https://helm.traefik.io/mesh
-    condition: mesh.enabled
+    condition: traefik-mesh.enabled
