@@ -77,12 +77,7 @@ spec:
           ports:
             - containerPort: 8484
               name: distributed
-            - containerPort: 80
-              name: httpproxy-data
-          #   tcpSocket:
-          #     port: http
-          #   initialDelaySeconds: 2
-          #   periodSeconds: 5
+{{ toYaml .Values.proxy.ports | indent 12}}
           resources:
             requests:
               memory: "100Mi"

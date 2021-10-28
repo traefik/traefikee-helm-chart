@@ -10,10 +10,15 @@ proxy:
   proxies: 2
   controllers: 1
   staticConfig:
-    enabled: true
+    enabled: false
     file: "static.yaml"
+  ports:
+    - containerPort: 443
+      name: https
+    - containerPort: 80
+      name: http
 
 mesh:
-  enabled: false
+  enabled: true
   kubedns: false
   clusterDomain: "cluster.local"

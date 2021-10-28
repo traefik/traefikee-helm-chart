@@ -40,3 +40,27 @@ tests:
           value: Never
       - hasDocuments:
           count: 1
+  - it: default ports are set
+    asserts:
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: metadata.name
+          value: default-proxy
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 443
+            name: https
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 8484
+            name: distributed
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 80
+            name: http
