@@ -9,17 +9,11 @@ proxy:
     pullPolicy: IfNotPresent
   proxies: 2
   controllers: 1
-  # TODO: withoutresources
   staticConfig:
     enabled: true
     file: "static.yaml"
 
 mesh:
   enabled: false
-  # kubedns: true
-  clusterDomain: cluster.local
-  # proxy:
-  #   image:
-  #     name: traefik/traefikee
-  #     tag: "v2.5.0"
-  #     pullPolicy: IfNotPresent
+  kubedns: false
+  clusterDomain: "cluster.local"
