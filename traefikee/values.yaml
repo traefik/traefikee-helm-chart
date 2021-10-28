@@ -14,10 +14,10 @@ proxy:
     enabled: true
     file: "static.yaml"
 
-traefik-mesh:
+mesh:
   enabled: false
   # kubedns: true
-  # clusterDomain: cluster.local
+  clusterDomain: cluster.local
   # proxy:
   #   image:
   #     name: traefik/traefikee

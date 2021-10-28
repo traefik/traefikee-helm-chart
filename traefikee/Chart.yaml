@@ -15,8 +15,3 @@ maintainers:
   - name: charlie-haley
 keywords:
   - traefikee
-dependencies:
-  - name: traefik-mesh
-    version: "4.0.*"
-    repository: https://helm.traefik.io/mesh
-    condition: traefik-mesh.enabled

@@ -2,8 +2,23 @@ suite: mesh test
 tests:
   - it: should install mesh
     set:
-      traefik-mesh.enabled: true
-    template: charts/traefik-mesh/templates/controller/controller-deployment.yaml
+      mesh.enabled: true
+    template: mesh/daemon-set.yaml
+    asserts:
+      - isKind:
+          of: DaemonSet
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: metadata.name
+          value: default-mesh-proxy
+      - hasDocuments:
+          count: 1
+  - it: should install coredns
+    set:
+      mesh.kubedns: true
+      mesh.enabled: true
+    template: mesh/coredns/deployment.yaml
     asserts:
       - isKind:
           of: Deployment
@@ -11,27 +26,6 @@ tests:
           of: apps/v1
       - equal:
           path: metadata.name
-          value: traefik-mesh-controller
+          value: coredns
       - hasDocuments:
           count: 1
-  - it: should patch DNS
-    set:
-      traefik-mesh.enabled: true
-    template: mesh/job.yaml
-    asserts:
-      - isKind:
-          of: Job
-      - isAPIVersion:
-          of: batch/v1
-      - equal:
-          path: metadata.name
-          value: patch-dns
-      - hasDocuments:
-          count: 1
-  - it: should not patch DNS when mesh disabled
-    set:
-      traefik-mesh.enabled: false
-    template: mesh/job.yaml
-    asserts:
-      - hasDocuments:
-          count: 0

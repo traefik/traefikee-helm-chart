@@ -1,0 +1,21 @@
+{{ if and .Values.mesh.enabled .Values.mesh.kubedns}}
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+    app: traefikee
+    release: {{ .Values.cluster }}
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: "true"
+  name: traefikee-coredns-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefikee-coredns
+subjects:
+  - kind: ServiceAccount
+    name: mesh-coredns
+    namespace: {{ .Release.Namespace }}
+{{ end }}

@@ -1,0 +1,18 @@
+{{ if .Values.mesh.enabled }}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.cluster }}-mesh-proxy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: traefikee
+    release: {{ .Values.cluster }}
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: traefikee
+      component: maesh-mesh
+      release: {{ .Values.cluster }}
+{{ end }}

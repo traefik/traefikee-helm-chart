@@ -1,4 +1,4 @@
-{{ if (index .Values "traefik-mesh").enabled }}
+{{ if .Values.mesh.enabled }}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -25,7 +25,7 @@ spec:
             - "patch-dns"
             - "--namespace={{ .Release.Namespace }}"
             - "--cluster={{ .Values.cluster }}"
-            - "--clusterdomain={{ (index .Values "traefik-mesh").clusterDomain }}"
+            - "--clusterdomain={{ .Values.mesh.clusterDomain }}"
       restartPolicy: Never
   backoffLimit: 4
 {{ end }}
