@@ -9,7 +9,7 @@ This chart installs the Traefik EE on a Kubernetes cluster, an optional subchart
 ### Prerequisites
 
 With the command `helm version`, make sure that you have:
-- Helm v3 [installed](https://helm.sh/docs/using_helm/#installing-helm)
+- Helm v3 [installed](https://helm.sh/docs/intro/install/)
 
 Add Traefik EE's chart repository to Helm:
 
@@ -39,13 +39,6 @@ helm install traefikee traefikee/traefikee --namespace traefikee --create-namesp
 Then just create the license key we provided:
 ```bash
 kubectl create secret -n traefikee generic default --from-literal=license=xxxxxxx
-```
-
-Create tokens so proxy and plugin registry join the cluster:
-```bash
-kubectl exec -it -n traefikee default-controller-0 /traefikee tokens > /tmp/token
-source /tmp/token
-kubectl create secret -n traefikee generic default-tokens --from-literal=controller=$(echo $TRAEFIKEE_CONTROLLER_TOKEN | tr -d '\r') --from-literal=proxy=$(echo $TRAEFIKEE_PROXY_TOKEN | tr -d '\r')
 ```
 
 ### Launch unit tests

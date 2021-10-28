@@ -17,7 +17,7 @@ spec:
       component: controllers
   podManagementPolicy: Parallel
   serviceName: {{ .Values.cluster }}-ctrl-svc
-  replicas: {{ .Values.proxy.controllers }}
+  replicas: {{ .Values.controllers }}
   template:
     metadata:
       labels:

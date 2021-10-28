@@ -13,3 +13,4 @@ __snapshot__
 
 # Chart dependencies
 **/charts/*.tgz
+Chart.lock
