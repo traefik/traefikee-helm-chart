@@ -19,6 +19,6 @@ proxy:
       name: http
 
 mesh:
-  enabled: true
+  enabled: false
   kubedns: false
   clusterDomain: "cluster.local"
