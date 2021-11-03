@@ -36,9 +36,9 @@ By default, Traefik EE will be installed into the `default` namespace. If you wa
 helm install traefikee traefikee/traefikee --namespace traefikee --create-namespace
 ```
 
-Then just create the license key we provided:
+Then you'll need to create a secret containing your provided license key, where `default` if your cluster name.
 ```bash
-kubectl create secret -n traefikee generic default --from-literal=license=xxxxxxx
+kubectl create secret -n traefikee generic default-license --from-literal=license=xxxxxxx
 ```
 
 ### Launch unit tests

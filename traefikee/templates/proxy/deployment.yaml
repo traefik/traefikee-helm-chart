@@ -77,7 +77,10 @@ spec:
           ports:
             - containerPort: 8484
               name: distributed
-{{ toYaml .Values.proxy.ports | indent 12}}
+{{- range $port := .Values.proxy.ports }}
+            - containerPort: {{ $port.port}}
+              name: {{ $port.name}}
+{{ end }}
           resources:
             requests:
               memory: "100Mi"

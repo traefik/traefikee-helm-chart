@@ -74,7 +74,7 @@ spec:
             - name: LICENSE
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.cluster }}
+                  name: {{ .Values.cluster }}-license
                   key: license
           securityContext:
             readOnlyRootFilesystem: true
@@ -105,7 +105,7 @@ spec:
               mountPath: /var/lib/traefikee
             - name: sockets
               mountPath: /var/run/traefikee
-            {{ if .Values.proxy.staticConfig.enabled }}
+            {{ if (.Values.proxy.staticConfig).configMap }}
             - name: staticconfig
               mountPath: /var/run/traefikee/config
             {{ end }}
@@ -120,8 +120,8 @@ spec:
             - "--jointoken.kubernetes.namespace={{ .Release.Namespace }}"
             - "--license=$(LICENSE)"
             - "--api.autocerts"
-            {{ if .Values.proxy.staticConfig.enabled }}
-            - "--configFile=/var/run/traefikee/config/{{ .Values.proxy.staticConfig.file }}"
+            {{ if (.Values.proxy.staticConfig).configMap }}
+            - "--configFile=/var/run/traefikee/config/{{ .Values.proxy.staticConfig.configMapKey }}"
             {{ end }}
             - "--log.level="
             - "--log.filepath="
@@ -131,10 +131,10 @@ spec:
       volumes:
         - name: sockets
           emptyDir: {}
-        {{ if .Values.proxy.staticConfig.enabled }}
+        {{ if (.Values.proxy.staticConfig).configMap }}
         - name: staticconfig
           configMap:
-            name: {{ .Values.cluster }}-static-config
+            name: {{ .Values.proxy.staticConfig.configMap }}
         {{ end }}
   volumeClaimTemplates:
     - metadata:

@@ -10,13 +10,13 @@ proxy:
   proxies: 2
   controllers: 1
   staticConfig:
-    enabled: false
-    file: "static.yaml"
+#    configMap: 
+#    configMapKey: "static.yaml"
   ports:
-    - containerPort: 443
-      name: https
-    - containerPort: 80
-      name: http
+    - name: http
+      port: 80
+    - name: https
+      port: 443
 
 mesh:
   enabled: false
