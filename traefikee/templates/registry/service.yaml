@@ -5,8 +5,7 @@ metadata:
   name: {{ .Values.cluster }}-plugin-registry-svc
   namespace: {{ .Release.Namespace }}
   labels:
-    app: traefikee
-    release: {{ .Release.Name }}
+{{ include "common.labels" . | indent 4 }}
 spec:
   type: ClusterIP
   ports:

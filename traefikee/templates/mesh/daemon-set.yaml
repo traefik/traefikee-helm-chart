@@ -17,9 +17,8 @@ spec:
   template:
     metadata:
       labels:
-        app: traefikee
         component: maesh-mesh
-        release: {{ .Values.cluster }}
+{{ include "common.labels" . | indent 4 }}
     spec:
       serviceAccountName: {{ .Values.cluster }}-mesh-proxy
       automountServiceAccountToken: false

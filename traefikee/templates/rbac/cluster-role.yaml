@@ -4,8 +4,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ .Values.cluster }}-svc-acc-role
   labels:
-    app: traefikee
-    release: {{ .Values.cluster }}
+{{ include "common.labels" . | indent 4 }}
 rules:
   - apiGroups:
     - apps

@@ -5,8 +5,7 @@ kind: ClusterRoleBinding
 metadata:
   labels:
     kubernetes.io/bootstrapping: rbac-defaults
-    app: traefikee
-    release: {{ .Values.cluster }}
+{{ include "common.labels" . | indent 4 }}
   annotations:
     rbac.authorization.kubernetes.io/autoupdate: "true"
   name: traefikee-coredns-binding

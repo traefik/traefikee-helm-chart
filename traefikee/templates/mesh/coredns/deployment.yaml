@@ -8,8 +8,7 @@ metadata:
   labels:
     k8s-app: coredns
     kubernetes.io/name: "CoreDNS"
-    app: traefikee
-    release: {{ .Values.cluster }}
+{{ include "common.labels" . | indent 4 }}
 spec:
   replicas: 2
   strategy:

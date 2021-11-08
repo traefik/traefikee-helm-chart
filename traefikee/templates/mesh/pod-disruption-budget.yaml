@@ -6,8 +6,7 @@ metadata:
   name: {{ .Values.cluster }}-mesh-proxy
   namespace: {{ .Release.Namespace }}
   labels:
-    app: traefikee
-    release: {{ .Values.cluster }}
+{{ include "common.labels" . | indent 4 }}
 spec:
   maxUnavailable: 1
   selector:
