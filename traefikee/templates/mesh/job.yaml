@@ -6,14 +6,13 @@ metadata:
   name: patch-dns
   namespace: {{ .Release.Namespace }}
   labels:
-    app: traefikee
-    release: {{ .Release.Name }}
+{{ include "common.labels" . | indent 4 }}
 spec:
   template:
     metadata:
       labels:
         app: traefikee
-        release: {{ .Release.Name }}
+        release: {{ .Values.cluster }}
         component: patchdns
     spec:
       serviceAccountName: {{ .Values.cluster }}-svc-acc

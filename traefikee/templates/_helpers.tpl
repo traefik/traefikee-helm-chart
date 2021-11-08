@@ -37,3 +37,15 @@ Generates image name.
 {{- define "traefikee-helm-chart.image-name" -}}
 {{- printf "%s:%s" .Values.proxy.image.name (.Values.proxy.image.tag | default (printf "v%s" .Chart.AppVersion)) }}
 {{- end }}
+
+{{/*
+Generates common labels
+*/}}
+{{- define "common.labels" -}}
+app: traefikee
+app.kubernetes.io/version: {{ .Chart.AppVersion }}
+helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+app.kubernetes.io/managed-by: {{ .Release.Service}}
+app.kubernetes.io/instance: {{ .Release.Name}}
+release: {{ .Values.cluster }}
+{{- end }}

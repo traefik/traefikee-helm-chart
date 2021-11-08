@@ -5,8 +5,7 @@ metadata:
   name: {{ .Values.cluster }}-proxy-svc
   namespace: {{ .Release.Namespace }}
   labels:
-    app: traefikee
-    release: {{ .Release.Name }}
+{{ include "common.labels" . | indent 4 }}
 spec:
   type: LoadBalancer
   ports:
@@ -14,5 +13,5 @@ spec:
 
   selector:
     app: traefikee
-    release: {{ .Release.Name }}
+    release: {{ .Values.cluster }}
     component: proxies

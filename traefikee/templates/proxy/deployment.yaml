@@ -5,20 +5,19 @@ metadata:
   name: {{ .Values.cluster  }}-proxy
   namespace: {{ .Release.Namespace }}
   labels:
-    app: traefikee
-    release: {{ .Release.Name }}
+{{ include "common.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.proxies }}
   selector:
     matchLabels:
       app: traefikee
-      release: {{ .Release.Name }}
+      release: {{ .Values.cluster }}
       component: proxies
   template:
     metadata:
       labels:
         app: traefikee
-        release: {{ .Release.Name }}
+        release: {{ .Values.cluster }}
         component: proxies
     spec:
       affinity:
