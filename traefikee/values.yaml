@@ -1,4 +1,4 @@
-# Default values for Traefik EE
+# Default values for Traefik Enterprise
 cluster: "default"
 
 proxy:

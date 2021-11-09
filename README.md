@@ -1,8 +1,8 @@
-# Traefik Enterprise Edition
+# Traefik Enterprise
 
 ## Introduction
 
-This chart installs the Traefik EE on a Kubernetes cluster, an optional subchart of [Traefik Mesh](https://github.com/traefik/mesh-helm-chart) is also bundled.
+This chart installs the Traefik Enterprise on a Kubernetes cluster, an optional subchart of [Traefik Mesh](https://github.com/traefik/mesh-helm-chart) is also bundled.
 
 ## Installation
 
@@ -11,7 +11,7 @@ This chart installs the Traefik EE on a Kubernetes cluster, an optional subchart
 With the command `helm version`, make sure that you have:
 - Helm v3 [installed](https://helm.sh/docs/intro/install/)
 
-Add Traefik EE's chart repository to Helm:
+Add Traefik Enterprise's chart repository to Helm:
 
 ```bash
 helm repo add traefikee https://helm.traefik.io/traefikee
@@ -23,7 +23,7 @@ You can update the chart repository by running:
 helm repo update
 ```
 
-### Deploying Traefik EE
+### Deploying Traefik Enterprise
 
 ```bash
 helm install traefikee traefikee/traefikee
@@ -31,7 +31,7 @@ helm install traefikee traefikee/traefikee
 
 ### Specifications 
 
-By default, Traefik EE will be installed into the `default` namespace. If you want to install the Traefik EE in a specific namespace, you need to run helm with the `--namespace` and `--create-namespace` arguments:
+By default, Traefik Enterprise will be installed into the `default` namespace. If you want to install the Traefik Enterprise in a specific namespace, you need to run helm with the `--namespace` and `--create-namespace` arguments:
 ```bash
 helm install traefikee traefikee/traefikee --namespace traefikee --create-namespace
 ```
@@ -56,7 +56,7 @@ helm unittest traefikee/
 ```bash
 helm uninstall traefikee
 ```
-If Traefik EE was install in a specific namespace
+If Traefik Enterprise was installed in a specific namespace
 
 ```bash
 helm uninstall traefikee --namespace traefikee
