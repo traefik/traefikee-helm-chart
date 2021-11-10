@@ -1,0 +1,17 @@
+apiVersion: v2
+name: traefikee
+version: 0.1.0
+appVersion: "2.5.0"
+# Because of https://github.com/helm/helm/issues/3810 the pre-release version suffix has to be define.
+# This allows the installation on Kubernetes cluster with a pre-release version (e.g. v1.19.9-gke.1900)
+kubeVersion: ">= 1.14.0-0"
+description: |
+  Traefik Enterprise is a unified cloud-native networking solution that brings API management, ingress control, and
+  Service Mesh all together in one simple control plane. Traefik Enterprise eases microservices networking complexity
+  for developers and operations teams across the organization.
+type: application
+home: https://traefik.io/traefik-enterprise/
+maintainers:
+  - name: charlie-haley
+keywords:
+  - traefikee

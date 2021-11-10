@@ -1,0 +1,274 @@
+{{ $token := randAlphaNum 10 | nospace | b64enc}}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.cluster }}-controller
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "common.labels" . | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: traefikee
+      release: {{ .Release.Name }}
+      component: controllers
+  podManagementPolicy: Parallel
+  serviceName: {{ .Values.cluster }}-ctrl-svc
+  replicas: {{ .Values.controllers }}
+  template:
+    metadata:
+      labels:
+        app: traefikee
+        release: {{ .Values.cluster }}
+        component: controllers
+    spec:
+      serviceAccountName: {{ .Values.cluster }}-svc-acc
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.io/os
+                  operator: In
+                  values:
+                    - linux
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: component
+                      operator: In
+                      values:
+                        - controllers
+                topologyKey: "kubernetes.io/hostname"
+      terminationGracePeriodSeconds: 30
+      initContainers:
+        - name: wait-dns
+          image: busybox:1.31.1
+          command: ['sh', '-c', 'until nslookup -type=a {{ printf "%s-ctrl-svc.%s" .Values.cluster .Release.Namespace }}.svc.cluster.local; do echo waiting for published dns records; sleep 1; done;']
+          resources:
+            requests:
+              memory: "10Mi"
+              cpu: "100m"
+            limits:
+              memory: "100Mi"
+              cpu: "1000m"
+      containers:
+        - name: {{ .Values.cluster }}-controller
+          image: {{ template "traefikee-helm-chart.image-name" . }}
+          imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cluster }}-license
+                  key: license
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
+          ports:
+            - containerPort: 4242
+              name: control-port
+            - containerPort: 8080
+              name: api
+          readinessProbe:
+            tcpSocket:
+              port: control-port
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "4Gi"
+              cpu: "1000m"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/traefikee
+            - name: sockets
+              mountPath: /var/run/traefikee
+            {{ if (.Values.proxy.staticConfig).configMap }}
+            - name: staticconfig
+              mountPath: /var/run/traefikee/config
+            {{ end }}
+          command:
+            - "/traefikee"
+            - "controller"
+            - "--name=$(POD_NAME)"
+            - "--advertise=$(POD_NAME).{{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE):4242"
+            - "--discovery.dns.bootstrapexpected={{ .Values.proxy.controllers }}"
+            - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
+            - "--jointoken.kubernetes.prefix={{ .Values.cluster }}"
+            - "--jointoken.kubernetes.namespace={{ .Release.Namespace }}"
+            - "--license=$(LICENSE)"
+            - "--api.autocerts"
+            {{ if (.Values.proxy.staticConfig).configMap }}
+            - "--configFile=/var/run/traefikee/config/{{ .Values.proxy.staticConfig.configMapKey }}"
+            {{ end }}
+            - "--log.level="
+            - "--log.filepath="
+            - "--log.format="
+            - "--plugin.url=https://{{ .Values.cluster }}-plugin-registry-svc.{{ .Release.Namespace }}.svc.cluster.local"
+            - "--plugin.token={{ $token }}"
+      volumes:
+        - name: sockets
+          emptyDir: {}
+        {{ if (.Values.proxy.staticConfig).configMap }}
+        - name: staticconfig
+          configMap:
+            name: {{ .Values.proxy.staticConfig.configMap }}
+        {{ end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.cluster }}-plugin-registry
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: traefikee
+    release: {{ .Values.cluster }}
+spec:
+  serviceName: {{ .Values.cluster }}-plugin-registry-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefikee
+      release: {{ .Values.cluster }}
+      component: registry
+  template:
+    metadata:
+      labels:
+        app: traefikee
+        release: {{ .Values.cluster }}
+        component: registry
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.io/os
+                  operator: In
+                  values:
+                    - linux
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: component
+                      operator: In
+                      values:
+                        - registry
+                topologyKey: "kubernetes.io/hostname"
+      terminationGracePeriodSeconds: 30
+      automountServiceAccountToken: false
+      initContainers:
+        - name: wait-dns
+          image: busybox:1.31.1
+          command: ['sh', '-c', 'until nslookup -type=a {{ printf "%s-ctrl-svc.%s" .Values.cluster .Release.Namespace }}.svc.cluster.local; do echo waiting for published dns records; sleep 1; done;']
+          resources:
+            requests:
+              memory: "10Mi"
+              cpu: "100m"
+            limits:
+              memory: "100Mi"
+              cpu: "1000m"
+      containers:
+        - name: {{ .Values.cluster }}-controller
+          image: {{ template "traefikee-helm-chart.image-name" . }}
+          imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: http
+          #   initialDelaySeconds: 2
+          #   periodSeconds: 5
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "4Gi"
+              cpu: "1000m"
+          volumeMounts:
+            - name: {{ .Values.cluster }}-plugin-registry-data
+              mountPath: "/var/lib/traefikee"
+            - name: plugin-data
+              mountPath: "/var/lib/plugins"
+            - name: "join-token"
+              mountPath: "/var/run/secrets"
+          command:
+            - "/traefikee"
+            - "plugin-registry"
+            - "--name=$(POD_NAME)"
+            - "--plugindir=/var/lib/plugins"
+            - "--token={{ $token }}"
+            - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
+            - "--jointoken.file.path=/var/run/secrets"
+            - "--log.level="
+            - "--log.filepath="
+            - "--log.format="
+      volumes:
+        - name: {{ .Values.cluster }}-plugin-registry-data
+          emptyDir: {}
+        - name: "join-token"
+          secret:
+            secretName: {{ .Values.cluster }}-tokens
+  volumeClaimTemplates:
+    - metadata:
+        name: plugin-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi

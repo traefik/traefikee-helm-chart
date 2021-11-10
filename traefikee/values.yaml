@@ -1,0 +1,24 @@
+# Default values for Traefik Enterprise
+cluster: "default"
+
+proxy:
+  image:
+    name: traefik/traefikee
+    # defaults to appVersion
+    tag: ""
+    pullPolicy: IfNotPresent
+  proxies: 2
+  controllers: 1
+  staticConfig:
+#    configMap: 
+#    configMapKey: "static.yaml"
+  ports:
+    - name: http
+      port: 80
+    - name: https
+      port: 443
+
+mesh:
+  enabled: false
+  kubedns: false
+  clusterDomain: "cluster.local"

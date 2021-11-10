@@ -1,0 +1,30 @@
+{{ if .Values.mesh.enabled }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: patch-dns
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "common.labels" . | indent 4 }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: traefikee
+        release: {{ .Values.cluster }}
+        component: patchdns
+    spec:
+      serviceAccountName: {{ .Values.cluster }}-svc-acc
+      containers:
+        - name: patch-dns
+          image: {{ template "traefikee-helm-chart.image-name" . }}
+          command:
+            - "/traefikee"
+            - "patch-dns"
+            - "--namespace={{ .Release.Namespace }}"
+            - "--cluster={{ .Values.cluster }}"
+            - "--clusterdomain={{ .Values.mesh.clusterDomain }}"
+      restartPolicy: Never
+  backoffLimit: 4
+{{ end }}

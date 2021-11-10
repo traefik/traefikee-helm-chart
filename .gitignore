@@ -1,0 +1,16 @@
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+gh-pages.zip
+
+dist/
+repo/
+
+__snapshot__
+.idea
+
+# Chart dependencies
+**/charts/*.tgz
+Chart.lock

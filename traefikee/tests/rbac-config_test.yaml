@@ -1,0 +1,19 @@
+suite: rbac config
+tests:
+  - it: should create a default rbac object
+    asserts:
+      - isKind:
+          of: ClusterRoleBinding
+        template: rbac/cluster-role-binding.yaml
+      - isKind:
+          of: ClusterRole
+        template: rbac/cluster-role.yaml
+      - isKind:
+          of: ServiceAccount
+        template: rbac/service-account.yaml
+      - isKind:
+          of: Role
+        template: rbac/role.yaml
+      - isKind:
+          of: RoleBinding
+        template: rbac/role-binding.yaml
