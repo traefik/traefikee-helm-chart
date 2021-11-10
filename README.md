@@ -48,7 +48,7 @@ You need the helm-plugin: https://github.com/rancher/helm-unittest
 Then:
 
 ```bash
-helm unittest traefikee/
+make unit-test
 ```
 
 ### Uninstall
