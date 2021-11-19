@@ -3,6 +3,11 @@ templates:
   - stateful-set.yaml
 tests:
   - it: can enable static config
+    set:
+      proxy:
+        staticConfig:
+          configMap: test-map
+          configMapKey: "static.yaml"
     documentIndex: 0
     asserts:
       - isKind:
@@ -12,17 +17,10 @@ tests:
       - equal:
           path: metadata.name
           value: default-controller
-      - equal:
-          path: spec.template.spec.containers[0].volumeMounts[2].name
-          value: staticconfig
       - contains:
           path: spec.template.spec.containers[0].command
           content: "--configFile=/var/run/traefikee/config/static.yaml"
   - it: can disable static config
-    set:
-      proxy:
-        staticConfig:
-          enabled: false
     documentIndex: 0
     asserts:
       - isKind:

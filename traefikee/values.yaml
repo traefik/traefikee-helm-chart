@@ -10,7 +10,7 @@ proxy:
   proxies: 2
   controllers: 1
   staticConfig:
-#    configMap: 
+#    configMap:
 #    configMapKey: "static.yaml"
   ports:
     - name: http
