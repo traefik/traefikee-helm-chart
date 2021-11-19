@@ -12,7 +12,7 @@ spec:
   selector:
     matchLabels:
       app: traefikee
-      release: {{ .Release.Name }}
+      release: {{ .Values.cluster }}
       component: controllers
   podManagementPolicy: Parallel
   serviceName: {{ .Values.cluster }}-ctrl-svc
