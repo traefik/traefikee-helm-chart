@@ -14,5 +14,5 @@ spec:
       targetPort: https
   selector:
     app: traefikee
-    release: {{ .Release.Name }}
+    release: {{ .Values.cluster }}
     component: registry
