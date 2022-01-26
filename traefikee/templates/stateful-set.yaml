@@ -16,7 +16,7 @@ spec:
       component: controllers
   podManagementPolicy: Parallel
   serviceName: {{ .Values.cluster }}-ctrl-svc
-  replicas: {{ .Values.controllers }}
+  replicas: {{ .Values.controller.controllerSpecs.replicas }}
   template:
     metadata:
       labels:
@@ -25,26 +25,20 @@ spec:
         component: controllers
     spec:
       serviceAccountName: {{ .Values.cluster }}-svc-acc
+{{- if or .Values.controller.controllerSpecs.affinity .Values.controller.controllerSpecs.podAntiAffinity }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: kubernetes.io/os
-                  operator: In
-                  values:
-                    - linux
+{{- if .Values.controller.controllerSpecs.affinity }}
+{{ toYaml .Values.controller.controllerSpecs.affinity | indent 8 }}
+{{- end }}
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: component
-                      operator: In
-                      values:
-                        - controllers
-                topologyKey: "kubernetes.io/hostname"
+{{- if .Values.controller.controllerSpecs.podAntiAffinity }}
+{{ toYaml .Values.controller.controllerSpecs.podAntiAffinity | indent 10 }}
+{{- end }}
+{{- end }}
+{{- if .Values.controller.controllerSpecs.tolerations }}
+      tolerations:
+{{ toYaml .Values.controller.controllerSpecs.tolerations | indent 8 }}
+{{- end }}
       terminationGracePeriodSeconds: 30
       initContainers:
         - name: wait-dns
@@ -60,7 +54,7 @@ spec:
       containers:
         - name: {{ .Values.cluster }}-controller
           image: {{ template "traefikee-helm-chart.image-name" . }}
-          imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.controller.controllerSpecs.containers.containerSpecs.controller.pullPolicy }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -92,19 +86,16 @@ spec:
               port: control-port
             initialDelaySeconds: 10
             periodSeconds: 5
+{{- if .Values.controller.controllerSpecs.containers.containerSpecs.controller.resources }}
           resources:
-            requests:
-              memory: "100Mi"
-              cpu: "100m"
-            limits:
-              memory: "4Gi"
-              cpu: "1000m"
+{{ toYaml .Values.controller.controllerSpecs.containers.containerSpecs.controller.resources | indent 12 }}
+{{- end }}
           volumeMounts:
             - name: data
               mountPath: /var/lib/traefikee
             - name: sockets
               mountPath: /var/run/traefikee
-            {{ if (.Values.proxy.staticConfig).configMap }}
+            {{ if (.Values.controller.controllerSpecs.containers.containerSpecs.controller.staticConfig).configMap }}
             - name: staticconfig
               mountPath: /var/run/traefikee/config
             {{ end }}
@@ -113,14 +104,14 @@ spec:
             - "controller"
             - "--name=$(POD_NAME)"
             - "--advertise=$(POD_NAME).{{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE):4242"
-            - "--discovery.dns.bootstrapexpected={{ .Values.proxy.controllers }}"
+            - "--discovery.dns.bootstrapexpected={{ .Values.controller.controllerSpecs.replicas }}"
             - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
             - "--jointoken.kubernetes.prefix={{ .Values.cluster }}"
             - "--jointoken.kubernetes.namespace={{ .Release.Namespace }}"
             - "--license=$(LICENSE)"
             - "--api.autocerts"
-            {{ if (.Values.proxy.staticConfig).configMap }}
-            - "--configFile=/var/run/traefikee/config/{{ .Values.proxy.staticConfig.configMapKey }}"
+            {{ if (.Values.controller.controllerSpecs.containers.containerSpecs.controller.staticConfig).configMap }}
+            - "--configFile=/var/run/traefikee/config/{{ .Values.controller.controllerSpecs.containers.containerSpecs.controller.staticConfig.configMapKey }}"
             {{ end }}
             - "--log.level="
             - "--log.filepath="
@@ -130,10 +121,10 @@ spec:
       volumes:
         - name: sockets
           emptyDir: {}
-        {{ if (.Values.proxy.staticConfig).configMap }}
+        {{ if (.Values.controller.controllerSpecs.containers.containerSpecs.controller.staticConfig).configMap }}
         - name: staticconfig
           configMap:
-            name: {{ .Values.proxy.staticConfig.configMap }}
+            name: {{ .Values.controller.controllerSpecs.containers.containerSpecs.controller.staticConfig.configMap }}
         {{ end }}
   volumeClaimTemplates:
     - metadata:
@@ -156,7 +147,7 @@ metadata:
     release: {{ .Values.cluster }}
 spec:
   serviceName: {{ .Values.cluster }}-plugin-registry-svc
-  replicas: 1
+  replicas: {{ .Values.registry.registrySpecs.replicas }}
   selector:
     matchLabels:
       app: traefikee
@@ -169,26 +160,20 @@ spec:
         release: {{ .Values.cluster }}
         component: registry
     spec:
+{{- if or .Values.registry.registrySpecs.affinity .Values.registry.registrySpecs.podAntiAffinity }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: kubernetes.io/os
-                  operator: In
-                  values:
-                    - linux
+{{- if .Values.registry.registrySpecs.affinity }}
+{{ toYaml .Values.registry.registrySpecs.affinity | indent 8 }}
+{{- end }}
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: component
-                      operator: In
-                      values:
-                        - registry
-                topologyKey: "kubernetes.io/hostname"
+{{- if .Values.registry.registrySpecs.podAntiAffinity }}
+{{ toYaml .Values.registry.registrySpecs.podAntiAffinity | indent 10 }}
+{{- end }}
+{{- end }}
+{{- if .Values.registry.registrySpecs.tolerations }}
+      tolerations:
+{{ toYaml .Values.registry.registrySpecs.tolerations | indent 8 }}
+{{- end }}
       terminationGracePeriodSeconds: 30
       automountServiceAccountToken: false
       initContainers:
@@ -205,7 +190,7 @@ spec:
       containers:
         - name: {{ .Values.cluster }}-controller
           image: {{ template "traefikee-helm-chart.image-name" . }}
-          imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.registry.registrySpecs.containers.containerSpecs.registry.pullPolicy }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -232,13 +217,10 @@ spec:
           #     port: http
           #   initialDelaySeconds: 2
           #   periodSeconds: 5
+{{- if .Values.registry.registrySpecs.containers.containerSpecs.registry.resources }}
           resources:
-            requests:
-              memory: "100Mi"
-              cpu: "100m"
-            limits:
-              memory: "4Gi"
-              cpu: "1000m"
+{{ toYaml .Values.registry.registrySpecs.containers.containerSpecs.registry.resources | indent 12 }}
+{{- end }}
           volumeMounts:
             - name: {{ .Values.cluster }}-plugin-registry-data
               mountPath: "/var/lib/traefikee"

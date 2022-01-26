@@ -9,7 +9,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-{{ toYaml .Values.proxy.ports | indent 4}}
+{{ toYaml .Values.proxy.proxySpecs.containers.containerSpecs.proxy.ports | indent 4}}
 
   selector:
     app: traefikee

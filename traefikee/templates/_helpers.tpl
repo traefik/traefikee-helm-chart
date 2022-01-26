@@ -35,7 +35,7 @@ Create chart name and version as used by the chart label.
 Generates image name.
 */}}
 {{- define "traefikee-helm-chart.image-name" -}}
-{{- printf "%s:%s" .Values.proxy.image.name (.Values.proxy.image.tag | default (printf "v%s" .Chart.AppVersion)) }}
+{{- printf "%s:%s" .Values.global.image.name (.Values.global.image.tag | default (printf "v%s" .Chart.AppVersion)) }}
 {{- end }}
 
 {{/*

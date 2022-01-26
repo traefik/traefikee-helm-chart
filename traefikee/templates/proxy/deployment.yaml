@@ -7,7 +7,7 @@ metadata:
   labels:
 {{ include "common.labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.proxy.proxies }}
+  replicas: {{ .Values.proxy.proxySpecs.replicas }}
   selector:
     matchLabels:
       app: traefikee
@@ -20,26 +20,20 @@ spec:
         release: {{ .Values.cluster }}
         component: proxies
     spec:
+{{- if or .Values.controller.controllerSpecs.affinity .Values.controller.controllerSpecs.podAntiAffinity }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: kubernetes.io/os
-                  operator: In
-                  values:
-                    - linux
+{{- if .Values.controller.controllerSpecs.affinity }}
+{{ toYaml .Values.controller.controllerSpecs.affinity | indent 8 }}
+{{- end }}
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: component
-                      operator: In
-                      values:
-                        - proxies
-                topologyKey: "kubernetes.io/hostname"
+{{- if .Values.controller.controllerSpecs.podAntiAffinity }}
+{{ toYaml .Values.controller.controllerSpecs.podAntiAffinity | indent 10 }}
+{{- end }}
+{{- end }}
+{{- if .Values.controller.controllerSpecs.tolerations }}
+      tolerations:
+{{ toYaml .Values.controller.controllerSpecs.tolerations | indent 8 }}
+{{- end }}
       terminationGracePeriodSeconds: 30
       automountServiceAccountToken: false
       initContainers:
@@ -56,7 +50,7 @@ spec:
       containers:
         - name: {{ .Values.cluster }}-proxy
           image: {{ template "traefikee-helm-chart.image-name" . }}
-          imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.proxy.proxySpecs.containers.containerSpecs.proxy.pullPolicy }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -76,17 +70,14 @@ spec:
           ports:
             - containerPort: 8484
               name: distributed
-{{- range $port := .Values.proxy.ports }}
+{{- range $port := .Values.proxy.proxySpecs.containers.containerSpecs.proxy.ports }}
             - containerPort: {{ $port.port}}
               name: {{ $port.name}}
 {{ end }}
+{{- if .Values.proxy.proxySpecs.containers.containerSpecs.proxy.resources }}
           resources:
-            requests:
-              memory: "100Mi"
-              cpu: "100m"
-            limits:
-              memory: "4Gi"
-              cpu: "1000m"
+{{ toYaml .Values.proxy.proxySpecs.containers.containerSpecs.proxy.resources | indent 12 }}
+{{- end }}
           volumeMounts:
             - name: {{ .Values.cluster }}-proxy-data
               mountPath: "/var/lib/traefikee"
