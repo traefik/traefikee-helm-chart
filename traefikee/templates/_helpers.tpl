@@ -43,7 +43,7 @@ Generates common labels
 */}}
 {{- define "common.labels" -}}
 app: traefikee
-app.kubernetes.io/version: {{ .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Values.global.image.tag | default .Chart.AppVersion }}
 helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 app.kubernetes.io/managed-by: {{ .Release.Service}}
 app.kubernetes.io/instance: {{ .Release.Name}}

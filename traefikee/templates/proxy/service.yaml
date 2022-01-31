@@ -7,10 +7,13 @@ metadata:
   labels:
 {{ include "common.labels" . | indent 4 }}
 spec:
+{{- if .Values.proxy.service }}
+{{ toYaml .Values.proxy.service | indent 2 }}
+{{- else }}
   type: LoadBalancer
   ports:
-{{ toYaml .Values.proxy.proxySpecs.containers.containerSpecs.proxy.ports | indent 4}}
-
+{{ toYaml .Values.proxy.containers.proxy.ports | indent 4}}
+{{- end }}
   selector:
     app: traefikee
     release: {{ .Values.cluster }}

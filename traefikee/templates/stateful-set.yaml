@@ -1,4 +1,4 @@
-{{ $token := randAlphaNum 10 | nospace | b64enc}}
+{{ $token := randAlphaNum 10 | nospace | b64enc }}
 
 ---
 apiVersion: apps/v1
@@ -16,7 +16,7 @@ spec:
       component: controllers
   podManagementPolicy: Parallel
   serviceName: {{ .Values.cluster }}-ctrl-svc
-  replicas: {{ .Values.controller.controllerSpecs.replicas }}
+  replicas: {{ .Values.controller.replicas }}
   template:
     metadata:
       labels:
@@ -25,20 +25,14 @@ spec:
         component: controllers
     spec:
       serviceAccountName: {{ .Values.cluster }}-svc-acc
-{{- if or .Values.controller.controllerSpecs.affinity .Values.controller.controllerSpecs.podAntiAffinity }}
+{{ if .Values.controller.affinity }}
       affinity:
-{{- if .Values.controller.controllerSpecs.affinity }}
-{{ toYaml .Values.controller.controllerSpecs.affinity | indent 8 }}
-{{- end }}
-        podAntiAffinity:
-{{- if .Values.controller.controllerSpecs.podAntiAffinity }}
-{{ toYaml .Values.controller.controllerSpecs.podAntiAffinity | indent 10 }}
-{{- end }}
-{{- end }}
-{{- if .Values.controller.controllerSpecs.tolerations }}
+{{ toYaml .Values.controller.affinity | indent 8 }}
+{{ end }}
+{{ if .Values.controller.tolerations }}
       tolerations:
-{{ toYaml .Values.controller.controllerSpecs.tolerations | indent 8 }}
-{{- end }}
+{{ toYaml .Values.controller.tolerations | indent 8 }}
+{{ end }}
       terminationGracePeriodSeconds: 30
       initContainers:
         - name: wait-dns
@@ -54,7 +48,7 @@ spec:
       containers:
         - name: {{ .Values.cluster }}-controller
           image: {{ template "traefikee-helm-chart.image-name" . }}
-          imagePullPolicy: {{ .Values.controller.controllerSpecs.containers.containerSpecs.controller.pullPolicy }}
+          imagePullPolicy: {{ .Values.controller.containers.controller.pullPolicy }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -86,16 +80,16 @@ spec:
               port: control-port
             initialDelaySeconds: 10
             periodSeconds: 5
-{{- if .Values.controller.controllerSpecs.containers.containerSpecs.controller.resources }}
+{{ if .Values.controller.containers.controller.resources }}
           resources:
-{{ toYaml .Values.controller.controllerSpecs.containers.containerSpecs.controller.resources | indent 12 }}
-{{- end }}
+{{ toYaml .Values.controller.containers.controller.resources | indent 12 }}
+{{ end }}
           volumeMounts:
             - name: data
               mountPath: /var/lib/traefikee
             - name: sockets
               mountPath: /var/run/traefikee
-            {{ if (.Values.controller.controllerSpecs.containers.containerSpecs.controller.staticConfig).configMap }}
+            {{ if (.Values.controller.containers.controller.staticConfig).configMap }}
             - name: staticconfig
               mountPath: /var/run/traefikee/config
             {{ end }}
@@ -104,14 +98,14 @@ spec:
             - "controller"
             - "--name=$(POD_NAME)"
             - "--advertise=$(POD_NAME).{{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE):4242"
-            - "--discovery.dns.bootstrapexpected={{ .Values.controller.controllerSpecs.replicas }}"
+            - "--discovery.dns.bootstrapexpected={{ .Values.controller.replicas }}"
             - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
             - "--jointoken.kubernetes.prefix={{ .Values.cluster }}"
             - "--jointoken.kubernetes.namespace={{ .Release.Namespace }}"
             - "--license=$(LICENSE)"
             - "--api.autocerts"
-            {{ if (.Values.controller.controllerSpecs.containers.containerSpecs.controller.staticConfig).configMap }}
-            - "--configFile=/var/run/traefikee/config/{{ .Values.controller.controllerSpecs.containers.containerSpecs.controller.staticConfig.configMapKey }}"
+            {{ if (.Values.controller.containers.controller.staticConfig).configMap }}
+            - "--configFile=/var/run/traefikee/config/{{ .Values.controller.containers.controller.staticConfig.configMapKey }}"
             {{ end }}
             - "--log.level="
             - "--log.filepath="
@@ -121,10 +115,10 @@ spec:
       volumes:
         - name: sockets
           emptyDir: {}
-        {{ if (.Values.controller.controllerSpecs.containers.containerSpecs.controller.staticConfig).configMap }}
+        {{ if (.Values.controller.containers.controller.staticConfig).configMap }}
         - name: staticconfig
           configMap:
-            name: {{ .Values.controller.controllerSpecs.containers.containerSpecs.controller.staticConfig.configMap }}
+            name: {{ .Values.controller.containers.controller.staticConfig.configMap }}
         {{ end }}
   volumeClaimTemplates:
     - metadata:
@@ -147,7 +141,7 @@ metadata:
     release: {{ .Values.cluster }}
 spec:
   serviceName: {{ .Values.cluster }}-plugin-registry-svc
-  replicas: {{ .Values.registry.registrySpecs.replicas }}
+  replicas: {{ .Values.registry.replicas }}
   selector:
     matchLabels:
       app: traefikee
@@ -160,20 +154,14 @@ spec:
         release: {{ .Values.cluster }}
         component: registry
     spec:
-{{- if or .Values.registry.registrySpecs.affinity .Values.registry.registrySpecs.podAntiAffinity }}
+{{ if .Values.registry.affinity }}
       affinity:
-{{- if .Values.registry.registrySpecs.affinity }}
-{{ toYaml .Values.registry.registrySpecs.affinity | indent 8 }}
-{{- end }}
-        podAntiAffinity:
-{{- if .Values.registry.registrySpecs.podAntiAffinity }}
-{{ toYaml .Values.registry.registrySpecs.podAntiAffinity | indent 10 }}
-{{- end }}
-{{- end }}
-{{- if .Values.registry.registrySpecs.tolerations }}
+{{ toYaml .Values.registry.affinity | indent 8 }}
+{{ end }}
+{{ if .Values.registry.tolerations }}
       tolerations:
-{{ toYaml .Values.registry.registrySpecs.tolerations | indent 8 }}
-{{- end }}
+{{ toYaml .Values.registry.tolerations | indent 8 }}
+{{ end }}
       terminationGracePeriodSeconds: 30
       automountServiceAccountToken: false
       initContainers:
@@ -188,9 +176,9 @@ spec:
               memory: "100Mi"
               cpu: "1000m"
       containers:
-        - name: {{ .Values.cluster }}-controller
+        - name: {{ .Values.cluster }}-plugin-registry
           image: {{ template "traefikee-helm-chart.image-name" . }}
-          imagePullPolicy: {{ .Values.registry.registrySpecs.containers.containerSpecs.registry.pullPolicy }}
+          imagePullPolicy: {{ .Values.registry.containers.registry.pullPolicy }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -217,10 +205,10 @@ spec:
           #     port: http
           #   initialDelaySeconds: 2
           #   periodSeconds: 5
-{{- if .Values.registry.registrySpecs.containers.containerSpecs.registry.resources }}
+{{ if .Values.registry.containers.registry.resources }}
           resources:
-{{ toYaml .Values.registry.registrySpecs.containers.containerSpecs.registry.resources | indent 12 }}
-{{- end }}
+{{ toYaml .Values.registry.containers.registry.resources | indent 12 }}
+{{ end }}
           volumeMounts:
             - name: {{ .Values.cluster }}-plugin-registry-data
               mountPath: "/var/lib/traefikee"

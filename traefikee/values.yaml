@@ -4,129 +4,129 @@ global:
   image:
     name: traefik/traefikee
     tag: ""
+    
 
 controller:
-  controllerSpecs:
-    replicas: 1
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/os
-                operator: In
-                values:
-                  - linux
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                  - key: component
-                    operator: In
-                    values:
-                      - controllers
-              topologyKey: "kubernetes.io/hostname"
-    tolerations: {}
-    containers:
-      containerSpecs:
-        controller:
-          pullpolicy: IfNotPresent
-          resources:
-              requests:
-                memory: "100Mi"
-                cpu: "100m"
-              limits:
-                memory: "4Gi"
-                cpu: "1000m"
-          staticConfig:
-#           configMap:
-#             configMapKey: "static.yaml"
+  replicas: 1
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/os
+              operator: In
+              values:
+                - linux
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                    - controllers
+            topologyKey: "kubernetes.io/hostname"
+  tolerations: {}
+  containers:
+    controller:
+      pullpolicy: IfNotPresent
+      resources:
+          requests:
+            memory: "100Mi"
+            cpu: "100m"
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+      staticConfig:
+#       configMap:
+#         configMapKey: "static.yaml"
       
 registry:
-  registrySpecs:
-    replicas: 1
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/os
-                operator: In
-                values:
-                  - linux
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                  - key: component
-                    operator: In
-                    values:
-                      - registry
-              topologyKey: "kubernetes.io/hostname"
-        tolerations: {}
-    containers:
-      containerSpecs:
-        registry:
-          pullpolicy: IfNotPresent
-          resources:
-              requests:
-                memory: "100Mi"
-                cpu: "100m"
-              limits:
-                memory: "4Gi"
-                cpu: "1000m"
+  replicas: 1
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/os
+              operator: In
+              values:
+                - linux
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                    - registry
+            topologyKey: "kubernetes.io/hostname"
+  tolerations: {}
+  containers:
+    registry:
+      pullpolicy: IfNotPresent
+      resources:
+          requests:
+            memory: "100Mi"
+            cpu: "100m"
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
 
 proxy:
-  proxySpecs:
-    replicas: 2
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/os
-                operator: In
-                values:
-                  - linux
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                  - key: component
-                    operator: In
-                    values:
-                      - proxies
-              topologyKey: "kubernetes.io/hostname"
-    tolerations: {}
-    containers:
-      containerSpecs:
-        proxy:
-          pullpolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "100Mi"
-              cpu: "100m"
-            limits:
-              memory: "4Gi"
-              cpu: "1000m"
-          ports:
-            - name: http
-              port: 80
-            - name: https
-              port: 443
+  replicas: 2
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/os
+              operator: In
+              values:
+                - linux
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                    - proxies
+            topologyKey: "kubernetes.io/hostname"
+  tolerations: {}
+  containers:
+    proxy:
+      pullpolicy: IfNotPresent
+      resources:
+        requests:
+          memory: "100Mi"
+          cpu: "100m"
+        limits:
+          memory: "4Gi"
+          cpu: "1000m"
+      ports:
+        - name: http
+          port: 80
+        - name: https
+          port: 443
+#  service:
+#    type: NodePort
+#    ports:
+#      - port: 80
+#        nodePort: 30080
+#      - port: 443
+#        nodePort: 30443
 
 mesh:
   enabled: false
   kubedns: false
   job:
-    jobSpecs:
     containers:
-      containerSpecs:
-        command:
-          clusterDomain: "cluster.local"
+      command:
+        clusterDomain: "cluster.local"

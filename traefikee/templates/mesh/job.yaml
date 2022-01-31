@@ -24,7 +24,7 @@ spec:
             - "patch-dns"
             - "--namespace={{ .Release.Namespace }}"
             - "--cluster={{ .Values.cluster }}"
-            - "--clusterdomain={{ .Values.mesh.job.jobSpecs.containers.containerSpecs.command.clusterDomain }}"
+            - "--clusterdomain={{ .Values.mesh.job.containers.command.clusterDomain }}"
       restartPolicy: Never
   backoffLimit: 4
 {{ end }}
