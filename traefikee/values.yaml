@@ -1,9 +1,9 @@
 # Default values for Traefik Enterprise
 cluster: "default"
-global:
-  image:
-    name: traefik/traefikee
-    tag: ""
+#global:
+#  image:
+#    name: traefik/traefikee
+#    tag: ""
     
 
 controller:
