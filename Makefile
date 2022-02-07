@@ -19,7 +19,7 @@ lint: lint-requirements
 	@git remote add traefikee-agent https://github.com/traefik/traefikee-helm-chart >/dev/null 2>&1 || true
 	@git fetch traefikee-agent master >/dev/null 2>&1 || true
 ifeq ($(LINT_USE_DOCKER),true)
-	    @docker run --rm -t -v $(CURDIR):/charts -w /charts --platform=linux/arm64 quay.io/helmpack/chart-testing:v3.5.0 $(LINT_CMD)
+	    @docker run --rm -t -v $(CURDIR):/charts -w /charts quay.io/helmpack/chart-testing:v3.3.1 $(LINT_CMD)
 else
 	    cd $(CHART_DIR)/tests && $(LINT_CMD)
 endif
