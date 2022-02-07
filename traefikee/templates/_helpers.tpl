@@ -49,3 +49,13 @@ app.kubernetes.io/managed-by: {{ .Release.Service}}
 app.kubernetes.io/instance: {{ .Release.Name}}
 release: {{ .Values.cluster }}
 {{- end }}
+
+{{/*
+Define registry token only if there is no values define.
+*/}}
+{{- define "token" -}}
+{{- if not .Values.global.registry_token }}
+{{- randAlphaNum 10 | nospace | b64enc }}
+{{- end }}
+{{- end -}}
+

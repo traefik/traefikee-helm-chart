@@ -1,10 +1,11 @@
 # Default values for Traefik Enterprise
 cluster: "default"
 
-# global:
-#   image:
-#     name: traefik/traefikee
-#     tag: ""
+global:
+  image:
+    name: traefik/traefikee
+    tag: ""
+  registry_token: ""
 
 controller:
   replicas: 1
