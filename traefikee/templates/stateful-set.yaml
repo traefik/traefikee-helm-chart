@@ -1,5 +1,3 @@
-{{ $token := randAlphaNum 10 | nospace | b64enc}}
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -75,6 +73,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.cluster }}-license
                   key: license
+            - name: PLUGIN_REGISTRY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cluster }}-registry-token
+                  key: token
           securityContext:
             readOnlyRootFilesystem: true
             capabilities:
@@ -126,7 +129,7 @@ spec:
             - "--log.filepath="
             - "--log.format="
             - "--plugin.url=https://{{ .Values.cluster }}-plugin-registry-svc.{{ .Release.Namespace }}.svc.cluster.local"
-            - "--plugin.token={{ $token }}"
+            - "--plugin.token=$(PLUGIN_REGISTRY_TOKEN)"
       volumes:
         - name: sockets
           emptyDir: {}
@@ -203,7 +206,7 @@ spec:
               memory: "100Mi"
               cpu: "1000m"
       containers:
-        - name: {{ .Values.cluster }}-controller
+        - name: {{ .Values.cluster }}-plugin-registry
           image: {{ template "traefikee-helm-chart.image-name" . }}
           imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
           env:
@@ -215,6 +218,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: PLUGIN_REGISTRY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cluster }}-registry-token
+                  key: token
           securityContext:
             readOnlyRootFilesystem: true
             capabilities:
@@ -251,7 +259,7 @@ spec:
             - "plugin-registry"
             - "--name=$(POD_NAME)"
             - "--plugindir=/var/lib/plugins"
-            - "--token={{ $token }}"
+            - "--token=$(PLUGIN_REGISTRY_TOKEN)"
             - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
             - "--jointoken.file.path=/var/run/secrets"
             - "--log.level="
