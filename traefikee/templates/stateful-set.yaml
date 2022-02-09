@@ -1,4 +1,18 @@
-{{ $token := randAlphaNum 10 | nospace | b64enc}}
+# retrieve the token data, returns an empty dictionary if not found
+{{- $tokenSecret := (lookup "v1" "Secret" .Release.Namespace (print .Values.cluster "-registry-token")) | default dict }}
+{{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
+# set $token to existing data or generate a random one
+{{- $token := (get $tokenSecretData "token") | default (randAlphaNum 10 | nospace | b64enc) }}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.cluster }}-registry-token
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+data:
+  token: {{ $token }}
 
 ---
 apiVersion: apps/v1
@@ -19,6 +33,10 @@ spec:
   replicas: {{ .Values.controllers }}
   template:
     metadata:
+      annotations:
+        # This ensures that the controller pods will be rollout,
+        # if the token for the plugin registry has changed since last deployment.
+        checksum/config: {{ $token | sha256sum }}
       labels:
         app: traefikee
         release: {{ .Values.cluster }}
@@ -75,6 +93,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.cluster }}-license
                   key: license
+            - name: PLUGIN_REGISTRY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cluster }}-registry-token
+                  key: token
           securityContext:
             readOnlyRootFilesystem: true
             capabilities:
@@ -126,7 +149,7 @@ spec:
             - "--log.filepath="
             - "--log.format="
             - "--plugin.url=https://{{ .Values.cluster }}-plugin-registry-svc.{{ .Release.Namespace }}.svc.cluster.local"
-            - "--plugin.token={{ $token }}"
+            - "--plugin.token=$(PLUGIN_REGISTRY_TOKEN)"
       volumes:
         - name: sockets
           emptyDir: {}
@@ -164,6 +187,10 @@ spec:
       component: registry
   template:
     metadata:
+      annotations:
+        # This ensures that the registry pods will be rollout,
+        # if the token for the plugin registry has changed since last deployment.
+        checksum/config: {{ $token | sha256sum }}
       labels:
         app: traefikee
         release: {{ .Values.cluster }}
@@ -203,7 +230,7 @@ spec:
               memory: "100Mi"
               cpu: "1000m"
       containers:
-        - name: {{ .Values.cluster }}-controller
+        - name: {{ .Values.cluster }}-plugin-registry
           image: {{ template "traefikee-helm-chart.image-name" . }}
           imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
           env:
@@ -215,6 +242,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: PLUGIN_REGISTRY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cluster }}-registry-token
+                  key: token
           securityContext:
             readOnlyRootFilesystem: true
             capabilities:
@@ -251,7 +283,7 @@ spec:
             - "plugin-registry"
             - "--name=$(POD_NAME)"
             - "--plugindir=/var/lib/plugins"
-            - "--token={{ $token }}"
+            - "--token=$(PLUGIN_REGISTRY_TOKEN)"
             - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
             - "--jointoken.file.path=/var/run/secrets"
             - "--log.level="
