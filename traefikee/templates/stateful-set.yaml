@@ -1,3 +1,19 @@
+# retrieve the token data, returns an empty dictionary if not found
+{{- $tokenSecret := (lookup "v1" "Secret" .Release.Namespace (print .Values.cluster "-registry-token")) | default dict }}
+{{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
+# set $token to existing data or generate a random one
+{{- $token := (get $tokenSecretData "token") | default (randAlphaNum 10 | nospace | b64enc) }}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.cluster }}-registry-token
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+data:
+  token: {{ $token }}
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -17,6 +33,10 @@ spec:
   replicas: {{ .Values.controllers }}
   template:
     metadata:
+      annotations:
+        # This ensures that the controller pods will be rollout,
+        # if the token for the plugin registry has changed since last deployment.
+        checksum/config: {{ $token | sha256sum }}
       labels:
         app: traefikee
         release: {{ .Values.cluster }}
@@ -167,6 +187,10 @@ spec:
       component: registry
   template:
     metadata:
+      annotations:
+        # This ensures that the registry pods will be rollout,
+        # if the token for the plugin registry has changed since last deployment.
+        checksum/config: {{ $token | sha256sum }}
       labels:
         app: traefikee
         release: {{ .Values.cluster }}
