@@ -1,8 +1,15 @@
 # retrieve the token data, returns an empty dictionary if not found
 {{- $tokenSecret := (lookup "v1" "Secret" .Release.Namespace (print .Values.cluster "-registry-token")) | default dict }}
 {{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
-# set $token to existing data or generate a random one
-{{- $token := (get $tokenSecretData "token") | default (randAlphaNum 10 | nospace | b64enc) }}
+# set $token in this order
+# 1. existing data, if a token already exists and user wants to override it, it needs to be done manually, otherwise it can be dangerous
+# 2. get it from values, if it needs to be created
+# 3. generate a random one, if it needs to be created
+{{- $tokenStr := (get $tokenSecretData "token" | b64dec ) | default "" }}
+{{ if eq $tokenStr "" }}
+{{- $tokenStr = (.Values.token | default (randAlphaNum 10)) }}
+{{ end }}
+{{- $token := $tokenStr | nospace | b64enc }}
 
 ---
 apiVersion: v1
