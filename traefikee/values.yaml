@@ -1,6 +1,8 @@
 # Default values for Traefik Enterprise
 cluster: "default"
-token: ""
+
+registry:
+  token: ""
 
 proxy:
   image:
