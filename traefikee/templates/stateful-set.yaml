@@ -2,7 +2,7 @@
 {{- $tokenSecret := (lookup "v1" "Secret" .Release.Namespace (print .Values.cluster "-registry-token")) | default dict }}
 {{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
 
-# set $token to existing data, or if it's not created, set it to the chart values or fallback to a random string.
+# set $token to existing secret data, or if it does not exist, set it to the chart values or fallback to a random string.
 {{- $tokenStr := (get $tokenSecretData "token" | b64dec ) | default "" }}
 {{ if eq $tokenStr "" }}
 {{- $tokenStr = (.Values.registry.token | default (randAlphaNum 10)) }}
