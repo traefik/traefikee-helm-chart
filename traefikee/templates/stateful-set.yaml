@@ -1,8 +1,13 @@
 # retrieve the token data, returns an empty dictionary if not found
 {{- $tokenSecret := (lookup "v1" "Secret" .Release.Namespace (print .Values.cluster "-registry-token")) | default dict }}
 {{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
-# set $token to existing data or generate a random one
-{{- $token := (get $tokenSecretData "token") | default (randAlphaNum 10 | nospace | b64enc) }}
+
+# set $token to existing secret data, or if it does not exist, set it to the chart values or fallback to a random string.
+{{- $tokenStr := (get $tokenSecretData "token" | b64dec ) | default "" }}
+{{ if eq $tokenStr "" }}
+{{- $tokenStr = (.Values.registry.token | default (randAlphaNum 10)) }}
+{{ end }}
+{{- $token := $tokenStr | nospace | b64enc }}
 
 ---
 apiVersion: v1
