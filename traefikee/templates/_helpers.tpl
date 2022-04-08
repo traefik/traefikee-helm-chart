@@ -35,7 +35,7 @@ Create chart name and version as used by the chart label.
 Generates image name.
 */}}
 {{- define "traefikee-helm-chart.image-name" -}}
-{{- printf "%s:%s" .Values.proxy.image.name (.Values.proxy.image.tag | default (printf "v%s" .Chart.AppVersion)) }}
+{{- printf "%s:%s" .Values.image.name (.Values.image.tag | default (printf "v%s" .Chart.AppVersion)) }}
 {{- end }}
 
 {{/*
@@ -48,4 +48,17 @@ helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 app.kubernetes.io/managed-by: {{ .Release.Service}}
 app.kubernetes.io/instance: {{ .Release.Name}}
 release: {{ .Values.cluster }}
+{{- end }}
+
+{{/*
+Generates registry token.
+*/}}
+{{- define "traefikee-helm-chart.registry-token" -}}
+{{- $tokenSecret := (lookup "v1" "Secret" .Release.Namespace (print .Values.cluster "-registry-token")) | default dict }}
+{{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
+{{- $tokenStr := (get $tokenSecretData "token" | b64dec ) | default "" }}
+{{ if eq $tokenStr "" }}
+{{- $tokenStr = (.Values.registry.token | default (randAlphaNum 10)) }}
+{{ end }}
+{{- printf "%s" $tokenStr | nospace | b64enc }}
 {{- end }}

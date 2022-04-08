@@ -1,25 +1,54 @@
 # Default values for Traefik Enterprise
 cluster: "default"
 
+image:
+  name: traefik/traefikee
+  # defaults to appVersion
+  tag: ""
+  pullPolicy: IfNotPresent
+
 registry:
   token: ""
 
-proxy:
-  image:
-    name: traefik/traefikee
-    # defaults to appVersion
-    tag: ""
-    pullPolicy: IfNotPresent
-  proxies: 2
-  controllers: 1
+controller:
+  count: 1
   staticConfig:
 #    configMap:
 #    configMapKey: "static.yaml"
+  #statefulSetLabels:  
+  #  foo: bar
+  #statefulSetAnnotations:
+  #  foo: bar
+  #podLabels:
+  #  foo: bar
+  #podAnnotations:
+  #  foo: bar
+  #additionalArguments:
+  #  - --foo=bar
+
+proxy:
+  count: 2
+  serviceType: LoadBalancer
   ports:
     - name: http
       port: 80
     - name: https
-      port: 443
+      port: 443  
+  #readinessProbe:
+  #  tcpSocket:
+  #    port: http
+  #  initialDelaySeconds: 2
+  #  periodSeconds: 5
+  #deploymentLabels:
+  #  foo: bar
+  #deploymentAnnotations:
+  #  foo: bar
+  #podLabels:
+  #  foo: bar
+  #podAnnotations:
+  #  foo: bar
+  #additionalArguments:
+  #  - --foo=bar
 
 mesh:
   enabled: false

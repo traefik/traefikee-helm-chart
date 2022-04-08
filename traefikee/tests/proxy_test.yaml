@@ -17,10 +17,11 @@ tests:
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
-      proxy.image.name: "mycustompublisher/myspecialimage"
-      proxy.image.tag: "myspecialversion"
-      proxy.image.pullPolicy: Never
-      proxies: 2
+      image.name: "mycustompublisher/myspecialimage"
+      image.tag: "myspecialversion"
+      image.pullPolicy: Never
+      proxy:
+        count: 2
     asserts:
       - isKind:
           of: Deployment

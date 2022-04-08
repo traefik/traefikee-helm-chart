@@ -4,7 +4,7 @@ templates:
 tests:
   - it: can enable static config
     set:
-      proxy:
+      controller:
         staticConfig:
           configMap: test-map
           configMapKey: "static.yaml"
@@ -66,10 +66,11 @@ tests:
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
-      proxy.image.name: "mycustompublisher/myspecialimage"
-      proxy.image.tag: "myspecialversion"
-      proxy.image.pullPolicy: Never
-      controllers: 2
+      image.name: "mycustompublisher/myspecialimage"
+      image.tag: "myspecialversion"
+      image.pullPolicy: Never
+      controller:
+        count: 2
     asserts:
       - isKind:
           of: StatefulSet

@@ -7,10 +7,9 @@ metadata:
   labels:
 {{ include "common.labels" . | indent 4 }}
 spec:
-  type: LoadBalancer
+  type: {{ .Values.proxy.serviceType | default "LoadBalancer"}}
   ports:
-{{ toYaml .Values.proxy.ports | indent 4}}
-
+{{ toYaml .Values.proxy.ports | indent 4 }}
   selector:
     app: traefikee
     release: {{ .Values.cluster }}

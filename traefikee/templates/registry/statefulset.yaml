@@ -1,38 +1,64 @@
+# retrieve the token data, returns an empty dictionary if not found
+{{- $tokenSecret := (lookup "v1" "Secret" .Release.Namespace (print .Values.cluster "-registry-token")) | default dict }}
+{{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
+
+# set $token to existing secret data, or if it does not exist, set it to the chart values or fallback to a random string.
+{{- $tokenStr := (get $tokenSecretData "token" | b64dec ) | default "" }}
+{{ if eq $tokenStr "" }}
+{{- $tokenStr = (.Values.registry.token | default (randAlphaNum 10)) }}
+{{ end }}
+{{- $token := $tokenStr | nospace | b64enc }}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.cluster }}-registry-token
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+data:
+  token: {{ $token }}
+
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: {{ .Values.cluster  }}-proxy
+  name: {{ .Values.cluster }}-plugin-registry
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "common.labels" . | indent 4 }}
-  {{- with .Values.proxy.deploymentLabels }}
-  {{- toYaml . | nindent 4 }}
-  {{- end }}
+    app: traefikee
+    release: {{ .Values.cluster }}
+    {{- with .Values.registry.statefulSetLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   annotations:
-  {{- with .Values.proxy.deploymentAnnotations }}
-  {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- with .Values.registry.statefulSetAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
-  replicas: {{ .Values.proxy.count }}
+  serviceName: {{ .Values.cluster }}-plugin-registry-svc
+  replicas: 1
   selector:
     matchLabels:
       app: traefikee
       release: {{ .Values.cluster }}
-      component: proxies
+      component: registry
   template:
     metadata:
+      annotations:
+        # This ensures that the registry pods will be rollout,
+        # if the token for the plugin registry has changed since last deployment.
+        checksum/config: {{ $token | sha256sum }}
+        {{- with .Values.registry.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         app: traefikee
         release: {{ .Values.cluster }}
-        component: proxies
-      {{- with .Values.proxy.podLabels }}
-      {{- toYaml . | nindent 8 }}
-      {{- end }}
-      annotations:
-      {{- with .Values.proxy.podAnnotations }}
-      {{- toYaml . | nindent 8 }}
-      {{- end }}
+        component: registry
+        {{- with .Values.registry.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       affinity:
         nodeAffinity:
@@ -52,7 +78,7 @@ spec:
                     - key: component
                       operator: In
                       values:
-                        - proxies
+                        - registry
                 topologyKey: "kubernetes.io/hostname"
       terminationGracePeriodSeconds: 30
       automountServiceAccountToken: false
@@ -68,7 +94,7 @@ spec:
               memory: "100Mi"
               cpu: "1000m"
       containers:
-        - name: {{ .Values.cluster }}-proxy
+        - name: {{ .Values.cluster }}-plugin-registry
           image: {{ template "traefikee-helm-chart.image-name" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
@@ -80,6 +106,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: PLUGIN_REGISTRY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cluster }}-registry-token
+                  key: token
           securityContext:
             readOnlyRootFilesystem: true
             capabilities:
@@ -88,18 +119,10 @@ spec:
               add:
                 - NET_BIND_SERVICE
           ports:
-            - containerPort: 8484
-              name: distributed
-          {{- range $port := .Values.proxy.ports }}
-            - containerPort: {{ $port.targetPort | default $port.port }}
-              name: {{ $port.name }}
-          {{- end }}
-          {{- if .Values.proxy.readinessProbe }}
-          readinessProbe:
-            {{- with .Values.proxy.readinessProbe }}
-            {{- toYaml . | nindent 12 }}
-            {{- end }}
-          {{- end }}
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
           resources:
             requests:
               memory: "100Mi"
@@ -108,28 +131,35 @@ spec:
               memory: "4Gi"
               cpu: "1000m"
           volumeMounts:
-            - name: {{ .Values.cluster }}-proxy-data
+            - name: {{ .Values.cluster }}-plugin-registry-data
               mountPath: "/var/lib/traefikee"
+            - name: plugin-data
+              mountPath: "/var/lib/plugins"
             - name: "join-token"
               mountPath: "/var/run/secrets"
           command:
             - "/traefikee"
-            - "proxy"
-            - "--role=ingress"
+            - "plugin-registry"
             - "--name=$(POD_NAME)"
-            - {{ printf "--discovery.dns.domain=%s-ctrl-svc.$(POD_NAMESPACE)" .Values.cluster }}
+            - "--plugindir=/var/lib/plugins"
+            - "--token=$(PLUGIN_REGISTRY_TOKEN)"
+            - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
             - "--jointoken.file.path=/var/run/secrets"
             - "--log.level={{ (.Values.log).level | default "" }}"
             - "--log.filepath={{ (.Values.log).filepath | default "" }}"
             - "--log.format={{ (.Values.log).format | default "" }}"
-            {{- with .Values.proxy.additionalArguments }}
-            {{- range . }}
-            - {{ . | quote }}
-            {{- end }}
-            {{- end }}
       volumes:
-        - name: {{ .Values.cluster }}-proxy-data
+        - name: {{ .Values.cluster }}-plugin-registry-data
           emptyDir: {}
         - name: "join-token"
           secret:
             secretName: {{ .Values.cluster }}-tokens
+  volumeClaimTemplates:
+    - metadata:
+        name: plugin-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
