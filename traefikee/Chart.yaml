@@ -12,8 +12,8 @@ description: |
 type: application
 home: https://traefik.io/traefik-enterprise/
 maintainers:
-  - name: Charlie Haley
-  - name: Kevin Pollet
-  - name: Douglas De Toni Machado
+  - name: charlie-haley
+  - name: kevinpollet
+  - name: ddtmachado
 keywords:
   - traefikee
