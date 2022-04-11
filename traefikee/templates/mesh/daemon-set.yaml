@@ -29,7 +29,7 @@ spec:
         {{- end }}
       labels:
         component: maesh-mesh
-{{ include "common.labels" . | indent 4 }}
+{{ include "common.labels" . | indent 8 }}
         {{- with .Values.mesh.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
