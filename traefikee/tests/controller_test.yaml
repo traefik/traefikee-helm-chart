@@ -1,6 +1,6 @@
 suite: controller test
 templates:
-  - stateful-set.yaml
+  - controller/statefulset.yaml
 tests:
   - it: can enable static config
     set:
@@ -8,7 +8,6 @@ tests:
         staticConfig:
           configMap: test-map
           configMapKey: "static.yaml"
-    documentIndex: 1
     asserts:
       - isKind:
           of: StatefulSet
@@ -21,7 +20,6 @@ tests:
           path: spec.template.spec.containers[0].command
           content: "--configFile=/var/run/traefikee/config/static.yaml"
   - it: can disable static config
-    documentIndex: 1
     asserts:
       - isKind:
           of: StatefulSet
@@ -39,30 +37,17 @@ tests:
       - notContains:
           path: spec.template.spec.containers[0].command
           content: "--configFile=/var/run/traefikee/config/static.yaml"
-  - it: should deploy the controller and the plugin registry
+  - it: should deploy the controller only
     asserts:
       - isKind:
           of: StatefulSet
-        documentIndex: 1
-      - isKind:
-          of: StatefulSet
-        documentIndex: 2
       - isAPIVersion:
           of: apps/v1
-        documentIndex: 1
-      - isAPIVersion:
-          of: apps/v1
-        documentIndex: 2
       - equal:
           path: metadata.name
           value: default-controller
-        documentIndex: 1
-      - equal:
-          path: metadata.name
-          value: default-plugin-registry
-        documentIndex: 2
       - hasDocuments:
-          count: 3
+          count: 1
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
@@ -74,34 +59,23 @@ tests:
     asserts:
       - isKind:
           of: StatefulSet
-        documentIndex: 1
       - isAPIVersion:
           of: apps/v1
-        documentIndex: 1
       - equal:
           path: metadata.name
           value: mysupertraefikee-controller
-        documentIndex: 1
-      - equal:
-          path: metadata.name
-          value: mysupertraefikee-plugin-registry
-        documentIndex: 2
       - equal:
           path: spec.template.spec.containers[0].image
           value: "mycustompublisher/myspecialimage:myspecialversion"
-        documentIndex: 1
       - equal:
           path: spec.replicas
           value: 2
-        documentIndex: 1
       - equal:
           path: spec.serviceName
           value: mysupertraefikee-ctrl-svc
-        documentIndex: 1
       - equal:
           path: spec.template.spec.containers[0].imagePullPolicy
           value: Never
-        documentIndex: 1
       - hasDocuments:
-          count: 3
+          count: 1
 

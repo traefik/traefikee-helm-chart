@@ -21,7 +21,7 @@ spec:
       component: controllers
   podManagementPolicy: Parallel
   serviceName: {{ .Values.cluster }}-ctrl-svc
-  replicas: {{ .Values.controllers }}
+  replicas: {{ .Values.controller.count }}
   template:
     metadata:
       annotations:
