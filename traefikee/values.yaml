@@ -15,16 +15,16 @@ controller:
   staticConfig:
 #    configMap:
 #    configMapKey: "static.yaml"
-  #statefulSetLabels:  
-  #  foo: bar
-  #statefulSetAnnotations:
-  #  foo: bar
-  #podLabels:
-  #  foo: bar
-  #podAnnotations:
-  #  foo: bar
-  #additionalArguments:
-  #  - --foo=bar
+#  statefulSetLabels:
+#    foo: bar
+#  statefulSetAnnotations:
+#    foo: bar
+#  podLabels:
+#    foo: bar
+#  podAnnotations:
+#    foo: bar
+#  additionalArguments:
+#    - --foo=bar
 
 proxy:
   count: 2
@@ -33,22 +33,22 @@ proxy:
     - name: http
       port: 80
     - name: https
-      port: 443  
-  #readinessProbe:
-  #  tcpSocket:
-  #    port: http
-  #  initialDelaySeconds: 2
-  #  periodSeconds: 5
-  #deploymentLabels:
-  #  foo: bar
-  #deploymentAnnotations:
-  #  foo: bar
-  #podLabels:
-  #  foo: bar
-  #podAnnotations:
-  #  foo: bar
-  #additionalArguments:
-  #  - --foo=bar
+      port: 443
+#  readinessProbe:
+#    tcpSocket:
+#      port: http
+#    initialDelaySeconds: 2
+#    periodSeconds: 5
+#  deploymentLabels:
+#    foo: bar
+#  deploymentAnnotations:
+#    foo: bar
+#  podLabels:
+#    foo: bar
+#  podAnnotations:
+#    foo: bar
+#  additionalArguments:
+#    - --foo=bar
 
 mesh:
   enabled: false
