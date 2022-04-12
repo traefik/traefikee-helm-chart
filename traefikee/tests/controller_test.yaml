@@ -79,3 +79,46 @@ tests:
       - hasDocuments:
           count: 1
 
+  - it: should add labels and annotations
+    set:
+      cluster: "mysupertraefikee"
+      controller:
+        statefulSetLabels:
+            st-lb-foo: bar
+        statefulSetAnnotations:
+            st-an-foo: bar
+        podLabels:
+            pod-lb-foo: bar
+        podAnnotations:
+            pod-an-foo: bar
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: spec.template.metadata.labels.pod-lb-foo
+          value: "bar"
+      - equal:
+          path: spec.template.metadata.annotations.pod-an-foo
+          value: "bar"
+      - equal:
+          path: metadata.labels.st-lb-foo
+          value: "bar"
+      - equal:
+          path: metadata.annotations.st-an-foo
+          value: "bar"
+
+  - it: should have additional arguments
+    set:
+      controller:
+        additionalArguments:
+            - --foo=bar
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+      - contains:
+          path: spec.template.spec.containers[0].command
+          content: "--foo=bar"

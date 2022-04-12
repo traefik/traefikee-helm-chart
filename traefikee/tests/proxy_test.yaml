@@ -65,3 +65,29 @@ tests:
           content:
             containerPort: 80
             name: http
+
+suite: proxy service test
+templates:
+  - proxy/service.yaml
+tests:
+  - it: should use LoadBalancer by default
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+  - it: should use NodePort
+    set:
+      proxy:
+        serviceType: NodePort
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: NodePort
