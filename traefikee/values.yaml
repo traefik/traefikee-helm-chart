@@ -12,20 +12,20 @@ log:
 #  format:
 #  file:
 
-#registry:
-#  serviceLabels:
-#    foo: bar
-#  serviceAnnotations:
-#    foo: bar
-#  statefulSetLabels:
-#    foo: bar
-#  statefulSetAnnotations:
-#    foo: bar
-#  podLabels:
-#    foo: bar
-#  podAnnotations:
-#    foo: bar
-#  manualTokenSecret: true
+# registry:
+#   serviceLabels:
+#     foo: bar
+#   serviceAnnotations:
+#     foo: bar
+#   statefulSetLabels:
+#     foo: bar
+#   statefulSetAnnotations:
+#     foo: bar
+#   podLabels:
+#     foo: bar
+#   podAnnotations:
+#     foo: bar
+#   manualTokenSecret: true
 
 controller:
   replicas: 1
