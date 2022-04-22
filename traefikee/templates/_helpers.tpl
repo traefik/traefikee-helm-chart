@@ -57,8 +57,8 @@ Generates registry token.
 {{- $tokenSecret := (lookup "v1" "Secret" .Release.Namespace (print .Values.cluster "-registry-token")) | default dict }}
 {{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
 {{- $tokenStr := (get $tokenSecretData "token" | b64dec ) | default "" }}
-{{ if eq $tokenStr "" }}
-{{- $tokenStr = (.Values.registry.token | default (randAlphaNum 10)) }}
-{{ end }}
+{{- if eq $tokenStr "" }}
+{{- $tokenStr = randAlphaNum 10 }}
+{{- end }}
 {{- printf "%s" $tokenStr | nospace | b64enc }}
 {{- end }}

@@ -5,16 +5,16 @@ metadata:
   name: {{ .Values.cluster  }}-proxy
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "common.labels" . | indent 4 }}
-  {{- with .Values.proxy.deploymentLabels }}
-  {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- include "common.labels" . | nindent 4 }}
+    {{- with .Values.proxy.deploymentLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   annotations:
-  {{- with .Values.proxy.deploymentAnnotations }}
-  {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- with .Values.proxy.deploymentAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
-  replicas: {{ .Values.proxy.count }}
+  replicas: {{ .Values.proxy.replicas }}
   selector:
     matchLabels:
       app: traefikee
@@ -22,17 +22,16 @@ spec:
       component: proxies
   template:
     metadata:
-      labels:
-        app: traefikee
-        release: {{ .Values.cluster }}
+      labels:        
         component: proxies
-      {{- with .Values.proxy.podLabels }}
-      {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{ include "common.labels" . | nindent 8 }}
+        {{- with .Values.proxy.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       annotations:
-      {{- with .Values.proxy.podAnnotations }}
-      {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- with .Values.proxy.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       affinity:
         nodeAffinity:

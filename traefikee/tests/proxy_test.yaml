@@ -21,7 +21,7 @@ tests:
       image.tag: "myspecialversion"
       image.pullPolicy: Never
       proxy:
-        count: 2
+        replicas: 2
     asserts:
       - isKind:
           of: Deployment

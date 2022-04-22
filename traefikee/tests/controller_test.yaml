@@ -1,13 +1,15 @@
 suite: controller test
 templates:
-  - controller/statefulset.yaml
+  - stateful-sets.yaml
 tests:
   - it: can enable static config
     set:
       controller:
         staticConfig:
-          configMap: test-map
-          configMapKey: "static.yaml"
+          configMap:
+            name: test-map
+            key: "static.yaml"
+    documentIndex: 2
     asserts:
       - isKind:
           of: StatefulSet
@@ -20,6 +22,7 @@ tests:
           path: spec.template.spec.containers[0].command
           content: "--configFile=/var/run/traefikee/config/static.yaml"
   - it: can disable static config
+    documentIndex: 2
     asserts:
       - isKind:
           of: StatefulSet
@@ -37,17 +40,23 @@ tests:
       - notContains:
           path: spec.template.spec.containers[0].command
           content: "--configFile=/var/run/traefikee/config/static.yaml"
-  - it: should deploy the controller only
+  - it: should deploy the registry and controller
     asserts:
       - isKind:
           of: StatefulSet
+        documentIndex: 1
+      - isKind:
+          of: StatefulSet
+        documentIndex: 2
       - isAPIVersion:
           of: apps/v1
+        documentIndex: 2
       - equal:
           path: metadata.name
           value: default-controller
+        documentIndex: 2
       - hasDocuments:
-          count: 1
+          count: 3
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
@@ -55,7 +64,8 @@ tests:
       image.tag: "myspecialversion"
       image.pullPolicy: Never
       controller:
-        count: 2
+        replicas: 2
+    documentIndex: 2
     asserts:
       - isKind:
           of: StatefulSet
@@ -76,8 +86,6 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].imagePullPolicy
           value: Never
-      - hasDocuments:
-          count: 1
 
   - it: should add labels and annotations
     set:
@@ -91,6 +99,7 @@ tests:
             pod-lb-foo: bar
         podAnnotations:
             pod-an-foo: bar
+    documentIndex: 2
     asserts:
       - isKind:
           of: StatefulSet
@@ -114,6 +123,7 @@ tests:
       controller:
         additionalArguments:
             - --foo=bar
+    documentIndex: 2
     asserts:
       - isKind:
           of: StatefulSet

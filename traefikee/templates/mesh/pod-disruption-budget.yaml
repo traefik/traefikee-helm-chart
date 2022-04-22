@@ -6,7 +6,7 @@ metadata:
   name: {{ .Values.cluster }}-mesh-proxy
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "common.labels" . | indent 4 }}
+    {{ include "common.labels" . | nindent 4 }}
 spec:
   maxUnavailable: 1
   selector:

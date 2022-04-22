@@ -6,8 +6,7 @@ metadata:
   name: {{ .Values.cluster }}-mesh-proxy
   namespace: {{ .Release.Namespace }}
   labels:
-    app: traefikee
-    release: {{ .Values.cluster }}
+    {{ include "common.labels" . | nindent 4 }}
     {{- with .Values.mesh.daemonSetLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -29,7 +28,7 @@ spec:
         {{- end }}
       labels:
         component: maesh-mesh
-{{ include "common.labels" . | indent 8 }}
+        {{ include "common.labels" . | nindent 8 }}
         {{- with .Values.mesh.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

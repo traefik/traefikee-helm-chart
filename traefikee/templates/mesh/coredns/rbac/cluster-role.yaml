@@ -5,7 +5,7 @@ kind: ClusterRole
 metadata:
   labels:
     kubernetes.io/bootstrapping: rbac-defaults
-{{ include "common.labels" . | indent 4 }}
+    {{ include "common.labels" . | nindent 4 }}
   name: traefikee-coredns
 rules:
   - apiGroups:

@@ -7,14 +7,36 @@ image:
   tag: ""
   pullPolicy: IfNotPresent
 
-registry:
-  token: ""
+log:
+  level: DEBUG
+#  format:
+#  file:
+
+#registry:
+#  serviceLabels:
+#    foo: bar
+#  serviceAnnotations:
+#    foo: bar
+#  statefulSetLabels:
+#    foo: bar
+#  statefulSetAnnotations:
+#    foo: bar
+#  podLabels:
+#    foo: bar
+#  podAnnotations:
+#    foo: bar
+#  manualTokenSecret: true
 
 controller:
-  count: 1
-  staticConfig:
+  replicas: 1
+#  staticConfig:
 #    configMap:
-#    configMapKey: "static.yaml"
+#      name: traefik-config
+#      key: "static.yml"
+#  serviceLabels:
+#    foo: bar
+#  serviceAnnotations:
+#    foo: bar
 #  statefulSetLabels:
 #    foo: bar
 #  statefulSetAnnotations:
@@ -27,7 +49,7 @@ controller:
 #    - --foo=bar
 
 proxy:
-  count: 2
+  replicas: 2
   serviceType: LoadBalancer
   ports:
     - name: http
@@ -39,6 +61,10 @@ proxy:
 #      port: http
 #    initialDelaySeconds: 2
 #    periodSeconds: 5
+#  serviceLabels:
+#    foo: bar
+#  serviceAnnotations:
+#    foo: bar
 #  deploymentLabels:
 #    foo: bar
 #  deploymentAnnotations:
@@ -54,3 +80,7 @@ mesh:
   enabled: false
   kubedns: false
   clusterDomain: "cluster.local"
+#  daemonSetLabels:
+#    foo: bar
+#  daemonSetAnnotations:
+#    foo: bar
