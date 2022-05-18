@@ -5,12 +5,18 @@ metadata:
   name: {{ .Values.cluster }}-proxy-svc
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "common.labels" . | indent 4 }}
+    {{ include "common.labels" . | nindent 4 }}
+    {{- with (.Values.proxy).serviceLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with (.Values.proxy).serviceAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
-  type: LoadBalancer
+  type: {{ .Values.proxy.serviceType | default "LoadBalancer" }}
   ports:
-{{ toYaml .Values.proxy.ports | indent 4}}
-
+    {{ toYaml .Values.proxy.ports | nindent 4 }}
   selector:
     app: traefikee
     release: {{ .Values.cluster }}

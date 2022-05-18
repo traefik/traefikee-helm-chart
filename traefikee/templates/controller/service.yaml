@@ -5,7 +5,14 @@ metadata:
   name: {{ .Values.cluster }}-ctrl-svc
   namespace: {{ .Release.Namespace }}
   labels:
-    app: traefikee
+    {{ include "common.labels" . | nindent 4 }}
+    {{- with (.Values.controller).serviceLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with (.Values.controller).serviceAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
     app: traefikee

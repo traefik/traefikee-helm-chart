@@ -5,9 +5,16 @@ metadata:
   name: {{ .Values.cluster  }}-proxy
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "common.labels" . | indent 4 }}
+    {{- include "common.labels" . | nindent 4 }}
+    {{- with .Values.proxy.deploymentLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.proxy.deploymentAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
-  replicas: {{ .Values.proxy.proxies }}
+  replicas: {{ .Values.proxy.replicas }}
   selector:
     matchLabels:
       app: traefikee
@@ -15,10 +22,16 @@ spec:
       component: proxies
   template:
     metadata:
-      labels:
-        app: traefikee
-        release: {{ .Values.cluster }}
+      labels:        
         component: proxies
+        {{ include "common.labels" . | nindent 8 }}
+        {{- with .Values.proxy.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        {{- with .Values.proxy.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       affinity:
         nodeAffinity:
@@ -56,7 +69,7 @@ spec:
       containers:
         - name: {{ .Values.cluster }}-proxy
           image: {{ template "traefikee-helm-chart.image-name" . }}
-          imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -76,10 +89,16 @@ spec:
           ports:
             - containerPort: 8484
               name: distributed
-{{- range $port := .Values.proxy.ports }}
-            - containerPort: {{ $port.port}}
-              name: {{ $port.name}}
-{{ end }}
+          {{- range $port := .Values.proxy.ports }}
+            - containerPort: {{ $port.targetPort | default $port.port }}
+              name: {{ $port.name }}
+          {{- end }}
+          {{- if .Values.proxy.readinessProbe }}
+          readinessProbe:
+            {{- with .Values.proxy.readinessProbe }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
           resources:
             requests:
               memory: "100Mi"
@@ -99,9 +118,14 @@ spec:
             - "--name=$(POD_NAME)"
             - {{ printf "--discovery.dns.domain=%s-ctrl-svc.$(POD_NAMESPACE)" .Values.cluster }}
             - "--jointoken.file.path=/var/run/secrets"
-            - "--log.level="
-            - "--log.filepath="
-            - "--log.format="
+            - "--log.level={{ (.Values.log).level | default "" }}"
+            - "--log.filepath={{ (.Values.log).filepath | default "" }}"
+            - "--log.format={{ (.Values.log).format | default "" }}"
+            {{- with .Values.proxy.additionalArguments }}
+            {{- range . }}
+            - {{ . | quote }}
+            {{- end }}
+            {{- end }}
       volumes:
         - name: {{ .Values.cluster }}-proxy-data
           emptyDir: {}

@@ -5,7 +5,14 @@ metadata:
   name: {{ .Values.cluster }}-plugin-registry-svc
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "common.labels" . | indent 4 }}
+    {{ include "common.labels" . | nindent 4 }}
+    {{- with (.Values.registry).serviceLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with (.Values.registry).serviceAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   type: ClusterIP
   ports:

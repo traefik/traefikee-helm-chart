@@ -6,8 +6,14 @@ metadata:
   name: {{ .Values.cluster }}-mesh-proxy
   namespace: {{ .Release.Namespace }}
   labels:
-    app: traefikee
-    release: {{ .Values.cluster }}
+    {{ include "common.labels" . | nindent 4 }}
+    {{- with .Values.mesh.daemonSetLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.mesh.daemonSetAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
@@ -16,9 +22,16 @@ spec:
       release: {{ .Values.cluster }}
   template:
     metadata:
+      annotations:
+        {{- with .Values.mesh.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         component: maesh-mesh
-{{ include "common.labels" . | indent 4 }}
+        {{ include "common.labels" . | nindent 8 }}
+        {{- with .Values.mesh.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: {{ .Values.cluster }}-mesh-proxy
       automountServiceAccountToken: false
@@ -29,7 +42,7 @@ spec:
       containers:
         - name: maesh-mesh
           image: {{ template "traefikee-helm-chart.image-name" . }}
-          imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true
             capabilities:
@@ -74,9 +87,9 @@ spec:
             - "--name=$(POD_NAME)"
             - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
             - "--jointoken.file.path=/var/run/secrets"
-            - "--log.level="
-            - "--log.filepath="
-            - "--log.format="
+            - "--log.level={{ (.Values.log).level | default "" }}"
+            - "--log.filepath={{ (.Values.log).filepath | default "" }}"
+            - "--log.format={{ (.Values.log).format | default "" }}"
       volumes:
         - name: {{ .Values.cluster }}-proxy-data
           emptyDir: {}

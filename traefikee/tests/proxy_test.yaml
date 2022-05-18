@@ -17,10 +17,11 @@ tests:
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
-      proxy.image.name: "mycustompublisher/myspecialimage"
-      proxy.image.tag: "myspecialversion"
-      proxy.image.pullPolicy: Never
-      proxies: 2
+      image.name: "mycustompublisher/myspecialimage"
+      image.tag: "myspecialversion"
+      image.pullPolicy: Never
+      proxy:
+        replicas: 2
     asserts:
       - isKind:
           of: Deployment
@@ -64,3 +65,29 @@ tests:
           content:
             containerPort: 80
             name: http
+
+suite: proxy service test
+templates:
+  - proxy/service.yaml
+tests:
+  - it: should use LoadBalancer by default
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+  - it: should use NodePort
+    set:
+      proxy:
+        serviceType: NodePort
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: NodePort

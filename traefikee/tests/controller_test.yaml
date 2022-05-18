@@ -1,14 +1,15 @@
 suite: controller test
 templates:
-  - stateful-set.yaml
+  - stateful-sets.yaml
 tests:
   - it: can enable static config
     set:
-      proxy:
+      controller:
         staticConfig:
-          configMap: test-map
-          configMapKey: "static.yaml"
-    documentIndex: 1
+          configMap:
+            name: test-map
+            key: "static.yaml"
+    documentIndex: 2
     asserts:
       - isKind:
           of: StatefulSet
@@ -21,7 +22,7 @@ tests:
           path: spec.template.spec.containers[0].command
           content: "--configFile=/var/run/traefikee/config/static.yaml"
   - it: can disable static config
-    documentIndex: 1
+    documentIndex: 2
     asserts:
       - isKind:
           of: StatefulSet
@@ -39,7 +40,7 @@ tests:
       - notContains:
           path: spec.template.spec.containers[0].command
           content: "--configFile=/var/run/traefikee/config/static.yaml"
-  - it: should deploy the controller and the plugin registry
+  - it: should deploy the registry and controller
     asserts:
       - isKind:
           of: StatefulSet
@@ -47,60 +48,87 @@ tests:
       - isKind:
           of: StatefulSet
         documentIndex: 2
-      - isAPIVersion:
-          of: apps/v1
-        documentIndex: 1
       - isAPIVersion:
           of: apps/v1
         documentIndex: 2
       - equal:
           path: metadata.name
           value: default-controller
-        documentIndex: 1
-      - equal:
-          path: metadata.name
-          value: default-plugin-registry
         documentIndex: 2
       - hasDocuments:
           count: 3
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
-      proxy.image.name: "mycustompublisher/myspecialimage"
-      proxy.image.tag: "myspecialversion"
-      proxy.image.pullPolicy: Never
-      controllers: 2
+      image.name: "mycustompublisher/myspecialimage"
+      image.tag: "myspecialversion"
+      image.pullPolicy: Never
+      controller:
+        replicas: 2
+    documentIndex: 2
     asserts:
       - isKind:
           of: StatefulSet
-        documentIndex: 1
       - isAPIVersion:
           of: apps/v1
-        documentIndex: 1
       - equal:
           path: metadata.name
           value: mysupertraefikee-controller
-        documentIndex: 1
-      - equal:
-          path: metadata.name
-          value: mysupertraefikee-plugin-registry
-        documentIndex: 2
       - equal:
           path: spec.template.spec.containers[0].image
           value: "mycustompublisher/myspecialimage:myspecialversion"
-        documentIndex: 1
       - equal:
           path: spec.replicas
           value: 2
-        documentIndex: 1
       - equal:
           path: spec.serviceName
           value: mysupertraefikee-ctrl-svc
-        documentIndex: 1
       - equal:
           path: spec.template.spec.containers[0].imagePullPolicy
           value: Never
-        documentIndex: 1
-      - hasDocuments:
-          count: 3
 
+  - it: should add labels and annotations
+    set:
+      cluster: "mysupertraefikee"
+      controller:
+        statefulSetLabels:
+            st-lb-foo: bar
+        statefulSetAnnotations:
+            st-an-foo: bar
+        podLabels:
+            pod-lb-foo: bar
+        podAnnotations:
+            pod-an-foo: bar
+    documentIndex: 2
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: spec.template.metadata.labels.pod-lb-foo
+          value: "bar"
+      - equal:
+          path: spec.template.metadata.annotations.pod-an-foo
+          value: "bar"
+      - equal:
+          path: metadata.labels.st-lb-foo
+          value: "bar"
+      - equal:
+          path: metadata.annotations.st-an-foo
+          value: "bar"
+
+  - it: should have additional arguments
+    set:
+      controller:
+        additionalArguments:
+            - --foo=bar
+    documentIndex: 2
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+      - contains:
+          path: spec.template.spec.containers[0].command
+          content: "--foo=bar"

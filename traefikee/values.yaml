@@ -1,27 +1,90 @@
 # Default values for Traefik Enterprise
 cluster: "default"
 
-registry:
-  token: ""
+image:
+  name: traefik/traefikee
+  # defaults to appVersion
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# log:
+#  level: DEBUG
+#  format:
+#  file:
+
+# registry:
+#   serviceLabels:
+#     foo: bar
+#   serviceAnnotations:
+#     foo: bar
+#   statefulSetLabels:
+#     foo: bar
+#   statefulSetAnnotations:
+#     foo: bar
+#   podLabels:
+#     foo: bar
+#   podAnnotations:
+#     foo: bar
+#   manualTokenSecret: true
+
+controller:
+  replicas: 1
+#  staticConfig:
+#    configMap:
+#      name: traefik-config
+#      key: "static.yml"
+#  serviceLabels:
+#    foo: bar
+#  serviceAnnotations:
+#    foo: bar
+#  statefulSetLabels:
+#    foo: bar
+#  statefulSetAnnotations:
+#    foo: bar
+#  podLabels:
+#    foo: bar
+#  podAnnotations:
+#    foo: bar
+#  additionalArguments:
+#    - --foo=bar
 
 proxy:
-  image:
-    name: traefik/traefikee
-    # defaults to appVersion
-    tag: ""
-    pullPolicy: IfNotPresent
-  proxies: 2
-  controllers: 1
-  staticConfig:
-#    configMap:
-#    configMapKey: "static.yaml"
+  replicas: 2
+  serviceType: LoadBalancer
   ports:
     - name: http
       port: 80
     - name: https
       port: 443
+#  readinessProbe:
+#    tcpSocket:
+#      port: http
+#    initialDelaySeconds: 2
+#    periodSeconds: 5
+#  serviceLabels:
+#    foo: bar
+#  serviceAnnotations:
+#    foo: bar
+#  deploymentLabels:
+#    foo: bar
+#  deploymentAnnotations:
+#    foo: bar
+#  podLabels:
+#    foo: bar
+#  podAnnotations:
+#    foo: bar
+#  additionalArguments:
+#    - --foo=bar
 
 mesh:
   enabled: false
   kubedns: false
   clusterDomain: "cluster.local"
+#  daemonSetLabels:
+#    foo: bar
+#  daemonSetAnnotations:
+#    foo: bar
+#  podLabels:
+#    foo: bar
+#  podAnnotations:
+#    foo: bar
