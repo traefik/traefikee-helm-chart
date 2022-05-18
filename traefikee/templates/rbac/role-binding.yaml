@@ -4,6 +4,8 @@ kind: RoleBinding
 metadata:
   name: {{ .Values.cluster }}-svc-acc-role-{{ .Release.Namespace }}
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "common.labels" . | nindent 4 }}
 roleRef:
   kind: Role
   name: {{ .Values.cluster }}-svc-acc-role-{{ .Release.Namespace }}
