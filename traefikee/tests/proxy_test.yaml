@@ -13,7 +13,7 @@ tests:
           value: default-proxy
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "traefik/traefikee:v2.6.5"
+          value: "traefik/traefikee:v2.7.0"
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
