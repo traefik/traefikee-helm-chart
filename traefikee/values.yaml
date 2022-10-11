@@ -75,6 +75,8 @@ proxy:
 #    foo: bar
 #  additionalArguments:
 #    - --foo=bar
+#  podDisruptionBudget:
+#    enabled: false
 
 mesh:
   enabled: false
