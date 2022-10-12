@@ -8,7 +8,11 @@ metadata:
   labels:
     {{ include "common.labels" . | nindent 4 }}
 spec:
-  maxUnavailable: 1
+  {{ if .Values.proxy.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.proxy.podDisruptionBudget.minAvailable }}
+  {{ else }}
+  maxUnavailable: {{ .Values.proxy.podDisruptionBudget.maxUnavailable | default 1 }}
+  {{ end }}
   selector:
     matchLabels:
       app: traefikee
