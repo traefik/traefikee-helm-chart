@@ -75,8 +75,8 @@ proxy:
 #    foo: bar
 #  additionalArguments:
 #    - --foo=bar
+#  # minAvailable or maxUnavailable (default value is maxUnavailable: 1)
 #  podDisruptionBudget:
-## minAvailable or maxUnavailable (default value is maxUnavailable: 1)
 #    minAvailable: 1
 #    maxUnavailable: 1
 
