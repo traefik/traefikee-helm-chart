@@ -47,6 +47,8 @@ controller:
 #    foo: bar
 #  additionalArguments:
 #    - --foo=bar
+#  env:
+#    foo: bar
 
 proxy:
   replicas: 2
@@ -75,6 +77,8 @@ proxy:
 #    foo: bar
 #  additionalArguments:
 #    - --foo=bar
+#  env:
+#    foo: bar
 
 mesh:
   enabled: false
