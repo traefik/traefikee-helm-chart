@@ -253,7 +253,7 @@ spec:
                   key: token
           {{- range $key, $value := .Values.controller.env }}
             - name: {{ $key }}
-              value: {{ $value }}
+              value: {{ $value | quote }}
           {{- end }}
           securityContext:
             readOnlyRootFilesystem: true
