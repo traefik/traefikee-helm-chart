@@ -84,7 +84,13 @@ proxy:
 #  additionalArguments:
 #    - --foo=bar
 #  env:
-#    foo: bar
+#    - name: FOO
+#      value: 1
+#    - name: BAR
+#      valueFrom:
+#        secretKeyRef:
+#          name: foo
+#          key: BAR
 
 mesh:
   enabled: false
