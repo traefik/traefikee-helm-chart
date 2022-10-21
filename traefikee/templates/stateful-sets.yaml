@@ -251,9 +251,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.cluster }}-registry-token
                   key: token
-          {{- range $key, $value := .Values.controller.env }}
-            - name: {{ $key }}
-              value: {{ $value }}
+          {{- with .Values.controller.env }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           securityContext:
             readOnlyRootFilesystem: true
