@@ -1,4 +1,4 @@
-{{ if .Values.mesh.enabled }}
+{{ if .Values.proxy.podDisruptionBudget }}
 ---
 {{- if semverCompare ">=1.21-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: policy/v1
@@ -7,15 +7,19 @@ apiVersion: policy/v1beta1
 {{- end }}
 kind: PodDisruptionBudget
 metadata:
-  name: {{ .Values.cluster }}-mesh-proxy
+  name: {{ .Values.cluster }}-proxy
   namespace: {{ .Release.Namespace }}
   labels:
     {{ include "common.labels" . | nindent 4 }}
 spec:
-  maxUnavailable: 1
+  {{ if .Values.proxy.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.proxy.podDisruptionBudget.minAvailable }}
+  {{ else }}
+  maxUnavailable: {{ .Values.proxy.podDisruptionBudget.maxUnavailable | default 1 }}
+  {{ end }}
   selector:
     matchLabels:
       app: traefikee
-      component: maesh-mesh
+      component: proxies
       release: {{ .Values.cluster }}
 {{ end }}
