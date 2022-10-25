@@ -65,7 +65,15 @@ tests:
           content:
             containerPort: 80
             name: http
-
+  - it: should set imagePullSecrets correctly
+    set:
+      imagePullSecrets:
+        - name: regcred
+    asserts:
+      - equal:
+          path: spec.template.spec.imagePullSecrets[0].name
+          value: regcred
+---
 suite: proxy service test
 templates:
   - proxy/service.yaml

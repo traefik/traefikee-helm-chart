@@ -86,7 +86,6 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].imagePullPolicy
           value: Never
-
   - it: should add labels and annotations
     set:
       cluster: "mysupertraefikee"
@@ -117,7 +116,6 @@ tests:
       - equal:
           path: metadata.annotations.st-an-foo
           value: "bar"
-
   - it: should have additional arguments
     set:
       controller:
@@ -132,3 +130,21 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].command
           content: "--foo=bar"
+  - it: should set imagePullSecrets correctly (registry)
+    set:
+      imagePullSecrets:
+        - name: regcred
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.imagePullSecrets[0].name
+          value: regcred
+  - it: should set imagePullSecrets correctly (controllers)
+    set:
+      imagePullSecrets:
+        - name: regcred
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: spec.template.spec.imagePullSecrets[0].name
+          value: regcred
