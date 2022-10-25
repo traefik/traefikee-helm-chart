@@ -1,6 +1,9 @@
 # Default values for Traefik Enterprise
 cluster: "default"
 
+# imagePullSecrets:
+#   - name: regcred
+
 image:
   name: traefik/traefikee
   # defaults to appVersion
