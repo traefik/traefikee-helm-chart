@@ -100,7 +100,7 @@ $(HELM_REPO):
 
 helm-unittest: global-requirements
 	@echo "== Checking that plugin helm-unittest is available..."
-	@helm plugin list 2>/dev/null | grep unittest >/dev/null || helm plugin install https://github.com/quintush/helm-unittest --version v0.2.7 --debug
+	@helm plugin list 2>/dev/null | grep unittest >/dev/null || helm plugin install https://github.com/quintush/helm-unittest --version v0.2.9 --debug
 	@echo "== plugin helm-unittest is ready"
 
 .PHONY: all global-requirements lint-requirements helm-unittest lint build package clean full-yaml

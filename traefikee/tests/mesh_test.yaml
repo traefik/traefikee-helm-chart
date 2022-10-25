@@ -1,9 +1,9 @@
 suite: mesh test
 tests:
   - it: should install mesh
+    template: mesh/daemon-set.yaml
     set:
       mesh.enabled: true
-    template: mesh/daemon-set.yaml
     asserts:
       - isKind:
           of: DaemonSet
@@ -15,10 +15,10 @@ tests:
       - hasDocuments:
           count: 1
   - it: should install coredns
-    set:
-      mesh.kubedns: true
-      mesh.enabled: true
     template: mesh/coredns/deployment.yaml
+    set:
+      mesh.enabled: true
+      mesh.kubedns: true
     asserts:
       - isKind:
           of: Deployment
@@ -29,3 +29,14 @@ tests:
           value: coredns
       - hasDocuments:
           count: 1
+  - it: should set imagePullSecrets correctly
+    template: mesh/coredns/deployment.yaml
+    set:
+      mesh.enabled: true
+      mesh.kubedns: true
+      imagePullSecrets:
+        - name: regcred
+    asserts:
+      - equal:
+          path: spec.template.spec.imagePullSecrets[0].name
+          value: regcred
