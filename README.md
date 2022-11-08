@@ -14,26 +14,21 @@ With the command `helm version`, make sure that you have:
 Add Traefik Enterprise's chart repository to Helm:
 
 ```bash
-helm repo add traefikee https://helm.traefik.io/traefikee
-```
-
-You can update the chart repository by running:
-
-```bash
+helm repo add traefik https://traefik.github.io/charts
 helm repo update
 ```
 
 ### Deploying Traefik Enterprise
 
 ```bash
-helm install traefikee traefikee/traefikee
+helm install traefikee traefik/traefikee
 ```
 
-### Specifications 
+### Specifications
 
 By default, Traefik Enterprise will be installed into the `default` namespace. If you want to install the Traefik Enterprise in a specific namespace, you need to run helm with the `--namespace` and `--create-namespace` arguments:
 ```bash
-helm install traefikee traefikee/traefikee --namespace traefikee --create-namespace
+helm install traefikee traefik/traefikee --namespace traefikee --create-namespace
 ```
 
 Then you'll need to create a secret containing your provided license key, where `default` if your cluster name.
@@ -43,12 +38,8 @@ kubectl create secret -n traefikee generic default-license --from-literal=licens
 
 ### Launch unit tests
 
-You need the helm-plugin: https://github.com/rancher/helm-unittest
-
-Then:
-
 ```bash
-make unit-test
+make test
 ```
 
 ### Uninstall

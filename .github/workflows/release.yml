@@ -1,0 +1,39 @@
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    uses: "traefik/mesh-helm-chart/.github/workflows/test.yml@master"
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config --global --add safe.directory /charts
+
+      - name: Publish Helm chart
+        uses: stefanprodan/helm-gh-pages@master
+        with:
+          token: ${{ secrets.CHARTS_TOKEN }}
+          charts_dir: .
+          charts_url: https://traefik.github.io/charts
+          owner: traefik
+          repository: charts
+          branch: master
+          target_dir: traefikee
+          index_dir: .
+          commit_username: traefiker
+          commit_email: 30906710+traefiker@users.noreply.github.com
