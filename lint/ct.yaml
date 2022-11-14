@@ -1,6 +1,0 @@
-chart-dirs:
-  - ./
-remote: traefikee-agent
-target-branch: master
-debug: true
-check-version-increment: true
