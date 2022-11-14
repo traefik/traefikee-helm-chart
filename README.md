@@ -15,6 +15,14 @@ Add Traefik Enterprise's chart repository to Helm:
 
 ```bash
 helm repo add traefik https://traefik.github.io/charts
+<<<<<<< HEAD
+=======
+```
+
+You can update the chart repository by running:
+
+```bash
+>>>>>>> 4450c1b (✨ migrate to centralised helm repository)
 helm repo update
 ```
 
