@@ -39,6 +39,13 @@ Generates image name.
 {{- end }}
 
 {{/*
+Generates initContainer image name.
+*/}}
+{{- define "traefikee-helm-chart.initContainer-image-name" -}}
+{{- printf "%s:%s" .Values.image.initContainer.name .Values.image.initContainer.tag }}
+{{- end }}
+
+{{/*
 Generates common labels.
 */}}
 {{- define "common.labels" -}}
