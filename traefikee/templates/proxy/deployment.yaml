@@ -61,7 +61,7 @@ spec:
       automountServiceAccountToken: false
       initContainers:
         - name: wait-dns
-          image: busybox:1.31.1
+          image: {{ template "traefikee-helm-chart.initContainer-image-name" . }}
           command: ['sh', '-c', 'until nslookup -type=a {{ printf "%s-ctrl-svc.%s" .Values.cluster .Release.Namespace }}.svc.cluster.local; do echo waiting for published dns records; sleep 1; done;']
           resources:
             requests:

@@ -9,6 +9,9 @@ image:
   # defaults to appVersion
   tag: ""
   pullPolicy: IfNotPresent
+  initContainer:
+    name: busybox
+    tag: "1.31.1"
 
 # log:
 #  level: DEBUG
