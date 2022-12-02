@@ -1,5 +1,5 @@
 {{- $tokenStr := include "traefikee-helm-chart.registry-token" . }}
-{{- if empty (.Values.registry).manualTokenSecret }}
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -9,8 +9,14 @@ metadata:
     "helm.sh/resource-policy": keep
 type: Opaque
 data:  
+{{- if empty (.Values.registry).tokenSecret }}
   token: {{ $tokenStr }}
+{{- else }}
+  token: {{ .Values.registry.tokenSecret }}
 {{- end }}
+
+
+
 
 ---
 apiVersion: apps/v1
@@ -37,6 +43,7 @@ spec:
       component: registry
   template:
     metadata:
+    {{- if empty (.Values.registry).tokenSecret }}
       annotations:
         # This ensures that the registry pods will be rollout,
         # if the token for the plugin registry has changed since last deployment.
@@ -44,6 +51,7 @@ spec:
         {{- with (.Values.registry).podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+    {{- end }}
       labels:        
         component: registry
         {{ include "common.labels" . | nindent 8 }}
@@ -185,6 +193,7 @@ spec:
   replicas: {{ .Values.controller.replicas }}
   template:
     metadata:
+    {{- if empty (.Values.registry).tokenSecret }}
       annotations:
         # This ensures that the controller pods will be rollout,
         # if the token for the plugin registry has changed since last deployment.
@@ -192,6 +201,7 @@ spec:
         {{- with .Values.controller.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+    {{- end }}
       labels:
         component: controllers
         {{ include "common.labels" . | nindent 8 }}

@@ -31,7 +31,7 @@ image:
 #     foo: bar
 #   podAnnotations:
 #     foo: bar
-#   manualTokenSecret: true
+#   tokenSecret: "NJ00yx60K+Wm1yufuBM6fLq3fVKcv44RvBsVGiH40+U="
 
 controller:
   replicas: 1
