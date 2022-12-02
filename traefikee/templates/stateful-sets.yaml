@@ -15,9 +15,6 @@ data:
   token: {{ .Values.registry.tokenSecret }}
 {{- end }}
 
-
-
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
