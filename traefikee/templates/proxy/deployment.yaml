@@ -57,7 +57,7 @@ spec:
                       values:
                         - proxies
                 topologyKey: "kubernetes.io/hostname"
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: {{ .Values.proxy.terminationGracePeriodSeconds | default 30 }}
       automountServiceAccountToken: false
       initContainers:
         - name: wait-dns
