@@ -101,6 +101,7 @@ proxy:
 #  podDisruptionBudget:
 #    minAvailable: 1
 #    maxUnavailable: 1
+# terminationGracePeriodSeconds: 30
 
 mesh:
   enabled: false
