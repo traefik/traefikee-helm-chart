@@ -1,5 +1,6 @@
 {{- $tokenStr := include "traefikee-helm-chart.registry-token" . }}
-{{- if empty (.Values.registry).manualTokenSecret }}
+{{- if or (empty (.Values.registry).manualTokenSecret) (eq (.Values.registry).manualTokenSecret false) }}
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -9,9 +10,12 @@ metadata:
     "helm.sh/resource-policy": keep
 type: Opaque
 data:  
+{{- if empty (.Values.registry).tokenSecret }}
   token: {{ $tokenStr }}
+{{- else }}
+  token: {{ .Values.registry.tokenSecret }}
 {{- end }}
-
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -38,10 +42,25 @@ spec:
   template:
     metadata:
       annotations:
-        # This ensures that the registry pods will be rollout,
-        # if the token for the plugin registry has changed since last deployment.
+      # This ensures that the registry pods will be rollout,
+      # if the token for the plugin registry has changed since last deployment.
+      {{- if and (empty (.Values.registry).tokenSecret) (or (empty (.Values.registry).manualTokenSecret) (eq (.Values.registry).manualTokenSecret false)) }}
         checksum/config: {{ $tokenStr | sha256sum }}
-        {{- with (.Values.registry).podAnnotations }}
+      {{ else if eq (.Values.registry).manualTokenSecret true }}
+        {{- $tokenSecret := (lookup "v1" "Secret" .Release.Namespace (print .Values.cluster "-registry-token")) | default dict }}
+        {{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
+        {{- $token := (get $tokenSecretData "token") | default dict }}
+        checksum/config: {{ $token | sha256sum }}
+      {{ else }}
+         checksum/config: {{ .Values.registry.tokenSecret | sha256sum }}
+      {{- end }}  
+        {{- with .Values.controller.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        component: controllers
+        {{ include "common.labels" . | nindent 8 }}
+        {{- with .Values.controller.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:        
@@ -186,9 +205,18 @@ spec:
   template:
     metadata:
       annotations:
-        # This ensures that the controller pods will be rollout,
-        # if the token for the plugin registry has changed since last deployment.
+      # This ensures that the controller pods will be rollout,
+      # if the token for the plugin registry has changed since last deployment.
+      {{- if and (empty (.Values.registry).tokenSecret) (or (empty (.Values.registry).manualTokenSecret) (eq (.Values.registry).manualTokenSecret false)) }}
         checksum/config: {{ $tokenStr | sha256sum }}
+      {{ else if eq (.Values.registry).manualTokenSecret true }}
+        {{- $tokenSecret := (lookup "v1" "Secret" .Release.Namespace (print .Values.cluster "-registry-token")) | default dict }}
+        {{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
+        {{- $token := (get $tokenSecretData "token") | default dict }}
+        checksum/config: {{ $token | sha256sum }}
+      {{ else }}
+         checksum/config: {{ .Values.registry.tokenSecret | sha256sum }}
+      {{- end }} 
         {{- with .Values.controller.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
