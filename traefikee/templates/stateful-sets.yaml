@@ -52,9 +52,9 @@ spec:
         {{- $token := (get $tokenSecretData "token") | default dict }}
         checksum/config: {{ $token | sha256sum }}
       {{ else }}
-         checksum/config: {{ .Values.registry.tokenSecret | sha256sum }}
+        checksum/config: {{ .Values.registry.tokenSecret | sha256sum }}
       {{- end }}  
-        {{- with .Values.registry.podAnnotations }}
+        {{- with (.Values.registry).podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:        
@@ -209,9 +209,9 @@ spec:
         {{- $token := (get $tokenSecretData "token") | default dict }}
         checksum/config: {{ $token | sha256sum }}
       {{ else }}
-         checksum/config: {{ .Values.registry.tokenSecret | sha256sum }}
+        checksum/config: {{ .Values.registry.tokenSecret | sha256sum }}
       {{- end }} 
-        {{- with .Values.controller.podAnnotations }}
+        {{- with (.Values.controller).podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
