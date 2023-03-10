@@ -54,13 +54,7 @@ spec:
       {{ else }}
          checksum/config: {{ .Values.registry.tokenSecret | sha256sum }}
       {{- end }}  
-        {{- with .Values.controller.podAnnotations }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-      labels:
-        component: controllers
-        {{ include "common.labels" . | nindent 8 }}
-        {{- with .Values.controller.podLabels }}
+        {{- with .Values.registry.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:        
