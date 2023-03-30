@@ -57,7 +57,53 @@ tests:
         documentIndex: 2
       - hasDocuments:
           count: 3
-  - it: should override defaults
+      - documentIndex: 1
+        equal:
+          path: spec.template.spec.affinity
+          value:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: kubernetes.io/os
+                        operator: In
+                        values:
+                          - linux
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: component
+                          operator: In
+                          values:
+                            - registry
+                    topologyKey: kubernetes.io/hostname
+      - documentIndex: 2
+        equal:
+          path: spec.template.spec.affinity
+          value:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: kubernetes.io/os
+                        operator: In
+                        values:
+                          - linux
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: component
+                          operator: In
+                          values:
+                            - controllers
+                    topologyKey: kubernetes.io/hostname
+  - it: should override controller defaults
     set:
       cluster: "mysupertraefikee"
       image.name: "mycustompublisher/myspecialimage"
@@ -65,6 +111,7 @@ tests:
       image.pullPolicy: Never
       controller:
         replicas: 2
+        affinity: null
     documentIndex: 2
     asserts:
       - isKind:
@@ -86,18 +133,48 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].imagePullPolicy
           value: Never
+      - isNull:
+          path: spec.template.spec.affinity
+  - it: should override registry defaults
+    set:
+      cluster: "mysupertraefikee"
+      image.name: "mycustompublisher/myspecialimage"
+      image.tag: "myspecialversion"
+      image.pullPolicy: Never
+      registry:
+        affinity: null
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: metadata.name
+          value: mysupertraefikee-plugin-registry
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "mycustompublisher/myspecialimage:myspecialversion"
+      - equal:
+          path: spec.serviceName
+          value: mysupertraefikee-plugin-registry-svc
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Never
+      - isNull:
+          path: spec.template.spec.affinity
   - it: should add labels and annotations
     set:
       cluster: "mysupertraefikee"
       controller:
         statefulSetLabels:
-            st-lb-foo: bar
+          st-lb-foo: bar
         statefulSetAnnotations:
-            st-an-foo: bar
+          st-an-foo: bar
         podLabels:
-            pod-lb-foo: bar
+          pod-lb-foo: bar
         podAnnotations:
-            pod-an-foo: bar
+          pod-an-foo: bar
     documentIndex: 2
     asserts:
       - isKind:
@@ -120,7 +197,7 @@ tests:
     set:
       controller:
         additionalArguments:
-            - --foo=bar
+          - --foo=bar
     documentIndex: 2
     asserts:
       - isKind:
