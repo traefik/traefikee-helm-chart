@@ -14,6 +14,28 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].image
           value: "traefik/traefikee:v2.9.1"
+      - equal:
+          path: spec.template.spec.affinity
+          value:
+              nodeAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  nodeSelectorTerms:
+                    - matchExpressions:
+                      - key: kubernetes.io/os
+                        operator: In
+                        values:
+                          - linux
+              podAntiAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    podAffinityTerm:
+                      labelSelector:
+                        matchExpressions:
+                          - key: component
+                            operator: In
+                            values:
+                              - proxies
+                      topologyKey: "kubernetes.io/hostname"
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
@@ -22,6 +44,7 @@ tests:
       image.pullPolicy: Never
       proxy:
         replicas: 2
+        affinity: null
     asserts:
       - isKind:
           of: Deployment
@@ -41,6 +64,8 @@ tests:
           value: Never
       - hasDocuments:
           count: 1
+      - isNull:
+          path: spec.template.spec.affinity
   - it: default ports are set
     asserts:
       - isKind:

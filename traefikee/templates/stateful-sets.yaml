@@ -8,7 +8,7 @@ metadata:
   annotations:
     "helm.sh/resource-policy": keep
 type: Opaque
-data:  
+data:
   token: {{ $tokenStr }}
 {{- end }}
 
@@ -44,7 +44,7 @@ spec:
         {{- with (.Values.registry).podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      labels:        
+      labels:
         component: registry
         {{ include "common.labels" . | nindent 8 }}
         {{- with (.Values.registry).podLabels }}
@@ -55,26 +55,10 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.registry.affinity }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: kubernetes.io/os
-                  operator: In
-                  values:
-                    - linux
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: component
-                      operator: In
-                      values:
-                        - registry
-                topologyKey: "kubernetes.io/hostname"
+        {{- tpl (toYaml .Values.registry.affinity) . | nindent 8 }}
+      {{- end }}
       terminationGracePeriodSeconds: 30
       automountServiceAccountToken: false
       initContainers:
@@ -204,26 +188,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ .Values.cluster }}-svc-acc
+      {{- if .Values.controller.affinity }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: kubernetes.io/os
-                  operator: In
-                  values:
-                    - linux
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: component
-                      operator: In
-                      values:
-                        - controllers
-                topologyKey: "kubernetes.io/hostname"
+        {{- tpl (toYaml .Values.controller.affinity) . | nindent 8 }}
+      {{- end }}
       terminationGracePeriodSeconds: 30
       initContainers:
         - name: wait-dns

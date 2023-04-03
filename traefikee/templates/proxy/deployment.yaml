@@ -22,7 +22,7 @@ spec:
       component: proxies
   template:
     metadata:
-      labels:        
+      labels:
         component: proxies
         {{ include "common.labels" . | nindent 8 }}
         {{- with .Values.proxy.podLabels }}
@@ -37,26 +37,10 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.proxy.affinity }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: kubernetes.io/os
-                  operator: In
-                  values:
-                    - linux
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: component
-                      operator: In
-                      values:
-                        - proxies
-                topologyKey: "kubernetes.io/hostname"
+        {{- tpl (toYaml .Values.proxy.affinity) . | nindent 8 }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.proxy.terminationGracePeriodSeconds | default 30 }}
       automountServiceAccountToken: false
       initContainers:
