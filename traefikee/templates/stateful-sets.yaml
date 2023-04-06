@@ -1,5 +1,9 @@
 {{- $tokenStr := include "traefikee-helm-chart.registry-token" . }}
-{{- if empty (.Values.registry).manualTokenSecret }}
+{{- $tokenShaSum := $tokenStr | sha256sum }}
+{{- $tokenRefName := (printf "%s-registry-token" .Values.cluster) }}
+
+{{- if or (empty (.Values.registry).manualTokenSecret) (eq (.Values.registry).manualTokenSecret false)}}
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -10,6 +14,8 @@ metadata:
 type: Opaque
 data:
   token: {{ $tokenStr }}
+{{ else }}
+  {{- $tokenRefName = .Values.registry.tokenSecretRef.name }}
 {{- end }}
 
 ---
@@ -40,7 +46,7 @@ spec:
       annotations:
         # This ensures that the registry pods will be rollout,
         # if the token for the plugin registry has changed since last deployment.
-        checksum/config: {{ $tokenStr | sha256sum }}
+        checksum/config: {{ $tokenShaSum }}
         {{- with (.Values.registry).podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -88,7 +94,7 @@ spec:
             - name: PLUGIN_REGISTRY_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.cluster }}-registry-token
+                  name: {{ $tokenRefName }}
                   key: token
           securityContext:
             readOnlyRootFilesystem: true
@@ -170,10 +176,10 @@ spec:
   template:
     metadata:
       annotations:
-        # This ensures that the controller pods will be rollout,
+        # This ensures that the registry pods will be rollout,
         # if the token for the plugin registry has changed since last deployment.
-        checksum/config: {{ $tokenStr | sha256sum }}
-        {{- with .Values.controller.podAnnotations }}
+        checksum/config: {{ $tokenShaSum }}
+        {{- with (.Values.controller).podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
@@ -225,7 +231,7 @@ spec:
             - name: PLUGIN_REGISTRY_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.cluster }}-registry-token
+                  name: {{ $tokenRefName }}
                   key: token
           {{- with .Values.controller.env }}
             {{- toYaml . | nindent 12 }}

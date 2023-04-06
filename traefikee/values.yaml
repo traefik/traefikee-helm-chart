@@ -40,7 +40,6 @@ registry:
                   values:
                     - registry
             topologyKey: "kubernetes.io/hostname"
-
 #   serviceLabels:
 #     foo: bar
 #   serviceAnnotations:
@@ -53,7 +52,14 @@ registry:
 #     foo: bar
 #   podAnnotations:
 #     foo: bar
+## Needed if you have setup the token manually
 #   manualTokenSecret: true
+#   tokenSecretRef:
+#     name: secret
+#     namespace: othernamespace
+## Set the registry token to put in secret
+#   tokenSecret: "NJ00yx60K+Wm1yufuBM6fLq3fVKcv44RvBsVGiH40+U="
+
 
 controller:
   replicas: 1
