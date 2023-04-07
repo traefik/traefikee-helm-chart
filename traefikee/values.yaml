@@ -52,13 +52,13 @@ registry:
 #     foo: bar
 #   podAnnotations:
 #     foo: bar
-## Needed if you have setup the token manually
-#   manualTokenSecret: true
-#   tokenSecretRef:
-#     name: secret
-#     namespace: othernamespace
-## Set the registry token to put in secret
-#   tokenSecret: "NJ00yx60K+Wm1yufuBM6fLq3fVKcv44RvBsVGiH40+U="
+## Needed if you setup the registry token manually before deploying TraefikEE
+#  manualTokenSecret: true
+#  tokenSecretRef:
+#    name: secret
+#    namespace: othernamespace
+## Set the registry token directly in Values
+#  tokenSecret: "NJ00yx60K+Wm1yufuBM6fLq3fVKcv44RvBsVGiH40+U="
 
 
 controller:
