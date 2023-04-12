@@ -225,3 +225,38 @@ tests:
       - equal:
           path: spec.template.spec.imagePullSecrets[0].name
           value: regcred
+  - it: should generate a default token secret
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Secret
+      - hasDocuments:
+          count: 3
+      - matchRegex:
+          path: data.token
+          pattern: "[a-zA-Z0-9]{14}[=]{2}"
+  - it: should use generated token secret or specified token
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[2].valueFrom.secretKeyRef.name
+          value: "default-registry-token"
+  - it: should fail because of missing secret name
+    set:
+      registry:
+        manualTokenSecret: true
+        tokenSecretRef:
+          namespace: test
+    asserts:
+      - failedTemplate:
+          errorMessage: "registry.tokenSecretRef needs at least secret name to be specified !"
+  - it: should fail because the secret can't be look up
+    set:
+      registry:
+        manualTokenSecret: true
+        tokenSecretRef:
+          name: test
+    asserts:
+      - failedTemplate:
+          errorMessage: "failed to lookup token from secret NAMESPACE/test"
+  - it: should fail
