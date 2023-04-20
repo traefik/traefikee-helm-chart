@@ -109,6 +109,45 @@ tests:
       - equal:
           path: spec.template.spec.priorityClassName
           value: important
+  - it: should set default resources
+    asserts:
+      - isSubset:
+          path: spec.template.spec.containers[0].resources
+          content:
+            requests:
+              cpu: "400m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+  - it: should be possible to remove resources
+    set:
+      proxy:
+        resources: null
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].resources
+  - it: should set custom resources requests & limits
+    set:
+      proxy:
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "50Mi"
+          limits:
+            cpu: "300m"
+            memory: "150Mi"
+    asserts:
+      - isSubset:
+          path: spec.template.spec.containers[0].resources
+          content:
+            requests:
+              cpu: "100m"
+              memory: "50Mi"
+            limits:
+              cpu: "300m"
+              memory: "150Mi"
+
 ---
 suite: proxy service test
 templates:

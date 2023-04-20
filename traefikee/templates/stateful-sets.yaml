@@ -111,13 +111,15 @@ spec:
               name: http
             - containerPort: 443
               name: https
+          {{- with .Values.controller.resources }}
           resources:
             requests:
-              memory: "100Mi"
-              cpu: "100m"
+              memory: {{ .requests.memory }}
+              cpu: {{ .requests.cpu }}
             limits:
-              memory: "4Gi"
-              cpu: "1000m"
+              memory: {{ .limits.memory }}
+              cpu: {{ .limits.cpu }}
+          {{- end }}
           volumeMounts:
             - name: {{ .Values.cluster }}-plugin-registry-data
               mountPath: "/var/lib/traefikee"
@@ -259,13 +261,15 @@ spec:
               port: control-port
             initialDelaySeconds: 10
             periodSeconds: 5
+          {{- with .Values.controller.resources }}
           resources:
             requests:
-              memory: "100Mi"
-              cpu: "100m"
+              memory: {{ .requests.memory }}
+              cpu: {{ .requests.cpu }}
             limits:
-              memory: "4Gi"
-              cpu: "1000m"
+              memory: {{ .limits.memory }}
+              cpu: {{ .limits.cpu }}
+          {{- end }}
           volumeMounts:
             - name: data
               mountPath: /var/lib/traefikee

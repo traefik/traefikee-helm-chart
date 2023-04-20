@@ -63,6 +63,14 @@ registry:
 
 controller:
   replicas: 1
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "1000m"
+      memory: "4Gi"
+
   # To disable affinity at all set this value to null
   affinity:
     nodeAffinity:
@@ -113,6 +121,13 @@ controller:
 
 proxy:
   replicas: 2
+  resources:
+    requests:
+      cpu: "400m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
   serviceType: LoadBalancer
   ports:
     - name: http

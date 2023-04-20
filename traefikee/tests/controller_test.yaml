@@ -275,3 +275,63 @@ tests:
           path: spec.template.spec.priorityClassName
           value: important
         documentIndex: 2
+  - it: should set expected resources by default
+    asserts:
+      - isSubset:
+          path: spec.template.spec.containers[0].resources
+          content:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "1000m"
+              memory: "4Gi"
+        documentIndex: 1
+      - isSubset:
+          path: spec.template.spec.containers[0].resources
+          content:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "1000m"
+              memory: "4Gi"
+        documentIndex: 2
+  - it: should be possible to remove resources
+    set:
+      controller:
+        resources: null
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].resources
+  - it: should set custom resources requests & limits on registry & controller
+    set:
+      controller:
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "50Mi"
+          limits:
+            cpu: "300m"
+            memory: "150Mi"
+    asserts:
+      - isSubset:
+          path: spec.template.spec.containers[0].resources
+          content:
+            requests:
+              cpu: "100m"
+              memory: "50Mi"
+            limits:
+              cpu: "300m"
+              memory: "150Mi"
+        documentIndex: 1
+      - isSubset:
+          path: spec.template.spec.containers[0].resources
+          content:
+            requests:
+              cpu: "100m"
+              memory: "50Mi"
+            limits:
+              cpu: "300m"
+              memory: "150Mi"
+        documentIndex: 2
