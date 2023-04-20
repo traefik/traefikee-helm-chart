@@ -259,4 +259,19 @@ tests:
     asserts:
       - failedTemplate:
           errorMessage: "failed to lookup token from secret NAMESPACE/test"
-  - it: should fail
+  - it: should not set priorityClassName by default
+    asserts:
+      - isNull:
+          path: spec.template.spec.priorityClassName
+  - it: should be possible to set priorityClassName
+    set:
+      priorityClassName: important
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: important
+        documentIndex: 1
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: important
+        documentIndex: 2

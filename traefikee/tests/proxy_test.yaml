@@ -98,6 +98,17 @@ tests:
       - equal:
           path: spec.template.spec.imagePullSecrets[0].name
           value: regcred
+  - it: should not set priorityClassName by default
+    asserts:
+      - isNull:
+          path: spec.template.spec.priorityClassName
+  - it: should set priorityClassName
+    set:
+      priorityClassName: important
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: important
 ---
 suite: proxy service test
 templates:

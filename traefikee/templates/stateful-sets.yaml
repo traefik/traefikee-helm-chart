@@ -65,6 +65,9 @@ spec:
       affinity:
         {{- tpl (toYaml .Values.registry.affinity) . | nindent 8 }}
       {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
       terminationGracePeriodSeconds: 30
       automountServiceAccountToken: false
       initContainers:
@@ -197,6 +200,9 @@ spec:
       {{- if .Values.controller.affinity }}
       affinity:
         {{- tpl (toYaml .Values.controller.affinity) . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . }}
       {{- end }}
       terminationGracePeriodSeconds: 30
       initContainers:
