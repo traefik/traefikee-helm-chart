@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/usr/bin/helm unittest --helm3 --color ./traefikee;
+/usr/bin/helm unittest --color ./traefikee;
