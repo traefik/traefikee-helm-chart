@@ -41,6 +41,9 @@ spec:
       affinity:
         {{- tpl (toYaml .Values.proxy.affinity) . | nindent 8 }}
       {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.proxy.terminationGracePeriodSeconds | default 30 }}
       automountServiceAccountToken: false
       initContainers:
@@ -90,13 +93,15 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- end }}
+          {{- with .Values.proxy.resources }}
           resources:
             requests:
-              memory: "100Mi"
-              cpu: "100m"
+              memory: {{ .requests.memory }}
+              cpu: {{ .requests.cpu }}
             limits:
-              memory: "4Gi"
-              cpu: "1000m"
+              memory: {{ .limits.memory }}
+              cpu: {{ .limits.cpu }}
+          {{- end }}
           volumeMounts:
             - name: {{ .Values.cluster }}-proxy-data
               mountPath: "/var/lib/traefikee"
