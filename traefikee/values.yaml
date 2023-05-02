@@ -188,6 +188,16 @@ proxy:
 #    minAvailable: 1
 #    maxUnavailable: 1
 # terminationGracePeriodSeconds: 30
+# # This example topologySpreadConstraints forces the scheduler to put traefikee proxy pods
+# # on nodes where no other traefikee pods are scheduled.
+#  topologySpreadConstraints:
+#    - labelSelector:
+#        matchLabels:
+#          app: traefikee
+#          component: proxies
+#      maxSkew: 1
+#      topologyKey: kubernetes.io/hostname
+#      whenUnsatisfiable: DoNotSchedule
 
 # priorityClassName will be set on all pods.
 priorityClassName: ""
