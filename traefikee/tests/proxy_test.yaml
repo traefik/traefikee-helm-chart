@@ -147,7 +147,11 @@ tests:
             limits:
               cpu: "300m"
               memory: "150Mi"
-  - it: should set custom topologySpreadConstraints
+  - it: should not set topologySpreadConstraints by default
+    asserts:
+      - isNull:
+          path: spec.template.spec.topologySpreadConstraints
+  - it: should set topologySpreadConstraints
     set:
       proxy:
         topologySpreadConstraints:
