@@ -160,15 +160,16 @@ tests:
             whenUnsatisfiable: DoNotSchedule
     asserts:
       - isSubset:
-          path: spec.template.spec.topologySpreadConstraints
+          path: spec.template.spec
           content:
-            - labelSelector:
-                matchLabels:
-                  app: traefikee
-                  component: proxies
-              maxSkew: 1
-              topologyKey: kubernetes.io/hostname
-              whenUnsatisfiable: DoNotSchedule
+            topologySpreadConstraints:
+              - labelSelector:
+                  matchLabels:
+                    app: traefikee
+                    component: proxies
+                maxSkew: 1
+                topologyKey: kubernetes.io/hostname
+                whenUnsatisfiable: DoNotSchedule
 ---
 suite: proxy service test
 templates:
