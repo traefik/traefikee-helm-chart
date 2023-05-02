@@ -147,7 +147,33 @@ tests:
             limits:
               cpu: "300m"
               memory: "150Mi"
-
+  - it: should not set topologySpreadConstraints by default
+    asserts:
+      - isNull:
+          path: spec.template.spec.topologySpreadConstraints
+  - it: should set topologySpreadConstraints
+    set:
+      proxy:
+        topologySpreadConstraints:
+          - labelSelector:
+              matchLabels:
+                app: traefikee
+                component: proxies
+            maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: DoNotSchedule
+    asserts:
+      - isSubset:
+          path: spec.template.spec
+          content:
+            topologySpreadConstraints:
+              - labelSelector:
+                  matchLabels:
+                    app: traefikee
+                    component: proxies
+                maxSkew: 1
+                topologyKey: kubernetes.io/hostname
+                whenUnsatisfiable: DoNotSchedule
 ---
 suite: proxy service test
 templates:

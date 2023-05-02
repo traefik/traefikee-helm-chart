@@ -33,6 +33,13 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.proxy.topologySpreadConstraints }}
+      {{- if (semverCompare "<1.19.0-0" .Capabilities.KubeVersion.Version) }}
+        {{- fail "ERROR: topologySpreadConstraints are supported only on kubernetes >= v1.19" -}}
+      {{- end }}
+      topologySpreadConstraints:
+        {{- tpl (toYaml .Values.proxy.topologySpreadConstraints) . | nindent 8 }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
