@@ -17,6 +17,9 @@ spec:
   type: {{ .Values.proxy.serviceType | default "LoadBalancer" }}
   ports:
     {{ toYaml .Values.proxy.ports | nindent 4 }}
+  {{- if .Values.proxy.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.proxy.loadBalancerIP }}
+  {{- end }}
   selector:
     app: traefikee
     release: {{ .Values.cluster }}
