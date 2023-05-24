@@ -19,7 +19,5 @@ To learn more about the release, try:
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! WARNING: please note that the .spec.loadBalancerIP field for a Service was deprecated in Kubernetes v1.24.  !!
 !!          This field may be removed in a future API version.                                                 !!
-!!          If you're integrating with a provider that supports specifying the load balancer IP address(es)    !!
-!!          for a Service via a (provider specific) annotation, you should switch to doing that.               !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
 {{ end }}
