@@ -14,3 +14,10 @@ To learn more about the release, try:
 !!          instead !                                                                                          !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {{ end }}
+
+{{ if and (semverCompare ">=1.24.0-0" .Capabilities.KubeVersion.Version) (.Values.proxy.loadBalancerIP) }}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! WARNING: please note that the .spec.loadBalancerIP field for a Service was deprecated in Kubernetes v1.24.  !!
+!!          This field may be removed in a future API version.                                                 !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+{{ end }}

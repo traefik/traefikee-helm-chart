@@ -134,6 +134,8 @@ proxy:
       port: 80
     - name: https
       port: 443
+# # Specify Static IP of cloud provider LB
+#  loadBalancerIP: "1.2.3.4"
 
   # To disable affinity at all set this value to null
   affinity:
