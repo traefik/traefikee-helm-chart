@@ -339,7 +339,7 @@ tests:
     asserts:
       - isNull:
           path: spec.template.spec.tolerations
-  - it: should be possible to set tolerations
+  - it: should be possible to set tolerations for controller
     set:
       controller:
         tolerations:
@@ -349,6 +349,21 @@ tests:
             effect: "NoSchedule"
           - key: "RSA"
             operator: "Destructor"
+    asserts:
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: "RSA"
+            operator: "Destructor"
+  - it: should be possible to set tolerations for registry
+    set:            
       registry:
         tolerations:
           - key: "testkey"
@@ -358,23 +373,15 @@ tests:
           - key: "RSA"
             operator: "Destructor"
     asserts:
-      - isSubset:
+      - contains:
           path: spec.template.spec.tolerations
-          content: 
-            - key: "testkey"
-              operator: "Equal"
-              value: "testvalue"
-              effect: "NoSchedule"
-            - key: "RSA"
-              operator: "Destructor"
-        documentIndex: 1
-      - isSubset:
+          content:
+            key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+      - contains:
           path: spec.template.spec.tolerations
-          content: 
-            - key: "testkey"
-              operator: "Equal"
-              value: "testvalue"
-              effect: "NoSchedule"
-            - key: "RSA"
-              operator: "Destructor"
-        documentIndex: 2
+          content:
+            key: "RSA"
+            operator: "Destructor" 

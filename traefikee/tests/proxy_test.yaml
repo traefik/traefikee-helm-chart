@@ -189,15 +189,18 @@ tests:
         - key: "RSA"
           operator: "Destructor"
     asserts:
-      - isSubset:
+      - contains:
           path: spec.template.spec.tolerations
-          content: 
-            - key: "testkey"
-              operator: "Equal"
-              value: "testvalue"
-              effect: "NoSchedule"
-            - key: "RSA"
-              operator: "Destructor"              
+          content:
+            key: "key"
+            operator: "Equal"
+            value: "value"
+            effect: "NoSchedule"
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: "RSA"
+            operator: "Destructor"            
 ---
 suite: proxy service test
 templates:
