@@ -335,3 +335,27 @@ tests:
               cpu: "300m"
               memory: "150Mi"
         documentIndex: 2
+  - it: should not set tolerations by default
+    asserts:
+      - isNull:
+          path: spec.template.spec.tolerations
+  - it: should be possible to set tolerations
+    set:
+      tolerations:
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations
+          value: 
+            - key: "testkey"
+              operator: "Equal"
+              value: "testvalue"
+              effect: "NoSchedule"
+        documentIndex: 1
+      - equal:
+          path: spec.template.spec.tolerations
+          value: 
+            - key: "testkey"
+              operator: "Equal"
+              value: "testvalue"
+              effect: "NoSchedule"
+        documentIndex: 2
