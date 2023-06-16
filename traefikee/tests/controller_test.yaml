@@ -349,31 +349,23 @@ tests:
         - key: "RSA"
           operator: "Destructor"
     asserts:
-      - contains:
+      - isSubset:
           path: spec.template.spec.tolerations
           content: 
-            key: "testkey"
-            operator: "Equal"
-            value: "testvalue"
-            effect: "NoSchedule"
+            - key: "testkey"
+              operator: "Equal"
+              value: "testvalue"
+              effect: "NoSchedule"
+            - key: "RSA"
+              operator: "Destructor"
         documentIndex: 1
-      - contains:
-          path: spec.template.spec.tolerations
-          content:
-            key: "RSA"
-            operator: "Destructor"
-        documentIndex: 1
-      - contains:
+      - isSubset:
           path: spec.template.spec.tolerations
           content: 
-            key: "testkey"
-            operator: "Equal"
-            value: "testvalue"
-            effect: "NoSchedule"
-        documentIndex: 2
-      - contains:
-          path: spec.template.spec.tolerations
-          content:
-            key: "RSA"
-            operator: "Destructor"
+            - key: "testkey"
+              operator: "Equal"
+              value: "testvalue"
+              effect: "NoSchedule"
+            - key: "RSA"
+              operator: "Destructor"
         documentIndex: 2
