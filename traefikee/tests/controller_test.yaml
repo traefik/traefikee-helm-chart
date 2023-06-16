@@ -349,6 +349,14 @@ tests:
             effect: "NoSchedule"
           - key: "RSA"
             operator: "Destructor"
+      registry:
+        tolerations:
+          - key: "testkey"
+            operator: "Equal"
+            value: "testvalue"
+            effect: "NoSchedule"
+          - key: "RSA"
+            operator: "Destructor"
     asserts:
       - isSubset:
           path: spec.template.spec.tolerations

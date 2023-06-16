@@ -182,7 +182,7 @@ tests:
     set:
       proxy:
         tolerations:
-          - key: "testkey"
+        - key: "testkey"
           operator: "Equal"
           value: "testvalue"
           effect: "NoSchedule"
