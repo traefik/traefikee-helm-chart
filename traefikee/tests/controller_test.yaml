@@ -356,6 +356,7 @@ tests:
             operator: "Equal"
             value: "testvalue"
             effect: "NoSchedule"
+        documentIndex: 1
       - contains:
           path: spec.template.spec.tolerations
           content:
@@ -369,6 +370,7 @@ tests:
             operator: "Equal"
             value: "testvalue"
             effect: "NoSchedule"
+        documentIndex: 2
       - contains:
           path: spec.template.spec.tolerations
           content:
