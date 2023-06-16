@@ -353,9 +353,9 @@ tests:
       - contains:
           path: spec.template.spec.tolerations
           content:
-            key: "key"
+            key: "testkey"
             operator: "Equal"
-            value: "value"
+            value: "testvalue"
             effect: "NoSchedule"
       - contains:
           path: spec.template.spec.tolerations
@@ -376,9 +376,9 @@ tests:
       - contains:
           path: spec.template.spec.tolerations
           content:
-            key: "key"
+            key: "testkey"
             operator: "Equal"
-            value: "value"
+            value: "testvalue"
             effect: "NoSchedule"
       - contains:
           path: spec.template.spec.tolerations
