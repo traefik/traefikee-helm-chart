@@ -181,6 +181,10 @@ tests:
   - it: should be possible to set tolerations
     set:
       tolerations:
+            - key: "testkey"
+              operator: "Equal"
+              value: "testvalue"
+              effect: "NoSchedule"
     asserts:
       - equal:
           path: spec.template.spec.tolerations
