@@ -349,6 +349,7 @@ tests:
             effect: "NoSchedule"
           - key: "RSA"
             operator: "Destructor"
+    documentIndex: 2
     asserts:
       - contains:
           path: spec.template.spec.tolerations
@@ -363,7 +364,8 @@ tests:
             key: "RSA"
             operator: "Destructor"
   - it: should be possible to set tolerations for registry
-    set:            
+    set:     
+    documentIndex: 1       
       registry:
         tolerations:
           - key: "testkey"
