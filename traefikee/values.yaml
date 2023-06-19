@@ -59,6 +59,8 @@ registry:
 #    namespace: othernamespace
 ## Set the registry token directly in Values
 #  tokenSecret: "NJ00yx60K+Wm1yufuBM6fLq3fVKcv44RvBsVGiH40+U="
+## Tolerations allow the scheduler to schedule pods with matching taints.
+  tolerations: []
 
 
 controller:
@@ -118,6 +120,8 @@ controller:
 #        secretKeyRef:
 #          name: foo
 #          key: BAR
+## Tolerations allow the scheduler to schedule pods with matching taints.
+  tolerations: []
 
 proxy:
   replicas: 2
@@ -200,6 +204,8 @@ proxy:
 #      maxSkew: 1
 #      topologyKey: kubernetes.io/hostname
 #      whenUnsatisfiable: DoNotSchedule
+## Tolerations allow the scheduler to schedule pods with matching taints.
+  tolerations: []
 
 # priorityClassName will be set on all pods.
 priorityClassName: ""
