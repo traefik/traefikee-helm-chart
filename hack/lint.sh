@@ -9,4 +9,4 @@ fi
 
 CT_ARGS="--charts ${PWD}/charts"
 
-ct lint --config=./.github/chart-testing.yaml
+ct lint --config=./.github/chart-testing.yaml --charts /charts/traefikee
