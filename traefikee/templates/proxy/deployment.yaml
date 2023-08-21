@@ -14,7 +14,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  replicas: {{ .Values.proxy.replicas }}
+  {{- with .Values.proxy.replicas }}
+  replicas: {{ . }}
+  {{- end }}
   selector:
     matchLabels:
       app: traefikee

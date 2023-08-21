@@ -200,7 +200,22 @@ tests:
           path: spec.template.spec.tolerations
           content:
             key: "RSA"
-            operator: "Destructor"            
+            operator: "Destructor"
+  - it: should not have replicas when set to
+    set:
+      proxy:
+        replicas: 0
+    asserts:
+      - notExists:
+          path: spec.replicas
+  - it: should not have replicas when set to null
+    set:
+      proxy:
+        replicas: null
+    asserts:
+      - notExists:
+          path: spec.replicas
+
 ---
 suite: proxy service test
 templates:
@@ -227,6 +242,22 @@ tests:
       - equal:
           path: spec.type
           value: NodePort
+  - it: should set loadbalancerIP
+    set:
+      proxy:
+        loadBalancerIP: "1.2.3.4"
+        serviceType: loadBalancer
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+      - equal:
+          path: spec.loadBalancerIP
+          value: "1.2.3.4"
   - it: should set loadbalancerIP
     set:
       proxy:
