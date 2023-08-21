@@ -208,6 +208,12 @@ proxy:
 #      whenUnsatisfiable: DoNotSchedule
 ## Tolerations allow the scheduler to schedule pods with matching taints.
   tolerations: []
+#  strategy:
+#    # -- Customize updateStrategy: RollingUpdate or OnDelete
+#    type: RollingUpdate
+#    rollingUpdate:
+#      maxUnavailable: 0
+#      maxSurge: 1
 
 # priorityClassName will be set on all pods.
 priorityClassName: ""
