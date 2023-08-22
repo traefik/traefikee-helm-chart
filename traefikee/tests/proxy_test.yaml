@@ -232,7 +232,6 @@ tests:
               rollingUpdate:
                 maxUnavailable: 0
                 maxSurge: 1
-
 ---
 suite: proxy service test
 templates:
