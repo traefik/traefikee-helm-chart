@@ -1,6 +1,6 @@
 apiVersion: v2
 name: traefikee
-version: 1.14.3
+version: 1.15.0
 # renovate: image=docker.io/traefik/traefikee
 appVersion: v2.10.4
 # Because of https://github.com/helm/helm/issues/3810 the pre-release version suffix has to be define.
