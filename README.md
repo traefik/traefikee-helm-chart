@@ -19,7 +19,7 @@ New major version indicates that there is an incompatible breaking change.
 With Helm v3, CRDs created by this chart can not be updated, cf the [Helm Documentation on CRDs](https://helm.sh/docs/chart_best_practices/custom_resource_definitions). Please read carefully release notes of this chart before upgrading CRDs.
 
 ```bash
-kubectl apply --server-side --force-conflicts -k https://github.com/traefik/traefik-hub-helm-chart/traefik-hub/crds/
+kubectl apply --server-side --force-conflicts -k https://github.com/traefik/traefikee-helm-chart/traefikee/crds/
 ```
 
 2. Upgrade chart
