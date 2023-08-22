@@ -22,11 +22,9 @@ spec:
       app: traefikee
       release: {{ .Values.cluster }}
       component: proxies
-  {{- if .Values.proxy.strategy }}
+  {{- with .Values.proxy.strategy}}
   strategy:
-    {{- with .Values.proxy.strategy}}
     {{- toYaml . | nindent 4 }}
-    {{- end }}
   {{- end }}
   template:
     metadata:
