@@ -124,6 +124,8 @@ controller:
   tolerations: []
 
 proxy:
+  # Can be set to null when using HPA, in order to avoid conflict between HPA
+  # and this Chart on replicas.
   replicas: 2
   resources:
     requests:
