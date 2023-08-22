@@ -6,43 +6,34 @@ This chart installs the Traefik Enterprise on a Kubernetes cluster, an optional 
 
 ## Installation
 
-### Prerequisites
+Detailed in Traefik Enterprise [documentation](https://doc.traefik.io/traefik-enterprise/installing/kubernetes/helm/)
 
-With the command `helm version`, make sure that you have:
-- Helm v3 [installed](https://helm.sh/docs/intro/install/)
+## Upgrading
 
-Add Traefik Enterprise's chart repository to Helm:
+One can check what has changed in this [Chart Changelog](./traefikee/Changelog.md) and in [Traefik Enterprise Release Notes](https://doc.traefik.io/traefik-enterprise/kb/release-notes/).
+
+New major version indicates that there is an incompatible breaking change.
+
+1. Upgrading CRDs (When it's needed)
+
+With Helm v3, CRDs created by this chart can not be updated, cf the [Helm Documentation on CRDs](https://helm.sh/docs/chart_best_practices/custom_resource_definitions). Please read carefully release notes of this chart before upgrading CRDs.
 
 ```bash
-helm repo add traefik https://traefik.github.io/charts
+kubectl apply --server-side --force-conflicts -k https://github.com/traefik/traefik-hub-helm-chart/traefik-hub/crds/
+```
+
+2. Upgrade chart
+
+```bash
+# Update repository
 helm repo update
+# See current Chart & Traefik Enterprise version
+helm search repo traefik/traefikee
+# Upgrade Traefik
+helm upgrade traefikee traefik/traefikee
 ```
 
-### Deploying Traefik Enterprise
-
-```bash
-helm install traefikee traefik/traefikee
-```
-
-### Specifications
-
-By default, Traefik Enterprise will be installed into the `default` namespace. If you want to install the Traefik Enterprise in a specific namespace, you need to run helm with the `--namespace` and `--create-namespace` arguments:
-```bash
-helm install traefikee traefik/traefikee --namespace traefikee --create-namespace
-```
-
-Then you'll need to create a secret containing your provided license key, where `default` if your cluster name.
-```bash
-kubectl create secret -n traefikee generic default-license --from-literal=license=xxxxxxx
-```
-
-### Launch unit tests
-
-```bash
-make test
-```
-
-### Uninstall
+## Uninstall
 
 ```bash
 helm uninstall traefikee
