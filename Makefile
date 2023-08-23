@@ -12,3 +12,9 @@ test: traefikee/tests/__snapshot__
 
 lint:
 	docker run ${DOCKER_ARGS} --env GIT_SAFE_DIR="true" --entrypoint /bin/sh --rm -v $(CURDIR):/charts -w /charts $(IMAGE_CHART_TESTING) /charts/hack/lint.sh
+
+changelog:
+	@echo "== Updating Changelogs..."
+	@docker run -it --rm -v $(CURDIR):/data ghcr.io/mloiseleur/helm-changelog:v0.0.2
+	@./hack/changelog.sh
+	@echo "== Updating finished"
