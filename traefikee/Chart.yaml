@@ -18,3 +18,7 @@ maintainers:
   - name: ddtmachado
 keywords:
   - traefikee
+annotations:
+  artifacthub.io/changes: |
+    - "feat: allows to set spec.strategy on proxy"
+    - "feat: allows to unset `spec.replicas` on proxy"
