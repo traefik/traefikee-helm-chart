@@ -215,6 +215,27 @@ tests:
     asserts:
       - notExists:
           path: spec.replicas
+  - it: should not set strategy by default
+    asserts:
+      - isNull:
+          path: spec.strategy
+  - it: should be possible to define update strategy
+    set:
+      proxy:
+        strategy:
+          type: RollingUpdate
+          rollingUpdate:
+            maxUnavailable: 0
+            maxSurge: 1
+    asserts:
+      - isSubset:
+          path: spec
+          content:
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxUnavailable: 0
+                maxSurge: 1
 
 ---
 suite: proxy service test
