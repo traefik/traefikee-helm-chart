@@ -30,7 +30,8 @@ This chart installs Traefik Enterprise on a Kubernetes cluster, an optional sub-
 
 ### Prerequisites
 
-- [x] [Helm](https://helm.sh) **v3**
+- ![Kubernetes: >= 1.14.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.14.0-0&color=informational&logo=kubernetes) 
+- ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 You can check your Helm version by running `helm version`.
 
