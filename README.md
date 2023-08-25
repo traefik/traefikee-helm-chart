@@ -10,9 +10,7 @@
       <img alt="Traefik Enterprise" src="https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enterprise-logo.svg" width="350" height="70" style="max-width: 100%;">
     </picture>
   </a>
-<!-- <a href="https://hub.traefik.io/">
-  <img src="https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enterprise-logo--white.svg"   style="width:250px;" align="center" />
-</a> -->
+
 <br />
 <br />
 
