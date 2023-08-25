@@ -3,9 +3,16 @@
 <br/>
 
 <div align="center" style="margin: 30px;">
-<a href="https://hub.traefik.io/">
-  <img src="https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enterprise-logo.svg"   style="width:250px;" align="center" />
-</a>
+<a href="https://traefik.io/traefik-enterprise/" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enterprise-logo--white.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enterprise-logo.svg">
+      <img alt="Traefik Enterprise" src="https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enterprise-logo.svg" width="350" height="70" style="max-width: 100%;">
+    </picture>
+  </a>
+<!-- <a href="https://hub.traefik.io/">
+  <img src="https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enterprise-logo--white.svg"   style="width:250px;" align="center" />
+</a> -->
 <br />
 <br />
 
