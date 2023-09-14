@@ -249,7 +249,7 @@ tests:
           namespace: test
     asserts:
       - failedTemplate:
-          errorMessage: "registry.tokenSecretRef needs at least secret name to be specified !"
+          errorMessage: "ERROR: registry.tokenSecretRef needs at least secret name to be specified !"
   - it: should fail because the secret can't be look up
     set:
       registry:
@@ -258,7 +258,7 @@ tests:
           name: test
     asserts:
       - failedTemplate:
-          errorMessage: "failed to lookup token from secret NAMESPACE/test"
+          errorMessage: "ERROR: failed to lookup token from secret NAMESPACE/test"
   - it: should not set priorityClassName by default
     asserts:
       - isNull:
@@ -364,7 +364,7 @@ tests:
             key: "RSA"
             operator: "Destructor"
   - it: should be possible to set tolerations for registry
-    set:     
+    set:
       registry:
         tolerations:
           - key: "testkey"
@@ -373,7 +373,7 @@ tests:
             effect: "NoSchedule"
           - key: "RSA"
             operator: "Destructor"
-    documentIndex: 1       
+    documentIndex: 1
     asserts:
       - contains:
           path: spec.template.spec.tolerations
@@ -386,4 +386,4 @@ tests:
           path: spec.template.spec.tolerations
           content:
             key: "RSA"
-            operator: "Destructor" 
+            operator: "Destructor"
