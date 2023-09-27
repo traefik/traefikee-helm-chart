@@ -335,6 +335,34 @@ tests:
               cpu: "300m"
               memory: "150Mi"
         documentIndex: 2
+  - it: should not set topologySpreadConstraints by default
+    asserts:
+      - isNull:
+          path: spec.template.spec.topologySpreadConstraints
+  - it: should set topologySpreadConstraints
+    set:
+      controller:
+        topologySpreadConstraints:
+          - labelSelector:
+              matchLabels:
+                app: traefikee
+                component: controllers
+            maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: DoNotSchedule
+    asserts:
+      - isSubset:
+          path: spec.template.spec
+          content:
+            topologySpreadConstraints:
+              - labelSelector:
+                  matchLabels:
+                    app: traefikee
+                    component: controllers
+                maxSkew: 1
+                topologyKey: kubernetes.io/hostname
+                whenUnsatisfiable: DoNotSchedule
+    documentIndex: 2
   - it: should not set tolerations by default
     asserts:
       - isNull:
