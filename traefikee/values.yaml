@@ -120,6 +120,16 @@ controller:
 #        secretKeyRef:
 #          name: foo
 #          key: BAR
+# # This example topologySpreadConstraints forces the scheduler to put traefikee controller pods
+# # on nodes where no other traefikee controller pods are scheduled.
+#  topologySpreadConstraints:
+#    - labelSelector:
+#        matchLabels:
+#          app: traefikee
+#          component: controllers
+#      maxSkew: 1
+#      topologyKey: kubernetes.io/hostname
+#      whenUnsatisfiable: DoNotSchedule
 ## Tolerations allow the scheduler to schedule pods with matching taints.
   tolerations: []
 
