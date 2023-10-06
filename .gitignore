@@ -11,6 +11,10 @@ repo/
 __snapshot__
 .idea
 
+# vim temporary files
+*.swp
+*.swo
+
 # Chart dependencies
 **/charts/*.tgz
 Chart.lock

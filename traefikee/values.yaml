@@ -200,11 +200,12 @@ proxy:
     #     - type: Pods
     #       value: 1
     #       periodSeconds: 60
-#  readinessProbe:
-#    tcpSocket:
-#      port: http
-#    initialDelaySeconds: 2
-#    periodSeconds: 5
+  readinessProbe:
+    initialDelaySeconds: 2
+    periodSeconds: 5
+  livenessProbe:
+    initialDelaySeconds: 2
+    periodSeconds: 5
 #  serviceLabels:
 #    foo: bar
 #  serviceAnnotations:
