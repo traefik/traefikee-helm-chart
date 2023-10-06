@@ -1,0 +1,63 @@
+# Custom values for High-Availability with Traefik Enterprise
+
+# This HA setup is without plugins.
+registry:
+  enabled: false
+
+controller:
+  replicas: 3
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "4Gi"
+
+  # This topologySpreadConstraints forces the scheduler to put traefikee controller pods
+  # on nodes where no other traefikee controller pods are scheduled.
+  topologySpreadConstraints:
+    - labelSelector:
+        matchLabels:
+          app: traefikee
+          component: controllers
+      maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+
+proxy:
+  # Can be set to null when using HPA, in order to avoid conflict between HPA
+  # and this Chart on replicas.
+  replicas: null
+  autoscaling:
+    # -- Create HorizontalPodAutoscaler object.
+    enabled: true
+    minReplicas: 5
+    maxReplicas: 10
+    metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 70
+
+  # termination grace period should be set higher than the "grace period" of LB you are using
+  terminationGracePeriodSeconds: 60
+  # Recycle pods one by one
+  podDisruptionBudget:
+    maxUnavailable: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
+# priorityClassName will be set on all pods.
+priorityClassName: "system-cluster-critical"
