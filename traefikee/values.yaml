@@ -5,13 +5,17 @@ cluster: "default"
 #   - name: regcred
 
 image:
-  name: traefik/traefikee
+  registry: docker.io
+  repository: traefik/traefikee
   # defaults to appVersion
   tag: ""
   pullPolicy: IfNotPresent
-  initContainer:
-    name: busybox
-    tag: "1.31.1"
+
+# Used to run initContainers
+initImage:
+  registry: docker.io
+  repository: busybox
+  tag: "1.31.1"
 
 # log:
 #  level: DEBUG

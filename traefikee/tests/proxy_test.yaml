@@ -13,7 +13,7 @@ tests:
           value: default-proxy
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "traefik/traefikee:v2.10.4"
+          value: "docker.io/traefik/traefikee:v2.10.4"
       - equal:
           path: spec.template.spec.affinity
           value:
@@ -55,7 +55,8 @@ tests:
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
-      image.name: "mycustompublisher/myspecialimage"
+      image.registry: "my.registry"
+      image.repository: "my/repository"
       image.tag: "myspecialversion"
       image.pullPolicy: Never
       proxy:
@@ -77,7 +78,7 @@ tests:
           value: mysupertraefikee-proxy
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "mycustompublisher/myspecialimage:myspecialversion"
+          value: "my.registry/my/repository:myspecialversion"
       - equal:
           path: spec.replicas
           value: 2
