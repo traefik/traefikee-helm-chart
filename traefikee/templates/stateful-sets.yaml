@@ -18,6 +18,7 @@ data:
   {{- $tokenRefName = .Values.registry.tokenSecretRef.name }}
 {{- end }}
 
+{{- if .Values.registry.enabled }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -203,7 +204,7 @@ spec:
         resources:
           requests:
             storage: 5Gi
-
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet

@@ -23,6 +23,8 @@ initImage:
 #  file:
 
 registry:
+  # When disabled, plugins cannot be used
+  enabled: true
   # To disable affinity at all set this value to null
   affinity:
     nodeAffinity:

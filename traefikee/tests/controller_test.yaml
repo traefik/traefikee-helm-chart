@@ -224,6 +224,24 @@ tests:
               drop: ["ALL"]
               add: ["NET_BIND_SERVICE"]
 
+  - it: should deploy only the controller when registry is disabled
+    set:
+      registry:
+        enabled: false
+    asserts:
+      - isKind:
+          of: StatefulSet
+        documentIndex: 1
+      - isAPIVersion:
+          of: apps/v1
+        documentIndex: 1
+      - equal:
+          path: metadata.name
+          value: default-controller
+        documentIndex: 1
+      - hasDocuments:
+          count: 2
+
   - it: should add labels and annotations
     set:
       cluster: "mysupertraefikee"
