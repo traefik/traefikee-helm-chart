@@ -35,14 +35,18 @@ Create chart name and version as used by the chart label.
 Generates image name.
 */}}
 {{- define "traefikee-helm-chart.image-name" -}}
-{{- printf "%s:%s" .Values.image.name (.Values.image.tag | default .Chart.AppVersion) }}
+  {{- with .Values.image }}
+    {{- printf "%s/%s:%s" .registry .repository (.tag | default $.Chart.AppVersion) }}
+  {{- end }}
 {{- end }}
 
 {{/*
 Generates initContainer image name.
 */}}
 {{- define "traefikee-helm-chart.initContainer-image-name" -}}
-{{- printf "%s:%s" .Values.image.initContainer.name .Values.image.initContainer.tag }}
+  {{- with .Values.initImage }}
+    {{- printf "%s/%s:%s" .registry .repository .tag }}
+  {{- end }}
 {{- end }}
 
 {{/*
@@ -69,11 +73,11 @@ Generates or load registry token.
       {{- if not (empty (.Values.registry.tokenSecretRef).namespace) }}
         {{- $tokenNS := .Values.registry.tokenSecretRef.namespace }}
       {{- end }}
-    
+
       {{- if empty (.Values.registry.tokenSecretRef).name }}
         {{- fail "ERROR: registry.tokenSecretRef needs at least secret name to be specified !"}}
       {{- end }}
-    
+
       {{- $tokenSecret := (lookup "v1" "Secret" $tokenNS (.Values.registry.tokenSecretRef).name) }}
       {{- $tokenSecretData := (get $tokenSecret "data") | default dict }}
       {{- $tokenStr = (get $tokenSecretData "token" | b64dec ) | default "" }}
