@@ -103,6 +103,38 @@ tests:
                           values:
                             - controllers
                     topologyKey: kubernetes.io/hostname
+      - documentIndex: 1
+        equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            tcpSocket:
+              port: https
+            initialDelaySeconds: 2
+            periodSeconds: 5
+      - documentIndex: 1
+        equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            tcpSocket:
+              port: https
+            initialDelaySeconds: 2
+            periodSeconds: 5
+      - documentIndex: 2
+        equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            tcpSocket:
+              port: control-port
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      - documentIndex: 2
+        equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            tcpSocket:
+              port: control-port
+            initialDelaySeconds: 10
+
   - it: should override controller defaults
     set:
       cluster: "mysupertraefikee"

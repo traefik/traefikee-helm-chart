@@ -68,7 +68,7 @@ spec:
       {{- if .Values.registry.tolerations }}
       tolerations:
         {{- tpl (toYaml .Values.registry.tolerations) . | nindent 8 }}
-      {{- end }}      
+      {{- end }}
       {{- with .Values.priorityClassName }}
       priorityClassName: {{ . }}
       {{- end }}
@@ -151,6 +151,16 @@ spec:
               name: http
             - containerPort: 443
               name: https
+          livenessProbe:
+            tcpSocket:
+              port: https
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: https
+            initialDelaySeconds: 2
+            periodSeconds: 5
           {{- with .Values.controller.resources }}
           resources:
             requests:
@@ -253,7 +263,7 @@ spec:
       {{- if .Values.controller.tolerations }}
       tolerations:
         {{- tpl (toYaml .Values.controller.tolerations) . | nindent 8 }}
-      {{- end }}   
+      {{- end }}
       {{- with .Values.priorityClassName }}
       priorityClassName: {{ . }}
       {{- end }}
@@ -349,6 +359,10 @@ spec:
               port: control-port
             initialDelaySeconds: 10
             periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: control-port
+            initialDelaySeconds: 10
           {{- with .Values.controller.resources }}
           resources:
             requests:
@@ -386,6 +400,7 @@ spec:
             - "--log.format={{ (.Values.log).format | default "" }}"
             - "--plugin.url=https://{{ .Values.cluster }}-plugin-registry-svc.{{ .Release.Namespace }}.svc.cluster.local"
             - "--plugin.token=$(PLUGIN_REGISTRY_TOKEN)"
+            - "--ping.entryPoint=traefik"
             {{- with .Values.controller.additionalArguments }}
             {{- range . }}
             - {{ . | quote }}
