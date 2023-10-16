@@ -15,7 +15,7 @@
   "labels": [
     "📌 dependencies"
   ],
-  "enabledManagers": ["github-actions", "regex"],
+  "enabledManagers": ["github-actions", "helm-values", "regex"],
   "regexManagers": [
     {
       "datasourceTemplate": "docker",

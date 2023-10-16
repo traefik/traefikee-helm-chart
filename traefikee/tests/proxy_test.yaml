@@ -13,7 +13,7 @@ tests:
           value: default-proxy
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "traefik/traefikee:v2.10.5"
+          value: "docker.io/traefik/traefikee:v2.10.5"
       - equal:
           path: spec.template.spec.affinity
           value:
@@ -36,15 +36,38 @@ tests:
                             values:
                               - proxies
                       topologyKey: "kubernetes.io/hostname"
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            httpGet:
+              path: /ping
+              port: traefik
+            initialDelaySeconds: 2
+            periodSeconds: 5
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            httpGet:
+              path: /ping
+              port: traefik
+            initialDelaySeconds: 2
+            periodSeconds: 5
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
-      image.name: "mycustompublisher/myspecialimage"
+      image.registry: "my.registry"
+      image.repository: "my/repository"
       image.tag: "myspecialversion"
       image.pullPolicy: Never
       proxy:
         replicas: 2
         affinity: null
+        readinessProbe:
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 20
     asserts:
       - isKind:
           of: Deployment
@@ -55,7 +78,7 @@ tests:
           value: mysupertraefikee-proxy
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "mycustompublisher/myspecialimage:myspecialversion"
+          value: "my.registry/my/repository:myspecialversion"
       - equal:
           path: spec.replicas
           value: 2
@@ -66,6 +89,23 @@ tests:
           count: 1
       - isNull:
           path: spec.template.spec.affinity
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            httpGet:
+              path: /ping
+              port: traefik
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            httpGet:
+              path: /ping
+              port: traefik
+            initialDelaySeconds: 10
+            periodSeconds: 20
+
   - it: should provide secure deployment by default
     asserts:
       - equal:

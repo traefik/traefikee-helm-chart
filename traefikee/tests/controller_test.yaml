@@ -103,10 +103,43 @@ tests:
                           values:
                             - controllers
                     topologyKey: kubernetes.io/hostname
+      - documentIndex: 1
+        equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            tcpSocket:
+              port: https
+            initialDelaySeconds: 2
+            periodSeconds: 5
+      - documentIndex: 1
+        equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            tcpSocket:
+              port: https
+            initialDelaySeconds: 2
+            periodSeconds: 5
+      - documentIndex: 2
+        equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            tcpSocket:
+              port: control-port
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      - documentIndex: 2
+        equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            tcpSocket:
+              port: control-port
+            initialDelaySeconds: 10
+
   - it: should override controller defaults
     set:
       cluster: "mysupertraefikee"
-      image.name: "mycustompublisher/myspecialimage"
+      image.registry: "my.registry"
+      image.repository: "my/repository"
       image.tag: "myspecialversion"
       image.pullPolicy: Never
       controller:
@@ -123,7 +156,7 @@ tests:
           value: mysupertraefikee-controller
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "mycustompublisher/myspecialimage:myspecialversion"
+          value: "my.registry/my/repository:myspecialversion"
       - equal:
           path: spec.replicas
           value: 2
@@ -138,7 +171,8 @@ tests:
   - it: should override registry defaults
     set:
       cluster: "mysupertraefikee"
-      image.name: "mycustompublisher/myspecialimage"
+      image.registry: "my.registry"
+      image.repository: "my/repository"
       image.tag: "myspecialversion"
       image.pullPolicy: Never
       registry:
@@ -154,7 +188,7 @@ tests:
           value: mysupertraefikee-plugin-registry
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "mycustompublisher/myspecialimage:myspecialversion"
+          value: "my.registry/my/repository:myspecialversion"
       - equal:
           path: spec.serviceName
           value: mysupertraefikee-plugin-registry-svc
@@ -189,6 +223,24 @@ tests:
             capabilities:
               drop: ["ALL"]
               add: ["NET_BIND_SERVICE"]
+
+  - it: should deploy only the controller when registry is disabled
+    set:
+      registry:
+        enabled: false
+    asserts:
+      - isKind:
+          of: StatefulSet
+        documentIndex: 1
+      - isAPIVersion:
+          of: apps/v1
+        documentIndex: 1
+      - equal:
+          path: metadata.name
+          value: default-controller
+        documentIndex: 1
+      - hasDocuments:
+          count: 2
 
   - it: should add labels and annotations
     set:

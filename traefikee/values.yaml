@@ -5,13 +5,17 @@ cluster: "default"
 #   - name: regcred
 
 image:
-  name: traefik/traefikee
+  registry: docker.io
+  repository: traefik/traefikee
   # defaults to appVersion
   tag: ""
   pullPolicy: IfNotPresent
-  initContainer:
-    name: busybox
-    tag: "1.31.1"
+
+# Used to run initContainers
+initImage:
+  registry: docker.io
+  repository: busybox
+  tag: "1.36.1"
 
 # log:
 #  level: DEBUG
@@ -19,6 +23,8 @@ image:
 #  file:
 
 registry:
+  # When disabled, plugins cannot be used
+  enabled: true
   # To disable affinity at all set this value to null
   affinity:
     nodeAffinity:
@@ -200,11 +206,12 @@ proxy:
     #     - type: Pods
     #       value: 1
     #       periodSeconds: 60
-#  readinessProbe:
-#    tcpSocket:
-#      port: http
-#    initialDelaySeconds: 2
-#    periodSeconds: 5
+  readinessProbe:
+    initialDelaySeconds: 2
+    periodSeconds: 5
+  livenessProbe:
+    initialDelaySeconds: 2
+    periodSeconds: 5
 #  serviceLabels:
 #    foo: bar
 #  serviceAnnotations:
