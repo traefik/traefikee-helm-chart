@@ -1,11 +1,13 @@
 # Custom values for High-Availability with Traefik Enterprise
 
 # This HA setup is without plugins.
+# You MUST enable it when using plugins
 registry:
   enabled: false
 
 controller:
   replicas: 3
+  # Those values should be changed according to your setup
   resources:
     requests:
       cpu: "200m"
