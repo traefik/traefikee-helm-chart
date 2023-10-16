@@ -15,6 +15,6 @@ lint:
 
 changelog:
 	@echo "== Updating Changelogs..."
-	@docker run -it --rm -v $(CURDIR):/data ghcr.io/mloiseleur/helm-changelog:v0.0.2
+	@docker run -it --rm -v $(CURDIR):/data ghcr.io/mloiseleur/helm-changelog:v0.0.3
 	@./hack/changelog.sh
 	@echo "== Updating finished"

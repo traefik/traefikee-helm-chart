@@ -1,24 +1,43 @@
 apiVersion: v2
 name: traefikee
-version: 1.15.0
-# renovate: image=docker.io/traefik/traefikee
-appVersion: v2.10.5
-# Because of https://github.com/helm/helm/issues/3810 the pre-release version suffix has to be define.
-# This allows the installation on Kubernetes cluster with a pre-release version (e.g. v1.19.9-gke.1900)
-kubeVersion: ">= 1.14.0-0"
 description: |
   Traefik Enterprise is a unified cloud-native networking solution that brings API management, ingress control, and
   Service Mesh all together in one simple control plane. Traefik Enterprise eases microservices networking complexity
   for developers and operations teams across the organization.
+icon: https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enterprise-logo.svg
+# Because of https://github.com/helm/helm/issues/3810 the pre-release version suffix has to be define.
+# This allows the installation on Kubernetes cluster with a pre-release version (e.g. v1.19.9-gke.1900)
+kubeVersion: ">= 1.14.0-0"
+version: 2.0.0
+# renovate: image=docker.io/traefik/traefikee
+appVersion: v2.10.5
 type: application
 home: https://traefik.io/traefik-enterprise/
 maintainers:
-  - name: charlie-haley
+  - name: darkweaver87
+  - name: mloiseleur
+  - name: mmatur
+  - name: NEwa-05
+  - name: sdelicata
   - name: kevinpollet
-  - name: ddtmachado
 keywords:
   - traefikee
+  - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
-    - "feat: allows to set spec.strategy on proxy"
-    - "feat: allows to unset `spec.replicas` on proxy"
+    - "fix: probes and ports on secured deployment"
+    - "fix: don't set plugin registry CLI when it's disabled"
+    - "feat: provide default HA values"
+    - "feat: inline static configuration"
+    - "feat: improve security on controller & registry"
+    - "feat: improve security defaults on proxy"
+    - "feat: allow to deploy without registry"
+    - "feat: add support for topology spread constraints on the controller"
+    - "feat: add optional hpa for proxy"
+    - "feat: :boom: rename image.name and image.initContainer"
+    - "feat: :boom: add readiness and liveness on all pods"
+    - "docs: add missing changelog entry for last release"
+    - "chore(release): publish v2.0.0"
+    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.5"
+    - "chore(deps): update docker.io/helmunittest/helm-unittest docker tag to v3.12.3"
+    - "chore(deps): update docker.io/busybox docker tag to v1.36.1"
