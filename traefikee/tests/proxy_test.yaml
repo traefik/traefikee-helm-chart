@@ -36,22 +36,10 @@ tests:
                             values:
                               - proxies
                       topologyKey: "kubernetes.io/hostname"
-      - equal:
+      - notExists:
           path: spec.template.spec.containers[0].readinessProbe
-          value:
-            httpGet:
-              path: /ping
-              port: traefik
-            initialDelaySeconds: 2
-            periodSeconds: 5
-      - equal:
+      - notExists:
           path: spec.template.spec.containers[0].livenessProbe
-          value:
-            httpGet:
-              path: /ping
-              port: traefik
-            initialDelaySeconds: 2
-            periodSeconds: 5
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
@@ -63,9 +51,15 @@ tests:
         replicas: 2
         affinity: null
         readinessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
           initialDelaySeconds: 10
           periodSeconds: 20
     asserts:

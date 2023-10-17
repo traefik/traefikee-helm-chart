@@ -148,18 +148,20 @@ spec:
               add:
                 - NET_BIND_SERVICE
           ports:
-            - containerPort: 80
-              name: http
-            - containerPort: 443
+            - containerPort: 6443
               name: https
           livenessProbe:
-            tcpSocket:
+            httpGet:
               port: https
+              scheme: HTTPS
+              path: /plugins
             initialDelaySeconds: 2
             periodSeconds: 5
           readinessProbe:
-            tcpSocket:
+            httpGet:
               port: https
+              scheme: HTTPS
+              path: /plugins
             initialDelaySeconds: 2
             periodSeconds: 5
           {{- with .Values.controller.resources }}
@@ -182,6 +184,7 @@ spec:
             - "/traefikee"
             - "plugin-registry"
             - "--name=$(POD_NAME)"
+            - "--addr=:6443"
             - "--plugindir=/var/lib/plugins"
             - "--token=$(PLUGIN_REGISTRY_TOKEN)"
             - "--discovery.dns.domain={{ .Values.cluster }}-ctrl-svc.$(POD_NAMESPACE)"
@@ -401,7 +404,6 @@ spec:
             - "--log.format={{ (.Values.log).format | default "" }}"
             - "--plugin.url=https://{{ .Values.cluster }}-plugin-registry-svc.{{ .Release.Namespace }}.svc.cluster.local"
             - "--plugin.token=$(PLUGIN_REGISTRY_TOKEN)"
-            - "--ping.entryPoint=traefik"
             {{- with .Values.controller.additionalArguments }}
             {{- range . }}
             - {{ . | quote }}

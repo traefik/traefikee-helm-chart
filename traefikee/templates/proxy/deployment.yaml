@@ -143,16 +143,10 @@ spec:
           {{- end }}
           {{- with .Values.proxy.readinessProbe }}
           readinessProbe:
-            httpGet:
-              path: /ping
-              port: traefik
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with .Values.proxy.livenessProbe }}
           livenessProbe:
-            httpGet:
-              path: /ping
-              port: traefik
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with .Values.proxy.resources }}

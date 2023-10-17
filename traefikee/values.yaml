@@ -206,12 +206,22 @@ proxy:
     #     - type: Pods
     #       value: 1
     #       periodSeconds: 60
-  readinessProbe:
-    initialDelaySeconds: 2
-    periodSeconds: 5
-  livenessProbe:
-    initialDelaySeconds: 2
-    periodSeconds: 5
+
+## You need to enable ping in static config before
+## enabling readiness and liveness
+#  readinessProbe:
+#    httpGet:
+#      path: /ping
+#      port: traefik
+#    initialDelaySeconds: 2
+#    periodSeconds: 5
+#  livenessProbe:
+#    httpGet:
+#      path: /ping
+#      port: traefik
+#    initialDelaySeconds: 2
+#    periodSeconds: 5
+
 #  serviceLabels:
 #    foo: bar
 #  serviceAnnotations:
