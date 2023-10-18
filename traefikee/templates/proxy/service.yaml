@@ -15,8 +15,7 @@ metadata:
     {{- end }}
 spec:
   type: {{ .Values.proxy.serviceType | default "LoadBalancer" }}
-  ports:
-    {{ toYaml .Values.proxy.ports | nindent 4 }}
+  ports: {{ toYaml .Values.proxy.servicePorts | nindent 4 }}
   {{- if .Values.proxy.loadBalancerIP }}
   loadBalancerIP: {{ .Values.proxy.loadBalancerIP }}
   {{- end }}

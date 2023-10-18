@@ -138,7 +138,11 @@ spec:
             - containerPort: 8080
               name: traefik
           {{- range $port := .Values.proxy.ports }}
-            - containerPort: {{ $port.targetPort | default $port.port }}
+            {{- $containerPort := ($port.targetPort | default $port.port) }}
+            {{- if lt (int $containerPort) 1024 }}
+              {{ fail "ERROR: Cannot set a privileged port on a non-root container" }}
+            {{- end }}
+            - containerPort: {{ $containerPort }}
               name: {{ $port.name }}
           {{- end }}
           {{- with .Values.proxy.readinessProbe }}

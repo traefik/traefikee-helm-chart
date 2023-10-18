@@ -1,0 +1,71 @@
+suite: proxy service test
+templates:
+  - proxy/service.yaml
+tests:
+  - it: should use LoadBalancer by default
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+  - it: should provide http & https port by default
+    asserts:
+      - contains:
+          path: spec.ports
+          content:
+            name: http
+            port: 80
+            targetPort: http
+      - contains:
+          path: spec.ports
+          content:
+            name: https
+            port: 443
+            targetPort: https
+  - it: should use NodePort
+    set:
+      proxy:
+        serviceType: NodePort
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: NodePort
+  - it: should set loadbalancerIP
+    set:
+      proxy:
+        loadBalancerIP: "1.2.3.4"
+        serviceType: LoadBalancer
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+      - equal:
+          path: spec.loadBalancerIP
+          value: "1.2.3.4"
+  - it: should set loadbalancerIP
+    set:
+      proxy:
+        loadBalancerIP: "1.2.3.4"
+        serviceType: LoadBalancer
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+      - equal:
+          path: spec.loadBalancerIP
+          value: "1.2.3.4"
