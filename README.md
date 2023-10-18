@@ -96,6 +96,14 @@ If Traefik Enterprise was installed in a specific namespace (for example `traefi
 helm uninstall traefikee --namespace traefikee
 ```
 
+For complete uninstall, secrets and pvc created by Traefik Enterprise should be also cleaned:
+```shell
+k delete pvc data-$CLUSTERNAME-controller-0
+k delete pvc plugin-data-$CLUSTERNAME-controller-0
+k delete secret $CLUSTERNAME-registry-token
+k delete secret $CLUSTERNAME-tokens
+```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## License
