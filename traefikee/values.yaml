@@ -150,12 +150,19 @@ proxy:
     limits:
       cpu: "1000m"
       memory: "1Gi"
-  serviceType: LoadBalancer
   ports:
     - name: http
+      port: 7080
+    - name: https
+      port: 7443
+  serviceType: LoadBalancer
+  servicePorts:
+    - name: http
       port: 80
+      targetPort: http
     - name: https
       port: 443
+      targetPort: https
 # # Specify Static IP of cloud provider LB
 #  loadBalancerIP: "1.2.3.4"
 
@@ -206,12 +213,22 @@ proxy:
     #     - type: Pods
     #       value: 1
     #       periodSeconds: 60
-  readinessProbe:
-    initialDelaySeconds: 2
-    periodSeconds: 5
-  livenessProbe:
-    initialDelaySeconds: 2
-    periodSeconds: 5
+
+## You need to enable ping in static config before
+## enabling readiness and liveness
+#  readinessProbe:
+#    httpGet:
+#      path: /ping
+#      port: traefik
+#    initialDelaySeconds: 2
+#    periodSeconds: 5
+#  livenessProbe:
+#    httpGet:
+#      path: /ping
+#      port: traefik
+#    initialDelaySeconds: 2
+#    periodSeconds: 5
+
 #  serviceLabels:
 #    foo: bar
 #  serviceAnnotations:

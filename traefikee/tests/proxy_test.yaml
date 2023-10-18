@@ -36,22 +36,10 @@ tests:
                             values:
                               - proxies
                       topologyKey: "kubernetes.io/hostname"
-      - equal:
+      - notExists:
           path: spec.template.spec.containers[0].readinessProbe
-          value:
-            httpGet:
-              path: /ping
-              port: traefik
-            initialDelaySeconds: 2
-            periodSeconds: 5
-      - equal:
+      - notExists:
           path: spec.template.spec.containers[0].livenessProbe
-          value:
-            httpGet:
-              path: /ping
-              port: traefik
-            initialDelaySeconds: 2
-            periodSeconds: 5
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
@@ -63,9 +51,15 @@ tests:
         replicas: 2
         affinity: null
         readinessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
           initialDelaySeconds: 10
           periodSeconds: 20
     asserts:
@@ -135,7 +129,7 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].ports
           content:
-            containerPort: 443
+            containerPort: 7443
             name: https
       - contains:
           path: spec.template.spec.containers[0].ports
@@ -145,7 +139,7 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].ports
           content:
-            containerPort: 80
+            containerPort: 7080
             name: http
   - it: should set imagePullSecrets correctly
     set:
@@ -293,103 +287,24 @@ tests:
               rollingUpdate:
                 maxUnavailable: 0
                 maxSurge: 1
-
----
-suite: proxy service test
-templates:
-  - proxy/service.yaml
-tests:
-  - it: should use LoadBalancer by default
-    asserts:
-      - isKind:
-          of: Service
-      - isAPIVersion:
-          of: v1
-      - equal:
-          path: spec.type
-          value: LoadBalancer
-  - it: should use NodePort
+  - it: should fail when using ports < 1024
     set:
       proxy:
-        serviceType: NodePort
-    asserts:
-      - isKind:
-          of: Service
-      - isAPIVersion:
-          of: v1
-      - equal:
-          path: spec.type
-          value: NodePort
-  - it: should set loadbalancerIP
-    set:
-      proxy:
-        loadBalancerIP: "1.2.3.4"
-        serviceType: loadBalancer
-    asserts:
-      - isKind:
-          of: Service
-      - isAPIVersion:
-          of: v1
-      - equal:
-          path: spec.type
-          value: LoadBalancer
-      - equal:
-          path: spec.loadBalancerIP
-          value: "1.2.3.4"
-  - it: should set loadbalancerIP
-    set:
-      proxy:
-        loadBalancerIP: "1.2.3.4"
-        serviceType: loadBalancer
-    asserts:
-      - isKind:
-          of: Service
-      - isAPIVersion:
-          of: v1
-      - equal:
-          path: spec.type
-          value: LoadBalancer
-      - equal:
-          path: spec.loadBalancerIP
-          value: "1.2.3.4"
-
-  - it: should use autoscaling/v2 when k8s >= 1.23
-    set:
-      proxy:
-        autoscaling:
-          enabled: true
-          maxReplicas: 3
-    asserts:
-      - isAPIVersion:
-          of: autoscaling/v2
-  - it: should use autoscaling/v2beta2 when k8s < 1.23
-    capabilities:
-      majorVersion: 1
-      minorVersion: 22
-    set:
-      proxy:
-        autoscaling:
-          enabled: true
-          maxReplicas: 3
-    asserts:
-      - isAPIVersion:
-          of: autoscaling/v2beta2
-  - it: should fail without maxReplicas
-    set:
-      proxy:
-        autoscaling:
-          enabled: true
+        ports:
+          - name: http
+            port: 80
     asserts:
       - failedTemplate:
-          errorMessage: "maxReplicas is required on HPA"
-  - it: should not contains metrics nor behavior when they are not set
+          errorMessage: "ERROR: Cannot set a privileged port on a non-root container"
+  - it: should be possible to change ports of deployments
     set:
       proxy:
-        autoscaling:
-          enabled: true
-          maxReplicas: 3
+        ports:
+          - name: https
+            port: 4443
     asserts:
-      - isNull:
-          path: spec.metrics
-      - isNull:
-          path: spec.behavior
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 4443
+            name: https
