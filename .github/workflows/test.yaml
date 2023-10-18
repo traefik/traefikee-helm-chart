@@ -24,3 +24,11 @@ jobs:
 
       - name: Test Chart
         run: make test
+
+      - name: Set-up Kind cluster
+        uses: helm/kind-action@v1.8.0
+        with:
+          wait: 120s
+
+      - name: Test Install
+        run: make test-install
