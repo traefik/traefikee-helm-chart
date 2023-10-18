@@ -383,10 +383,8 @@ spec:
               mountPath: /var/lib/traefikee
             - name: sockets
               mountPath: /var/run/traefikee
-            {{- if (.Values.controller.staticConfig).configMap }}
             - name: staticconfig
-              mountPath: /var/run/traefikee/config
-            {{- end }}
+              mountPath: /etc/traefikee
           command:
             - "/traefikee"
             - "controller"
@@ -398,9 +396,7 @@ spec:
             - "--jointoken.kubernetes.namespace={{ .Release.Namespace }}"
             - "--license=$(LICENSE)"
             - "--api.autocerts"
-            {{- if (.Values.controller.staticConfig).configMap }}
-            - "--configFile=/var/run/traefikee/config/{{ .Values.controller.staticConfig.configMap.key }}"
-            {{- end }}
+            - "--configFile=/etc/traefikee/{{ (.Values.controller.staticConfig.configMap).key | default "static.yaml" }}"
             - "--log.level={{ (.Values.log).level | default "" }}"
             - "--log.filepath={{ (.Values.log).filepath | default "" }}"
             - "--log.format={{ (.Values.log).format | default "" }}"
@@ -414,11 +410,9 @@ spec:
       volumes:
         - name: sockets
           emptyDir: {}
-        {{- if (.Values.controller.staticConfig).configMap }}
         - name: staticconfig
           configMap:
-            name: {{ .Values.controller.staticConfig.configMap.name }}
-        {{- end }}
+            name: {{ template "traefikee-helm-chart.configname" . }}
   volumeClaimTemplates:
     - metadata:
         name: data

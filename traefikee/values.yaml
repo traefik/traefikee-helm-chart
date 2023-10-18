@@ -100,10 +100,26 @@ controller:
                   values:
                     - controllers
             topologyKey: "kubernetes.io/hostname"
-#  staticConfig:
+  # Static Configuration can be set within values OR
+  # from an external ConfigMap. Not both.
+  staticConfig:
 #    configMap:
 #      name: traefik-config
 #      key: "static.yml"
+    content: |
+      entrypoints:
+        web:
+          address: ":7000"
+        websecure:
+          tls: {}
+          address: ":7443"
+      ping: {}
+      providers:
+        kubernetesIngress:
+          allowEmptyServices: true
+        kubernetesCRD:
+          allowEmptyServices: true
+
 #  serviceLabels:
 #    foo: bar
 #  serviceAnnotations:

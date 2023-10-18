@@ -50,6 +50,17 @@ Generates initContainer image name.
 {{- end }}
 
 {{/*
+Generates configmap name for static configuration
+*/}}
+{{- define "traefikee-helm-chart.configname" -}}
+{{- if .Values.controller.staticConfig.configMap }}
+{{- .Values.controller.staticConfig.configMap.name }}
+{{- else }}
+{{- printf "%s-static-config" .Values.cluster }}
+{{- end }}
+{{- end }}
+
+{{/*
 Generates common labels.
 */}}
 {{- define "common.labels" -}}
