@@ -36,19 +36,31 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.4.0
 
-      - name: Run chart-testing (list-changed)
-        id: list-changed
-        run: |
-          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
-          if [[ -n "$changed" ]]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Run chart-testing (lint)
         run: ct lint --target-branch ${{ github.event.repository.default_branch }}
 
+      #- name: Run chart-testing (lint)
+      #  run: make lint
+
       - name: Create kind cluster
         uses: helm/kind-action@v1.8.0
+        with:
+          config: hack/kind.config
+
+      # ct install check everything, including LoadBalancer service
+      # => LB is needed
+      # See https://kind.sigs.k8s.io/docs/user/loadbalancer/
+      - name: Create namespace, test license and LB
+        run: |
+          kubectl create namespace traefikee
+          kubectl create secret generic default-license --from-literal=license=${{secrets.TRAEFIKEE_TEST_LICENSE}} -n traefikee
+          # kubectl wait --for=condition=ready nodes --timeout 60s chart-testing-control-plane
+          kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.11/config/manifests/metallb-native.yaml
+          kubectl wait --namespace metallb-system --for=condition=ready pod --selector=app=metallb --timeout=90s
+          kubectl apply -f hack/metallb-config.yaml
+
+      #- name: Test install
+      #  run: make test-install
 
       - name: Run chart-testing (install)
-        run: ct install --target-branch ${{ github.event.repository.default_branch }}
+        run: ct install --config=.github/chart-testing.yaml --charts traefikee/ --namespace traefikee --helm-extra-set-args --set=registry.tokenSecret="NJ00yx60K+Wm1yufuBM6fLq3fVKcv44RvBsVGiH40+U="

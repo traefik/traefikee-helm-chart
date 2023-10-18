@@ -9,8 +9,6 @@ kind: Secret
 metadata:
   name: {{ .Values.cluster }}-registry-token
   namespace: {{ .Release.Namespace }}
-  annotations:
-    "helm.sh/resource-policy": keep
 type: Opaque
 data:
   token: {{ $tokenStr }}
