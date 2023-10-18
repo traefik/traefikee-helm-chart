@@ -97,7 +97,7 @@ spec:
                 - NET_RAW
         - name: chown
           image: {{ template "traefikee-helm-chart.initContainer-image-name" . }}
-          command: ['chown', '-R', '65532:', '/var/lib/traefikee']
+          command: ['chown', '-R', '65532:', '/var/lib/traefikee', '/var/lib/plugins']
           resources:
             requests:
               cpu: 10m
@@ -118,6 +118,8 @@ spec:
           volumeMounts:
             - name: {{ .Values.cluster }}-plugin-registry-data
               mountPath: "/var/lib/traefikee"
+            - name: plugin-data
+              mountPath: "/var/lib/plugins"
       containers:
         - name: {{ .Values.cluster }}-plugin-registry
           image: {{ template "traefikee-helm-chart.image-name" . }}
