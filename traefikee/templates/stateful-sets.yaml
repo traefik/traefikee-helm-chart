@@ -400,8 +400,10 @@ spec:
             - "--log.level={{ (.Values.log).level | default "" }}"
             - "--log.filepath={{ (.Values.log).filepath | default "" }}"
             - "--log.format={{ (.Values.log).format | default "" }}"
+            {{- if .Values.registry.enabled }}
             - "--plugin.url=https://{{ .Values.cluster }}-plugin-registry-svc.{{ .Release.Namespace }}.svc.cluster.local"
             - "--plugin.token=$(PLUGIN_REGISTRY_TOKEN)"
+            {{- end }}
             {{- with .Values.controller.additionalArguments }}
             {{- range . }}
             - {{ . | quote }}

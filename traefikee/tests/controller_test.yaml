@@ -280,6 +280,14 @@ tests:
           path: metadata.name
           value: default-controller
         documentIndex: 1
+      - notContains:
+          path: spec.template.spec.containers[0].command
+          content: "--plugin.url=https://default-plugin-registry-svc.NAMESPACE.svc.cluster.local"
+        documentIndex: 1
+      - notContains:
+          path: spec.template.spec.containers[0].command
+          content: "--plugin.token=$(PLUGIN_REGISTRY_TOKEN)"
+        documentIndex: 1
       - hasDocuments:
           count: 2
 
