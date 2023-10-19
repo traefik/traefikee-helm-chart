@@ -230,20 +230,19 @@ proxy:
     #       value: 1
     #       periodSeconds: 60
 
-## You need to enable ping in static config before
-## enabling readiness and liveness
-#  readinessProbe:
-#    httpGet:
-#      path: /ping
-#      port: traefik
-#    initialDelaySeconds: 2
-#    periodSeconds: 5
-#  livenessProbe:
-#    httpGet:
-#      path: /ping
-#      port: traefik
-#    initialDelaySeconds: 2
-#    periodSeconds: 5
+## Those probes need for ping to be enabled in static config
+  readinessProbe:
+    httpGet:
+      path: /ping
+      port: traefik
+    initialDelaySeconds: 2
+    periodSeconds: 5
+  livenessProbe:
+    httpGet:
+      path: /ping
+      port: traefik
+    initialDelaySeconds: 2
+    periodSeconds: 5
 
 #  serviceLabels:
 #    foo: bar
