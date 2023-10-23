@@ -36,10 +36,22 @@ tests:
                             values:
                               - proxies
                       topologyKey: "kubernetes.io/hostname"
-      - notExists:
+      - equal:
           path: spec.template.spec.containers[0].readinessProbe
-      - notExists:
+          value:
+            httpGet:
+              path: /ping
+              port: traefik
+            initialDelaySeconds: 2
+            periodSeconds: 5
+      - equal:
           path: spec.template.spec.containers[0].livenessProbe
+          value:
+            httpGet:
+              path: /ping
+              port: traefik
+            initialDelaySeconds: 2
+            periodSeconds: 5
   - it: should override defaults
     set:
       cluster: "mysupertraefikee"
@@ -50,18 +62,8 @@ tests:
       proxy:
         replicas: 2
         affinity: null
-        readinessProbe:
-          httpGet:
-            path: /ping
-            port: traefik
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /ping
-            port: traefik
-          initialDelaySeconds: 10
-          periodSeconds: 20
+        readinessProbe: null
+        livenessProbe: null
     asserts:
       - isKind:
           of: Deployment
@@ -83,22 +85,10 @@ tests:
           count: 1
       - isNull:
           path: spec.template.spec.affinity
-      - equal:
+      - notExists:
           path: spec.template.spec.containers[0].readinessProbe
-          value:
-            httpGet:
-              path: /ping
-              port: traefik
-            initialDelaySeconds: 5
-            periodSeconds: 10
-      - equal:
+      - notExists:
           path: spec.template.spec.containers[0].livenessProbe
-          value:
-            httpGet:
-              path: /ping
-              port: traefik
-            initialDelaySeconds: 10
-            periodSeconds: 20
 
   - it: should provide secure deployment by default
     asserts:

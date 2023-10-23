@@ -1,0 +1,15 @@
+{{- if .Values.controller.staticConfig.content }}
+{{- if .Values.controller.staticConfig.configMap }}
+{{- fail "ERROR: Can not set both content and configMap on staticConfig" }}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "traefikee-helm-chart.configname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+data:
+  static.yaml:
+    {{- tpl (toYaml .Values.controller.staticConfig.content) . | nindent 4 }}
+{{- end }}

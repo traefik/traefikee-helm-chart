@@ -2,13 +2,7 @@ suite: controller test
 templates:
   - stateful-sets.yaml
 tests:
-  - it: can enable static config
-    set:
-      controller:
-        staticConfig:
-          configMap:
-            name: test-map
-            key: "static.yaml"
+  - it: should provide default static config
     documentIndex: 2
     asserts:
       - isKind:
@@ -20,7 +14,50 @@ tests:
           value: default-controller
       - contains:
           path: spec.template.spec.containers[0].command
-          content: "--configFile=/var/run/traefikee/config/static.yaml"
+          content: "--configFile=/etc/traefikee/static.yaml"
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: staticconfig
+            mountPath: /etc/traefikee
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: staticconfig
+            configMap:
+              name: default-static-config
+
+  - it: can enable static config
+    set:
+      controller:
+        staticConfig:
+          configMap:
+            name: test-map
+            key: "test.yaml"
+    documentIndex: 2
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: metadata.name
+          value: default-controller
+      - contains:
+          path: spec.template.spec.containers[0].command
+          content: "--configFile=/etc/traefikee/test.yaml"
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: staticconfig
+            mountPath: /etc/traefikee
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: staticconfig
+            configMap:
+              name: test-map
+
   - it: can disable static config
     documentIndex: 2
     asserts:
