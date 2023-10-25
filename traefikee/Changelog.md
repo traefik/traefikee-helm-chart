@@ -1,12 +1,192 @@
 # Change Log
 
+## 2.0.0  ![AppVersion: v2.10.5](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.5&color=success&logo=) ![Kubernetes: >= 1.14.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.14.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2023-10-16
+
+* fix: probes and ports on secured deployment
+* fix: don't set plugin registry CLI when it's disabled
+* feat: provide default HA values
+* feat: inline static configuration
+* feat: improve security on controller & registry
+* feat: improve security defaults on proxy
+* feat: allow to deploy without registry
+* feat: add support for topology spread constraints on the controller
+* feat: add optional hpa for proxy
+* feat: :boom: rename image.name and image.initContainer
+* feat: :boom: add readiness and liveness on all pods
+* docs: add missing changelog entry for last release
+* chore(release): publish v2.0.0
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.5
+* chore(deps): update docker.io/helmunittest/helm-unittest docker tag to v3.12.3
+* chore(deps): update docker.io/busybox docker tag to v1.36.1
+
+### Default value changes
+
+```diff
+diff --git a/traefikee/values.yaml b/traefikee/values.yaml
+index 68e2a9e..cb5622f 100644
+--- a/traefikee/values.yaml
++++ b/traefikee/values.yaml
+@@ -5,13 +5,17 @@ cluster: "default"
+ #   - name: regcred
+ 
+ image:
+-  name: traefik/traefikee
++  registry: docker.io
++  repository: traefik/traefikee
+   # defaults to appVersion
+   tag: ""
+   pullPolicy: IfNotPresent
+-  initContainer:
+-    name: busybox
+-    tag: "1.31.1"
++
++# Used to run initContainers
++initImage:
++  registry: docker.io
++  repository: busybox
++  tag: "1.36.1"
+ 
+ # log:
+ #  level: DEBUG
+@@ -19,6 +23,8 @@ image:
+ #  file:
+ 
+ registry:
++  # When disabled, plugins cannot be used
++  enabled: true
+   # To disable affinity at all set this value to null
+   affinity:
+     nodeAffinity:
+@@ -94,10 +100,26 @@ controller:
+                   values:
+                     - controllers
+             topologyKey: "kubernetes.io/hostname"
+-#  staticConfig:
++  # Static Configuration can be set within values OR
++  # from an external ConfigMap. Not both.
++  staticConfig:
+ #    configMap:
+ #      name: traefik-config
+ #      key: "static.yml"
++    content: |
++      entrypoints:
++        web:
++          address: ":7000"
++        websecure:
++          tls: {}
++          address: ":7443"
++      ping: {}
++      providers:
++        kubernetesIngress:
++          allowEmptyServices: true
++        kubernetesCRD:
++          allowEmptyServices: true
++
+ #  serviceLabels:
+ #    foo: bar
+ #  serviceAnnotations:
+@@ -120,6 +142,16 @@ controller:
+ #        secretKeyRef:
+ #          name: foo
+ #          key: BAR
++# # This example topologySpreadConstraints forces the scheduler to put traefikee controller pods
++# # on nodes where no other traefikee controller pods are scheduled.
++#  topologySpreadConstraints:
++#    - labelSelector:
++#        matchLabels:
++#          app: traefikee
++#          component: controllers
++#      maxSkew: 1
++#      topologyKey: kubernetes.io/hostname
++#      whenUnsatisfiable: DoNotSchedule
+ ## Tolerations allow the scheduler to schedule pods with matching taints.
+   tolerations: []
+ 
+@@ -134,12 +166,19 @@ proxy:
+     limits:
+       cpu: "1000m"
+       memory: "1Gi"
+-  serviceType: LoadBalancer
+   ports:
++    - name: http
++      port: 7080
++    - name: https
++      port: 7443
++  serviceType: LoadBalancer
++  servicePorts:
+     - name: http
+       port: 80
++      targetPort: http
+     - name: https
+       port: 443
++      targetPort: https
+ # # Specify Static IP of cloud provider LB
+ #  loadBalancerIP: "1.2.3.4"
+ 
+@@ -164,11 +203,47 @@ proxy:
+                   values:
+                     - proxies
+             topologyKey: "kubernetes.io/hostname"
+-#  readinessProbe:
+-#    tcpSocket:
+-#      port: http
+-#    initialDelaySeconds: 2
+-#    periodSeconds: 5
++
++  autoscaling:
++    # -- Create HorizontalPodAutoscaler object.
++    enabled: false
++    # minReplicas: 1
++    # maxReplicas: 10
++    # metrics:
++    # - type: Resource
++    #   resource:
++    #     name: cpu
++    #     target:
++    #       type: Utilization
++    #       averageUtilization: 60
++    # - type: Resource
++    #   resource:
++    #     name: memory
++    #     target:
++    #       type: Utilization
++    #       averageUtilization: 60
++    # behavior:
++    #   scaleDown:
++    #     stabilizationWindowSeconds: 300
++    #     policies:
++    #     - type: Pods
++    #       value: 1
++    #       periodSeconds: 60
++
++## Those probes need for ping to be enabled in static config
++  readinessProbe:
++    httpGet:
++      path: /ping
++      port: traefik
++    initialDelaySeconds: 2
++    periodSeconds: 5
++  livenessProbe:
++    httpGet:
++      path: /ping
++      port: traefik
++    initialDelaySeconds: 2
++    periodSeconds: 5
++
+ #  serviceLabels:
+ #    foo: bar
+ #  serviceAnnotations:
+```
+
 ## 1.15.0  ![AppVersion: v2.10.4](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.4&color=success&logo=) ![Kubernetes: >= 1.14.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.14.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2023-08-23
 
+* feat: allows to unset `spec.replicas` on proxy
 * feat: allows to set spec.strategy on proxy
 * chore: add LICENSE, PR template, Changelog and Release Notes
-* feat: allows to unset `spec.replicas` on proxy
 * chore(deps): use renovate on this repo
 
 ### Default value changes
@@ -163,8 +343,8 @@ index d9be1d1..26cd9f5 100644
 
 **Release date:** 2023-04-27
 
-* bump chart version
 * feat: improve traefikee helm chart
+* bump chart version
 
 ### Default value changes
 
