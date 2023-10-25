@@ -111,7 +111,8 @@ controller:
         web:
           address: ":7000"
         websecure:
-          tls: {}
+          http:
+            tls: {}
           address: ":7443"
       ping: {}
       providers:
