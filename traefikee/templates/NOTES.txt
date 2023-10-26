@@ -21,3 +21,11 @@ To learn more about the release, try:
 !!          This field may be removed in a future API version.                                                 !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {{ end }}
+
+{{- if and .Values.controller.staticConfig.configMap .Values.controller.staticConfig.content }}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! WARNING: you declared both .spec.controller.staticConfig.configMap and .spec.controller.staticConfig        !!
+!!          .content.                                                                                          !!
+!!          Only .spec.controller.staticConfig.configMap will be taken into account.                           !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+{{ end }}
