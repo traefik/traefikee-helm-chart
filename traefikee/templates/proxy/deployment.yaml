@@ -135,8 +135,6 @@ spec:
           ports:
             - containerPort: 8484
               name: distributed
-            - containerPort: 8080
-              name: traefik
           {{- range $port := .Values.proxy.ports }}
             {{- $containerPort := ($port.targetPort | default $port.port) }}
             {{- if lt (int $containerPort) 1024 }}
