@@ -116,21 +116,17 @@ tests:
       - equal:
           path: metadata.name
           value: default-proxy
-      - contains:
+      - equal:
           path: spec.template.spec.containers[0].ports
-          content:
-            containerPort: 7443
-            name: https
-      - contains:
-          path: spec.template.spec.containers[0].ports
-          content:
-            containerPort: 8484
-            name: distributed
-      - contains:
-          path: spec.template.spec.containers[0].ports
-          content:
-            containerPort: 7080
-            name: http
+          value:
+            - containerPort: 8484
+              name: distributed
+            - containerPort: 9000
+              name: traefik
+            - containerPort: 7080
+              name: http
+            - containerPort: 7443
+              name: https
   - it: should set imagePullSecrets correctly
     set:
       imagePullSecrets:
