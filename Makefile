@@ -2,7 +2,7 @@
 
 # Used for Helm Chart
 IMAGE_HELM_UNITTEST=docker.io/helmunittest/helm-unittest:3.12.3-0.3.5
-IMAGE_CHART_TESTING=quay.io/helmpack/chart-testing:v3.10.0
+IMAGE_CHART_TESTING=quay.io/helmpack/chart-testing:v3.10.1
 
 traefikee/tests/__snapshot__:
 	@mkdir traefikee/tests/__snapshot__
