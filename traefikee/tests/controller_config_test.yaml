@@ -1,0 +1,67 @@
+suite: controller config test
+templates:
+  - controller/config.yaml
+tests:
+  - it: should provide default static config
+    asserts:
+      - isKind:
+          of: ConfigMap
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: metadata.name
+          value: default-static-config
+  - it: configmap should supersede contents
+    set:
+      controller:
+        staticConfig:
+          configMap:
+            name: traefik-config
+            key: "static.yml"
+    asserts:
+      - failedTemplate:
+          errorMessage: "ERROR: ConfigMap traefik-config with static.yml key cannot be found in NAMESPACE namespace"
+  - it: configmap should fail when not fully specified
+    set:
+      controller:
+        staticConfig:
+          configMap:
+            key: "static.yml"
+    asserts:
+      - failedTemplate:
+          errorMessage: "ERROR: You need to specify both name and key while using configMap for staticConfig"
+  - it: config should fail when ping not enabled for readiness
+    set:
+      controller:
+        staticConfig:
+          content: test
+    asserts:
+      - failedTemplate:
+          errorMessage: "ERROR: Readiness Probe is configured using ping and ping is not enabled in staticConfig"
+  - it: config should fail when ping not enabled for liveness
+    set:
+      controller:
+        staticConfig:
+          content: test
+      proxy:
+        readinessProbe:
+         httpGet:
+          path: "/pong"
+    asserts:
+      - failedTemplate:
+          errorMessage: "ERROR: Liveness Probe is configured using ping and ping is not enabled in staticConfig"
+  - it: config should not fail when ping is not needed
+    set:
+      controller:
+        staticConfig:
+          content: test
+      proxy:
+        livenessProbe:
+          httpGet:
+            path: "/pong"
+        readinessProbe:
+          httpGet:
+            path: "/pong"
+    asserts:
+      - hasDocuments:
+          count: 1

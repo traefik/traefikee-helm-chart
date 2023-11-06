@@ -21,25 +21,11 @@ To learn more about the release, try:
 !!          This field may be removed in a future API version.                                                 !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {{ end }}
-{{- with .Values.controller.staticConfig.configMap }}
-  {{- if and .name .key }}
-    {{- $data := (lookup "v1" "ConfigMap" $.Release.Namespace .name).data }}
-    {{- if hasKey $data .key }}
-      {{- $staticConfig := get $data .key }}
-      {{- if not (contains "ping" $staticConfig) }}
-        {{- if ($.Values.proxy.readinessProbe).httpGet }}
-          {{- if eq $.Values.proxy.readinessProbe.httpGet.path "/ping" }}
-            {{- fail "ERROR: Readiness Probe is configured using ping and ping is not enabled in staticConfig" }}
-          {{- end }}
-        {{- end }}
-        {{- if ($.Values.proxy.livenessProbe).httpGet }}
-          {{- if eq $.Values.proxy.livenessProbe.httpGet.path "/ping" }}
-            {{- fail "ERROR: Liveness Probe is configured using ping and ping is not enabled in staticConfig" }}
-          {{- end }}
-        {{- end }}
-      {{- end }}
-    {{- else }}
-      {{- fail (cat "ERROR: ConfigMap" .name "with" .key "key cannot be found in" $.Release.Namespace "namespace") }}
-    {{- end }}
-  {{- end }}
-{{- end }}
+
+{{- if and .Values.controller.staticConfig.configMap .Values.controller.staticConfig.content }}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! WARNING: .spec.controller.staticConfig.configMap and .spec.controller.staticConfig.content                  !!
+!!          has both been set.                                                                                 !!
+!!        /!\ Only .spec.controller.staticConfig.configMap will be taken into account.                         !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+{{ end }}

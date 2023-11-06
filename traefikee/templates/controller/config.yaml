@@ -1,7 +1,19 @@
-{{- if .Values.controller.staticConfig.content }}
+{{ $staticConfig := ""}}
 {{- if .Values.controller.staticConfig.configMap }}
-{{- fail "ERROR: Can not set both content and configMap on staticConfig" }}
-{{- end }}
+  {{- with .Values.controller.staticConfig.configMap }}
+    {{- if and .name .key }}
+      {{- $data := (lookup "v1" "ConfigMap" $.Release.Namespace .name).data }}
+      {{- if hasKey $data .key }}
+        {{- $staticConfig = get $data .key }}
+      {{- else }}
+        {{- fail (cat "ERROR: ConfigMap" .name "with" .key "key cannot be found in" $.Release.Namespace "namespace") }}
+      {{- end }}
+    {{- else }}
+      {{- fail (cat "ERROR: You need to specify both name and key while using configMap for staticConfig") }}
+    {{- end }}
+  {{- end }}
+{{ else }}
+{{ $staticConfig = tpl (toYaml .Values.controller.staticConfig.content) . }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -11,5 +23,18 @@ metadata:
   labels: {{ include "common.labels" . | nindent 4 }}
 data:
   static.yaml:
-    {{- tpl (toYaml .Values.controller.staticConfig.content) . | nindent 4 }}
+    {{- $staticConfig | nindent 4 }}
+{{- end }}
+
+{{- if not (contains "ping" $staticConfig) }}
+  {{- if ($.Values.proxy.readinessProbe).httpGet }}
+    {{- if eq $.Values.proxy.readinessProbe.httpGet.path "/ping" }}
+      {{- fail "ERROR: Readiness Probe is configured using ping and ping is not enabled in staticConfig" }}
+    {{- end }}
+  {{- end }}
+  {{- if ($.Values.proxy.livenessProbe).httpGet }}
+    {{- if eq $.Values.proxy.livenessProbe.httpGet.path "/ping" }}
+      {{- fail "ERROR: Liveness Probe is configured using ping and ping is not enabled in staticConfig" }}
+    {{- end }}
+  {{- end }}
 {{- end }}
