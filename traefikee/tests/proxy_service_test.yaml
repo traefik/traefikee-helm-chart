@@ -13,18 +13,15 @@ tests:
           value: LoadBalancer
   - it: should provide http & https port by default
     asserts:
-      - contains:
+      - equal:
           path: spec.ports
-          content:
-            name: http
-            port: 80
-            targetPort: http
-      - contains:
-          path: spec.ports
-          content:
-            name: https
-            port: 443
-            targetPort: https
+          value:
+            - name: http
+              port: 80
+              targetPort: http
+            - name: https
+              port: 443
+              targetPort: https
   - it: should use NodePort
     set:
       proxy:

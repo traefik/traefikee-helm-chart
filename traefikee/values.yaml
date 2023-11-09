@@ -108,6 +108,8 @@ controller:
 #      key: "static.yml"
     content: |
       entrypoints:
+        traefik:
+          address: ":9000"
         web:
           address: ":7000"
         websecure:
@@ -168,6 +170,8 @@ proxy:
       cpu: "1000m"
       memory: "1Gi"
   ports:
+    - name: traefik
+      port: 9000
     - name: http
       port: 7080
     - name: https
