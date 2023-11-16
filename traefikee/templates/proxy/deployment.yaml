@@ -123,7 +123,8 @@ spec:
           {{- end }}
           securityContext:
             allowPrivilegeEscalation: false
-            runAsUser: 65532
+            runAsNonRoot: {{ if eq (int .Values.proxy.securityContext.runAsUser) 0 -}}false{{- else -}}true{{- end }}
+            runAsUser: {{ .Values.proxy.securityContext.runAsUser }}
             readOnlyRootFilesystem: true
             seccompProfile:
               type: RuntimeDefault
@@ -137,7 +138,7 @@ spec:
               name: distributed
           {{- range $port := .Values.proxy.ports }}
             {{- $containerPort := ($port.targetPort | default $port.port) }}
-            {{- if lt (int $containerPort) 1024 }}
+            {{- if and (lt (int $containerPort) 1024) (ne (int $.Values.proxy.securityContext.runAsUser) 0) }}
               {{ fail "ERROR: Cannot set a privileged port on a non-root container" }}
             {{- end }}
             - containerPort: {{ $containerPort }}
