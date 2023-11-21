@@ -84,7 +84,7 @@ spec:
                 - NET_RAW
         - name: chown
           image: {{ template "traefikee-helm-chart.initContainer-image-name" . }}
-          command: ['chown', '-R', '65532:', '/var/lib/traefikee']
+          command: ['chown', '-R', '{{.Values.proxy.securityContext.runAsUser}}:', '/var/lib/traefikee']
           resources:
             requests:
               cpu: 10m

@@ -296,6 +296,22 @@ tests:
           content:
             containerPort: 80
             name: http
+  - it: should give the rights on data to the right user (default)
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[1].command
+          value:
+            ['chown', '-R', '65532:', '/var/lib/traefikee']
+  - it: should give the rights on data to the right user
+    set:
+      proxy:
+        securityContext:
+          runAsUser: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[1].command
+          value:
+            [ 'chown', '-R', '0:', '/var/lib/traefikee' ]
   - it: should be possible to change ports of deployments
     set:
       proxy:
