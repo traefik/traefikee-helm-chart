@@ -111,7 +111,7 @@ controller:
         traefik:
           address: ":9000"
         web:
-          address: ":7000"
+          address: ":7080"
         websecure:
           http:
             tls: {}
@@ -248,6 +248,8 @@ proxy:
       port: traefik
     initialDelaySeconds: 2
     periodSeconds: 5
+  securityContext:
+    runAsUser: 65532
 
 #  serviceLabels:
 #    foo: bar

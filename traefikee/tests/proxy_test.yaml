@@ -273,7 +273,7 @@ tests:
               rollingUpdate:
                 maxUnavailable: 0
                 maxSurge: 1
-  - it: should fail when using ports < 1024
+  - it: should fail when using ports < 1024 for non-root users
     set:
       proxy:
         ports:
@@ -282,6 +282,36 @@ tests:
     asserts:
       - failedTemplate:
           errorMessage: "ERROR: Cannot set a privileged port on a non-root container"
+  - it: should be possible to run proxies as root (to specify elevated ports)
+    set:
+      proxy:
+        ports:
+          - name: http
+            port: 80
+        securityContext:
+          runAsUser: 0
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 80
+            name: http
+  - it: should give the rights on data to the right user (default)
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[1].command
+          value:
+            ['chown', '-R', '65532:', '/var/lib/traefikee']
+  - it: should give the rights on data to the right user
+    set:
+      proxy:
+        securityContext:
+          runAsUser: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[1].command
+          value:
+            [ 'chown', '-R', '0:', '/var/lib/traefikee' ]
   - it: should be possible to change ports of deployments
     set:
       proxy:
