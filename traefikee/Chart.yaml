@@ -8,7 +8,7 @@ icon: https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enter
 # Because of https://github.com/helm/helm/issues/3810 the pre-release version suffix has to be define.
 # This allows the installation on Kubernetes cluster with a pre-release version (e.g. v1.19.9-gke.1900)
 kubeVersion: ">= 1.14.0-0"
-version: 2.0.0
+version: 3.0.0
 # renovate: image=docker.io/traefik/traefikee
 appVersion: v2.10.5
 type: application
@@ -25,19 +25,7 @@ keywords:
   - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
-    - "fix: probes and ports on secured deployment"
-    - "fix: don't set plugin registry CLI when it's disabled"
-    - "feat: provide default HA values"
-    - "feat: inline static configuration"
-    - "feat: improve security on controller & registry"
-    - "feat: improve security defaults on proxy"
-    - "feat: allow to deploy without registry"
-    - "feat: add support for topology spread constraints on the controller"
-    - "feat: add optional hpa for proxy"
-    - "feat: :boom: rename image.name and image.initContainer"
-    - "feat: :boom: add readiness and liveness on all pods"
-    - "docs: add missing changelog entry for last release"
-    - "chore(release): publish v2.0.0"
-    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.5"
-    - "chore(deps): update docker.io/helmunittest/helm-unittest docker tag to v3.12.3"
-    - "chore(deps): update docker.io/busybox docker tag to v1.36.1"
+    - "fix: :see_no_evil: allow user to run proxy on priviledged ports"
+    - "fix: :boom: change default traefik port and make it configurable"
+    - "feat: :rocket: release 3.0.0"
+    - "feat: :card_file_box: configmap superseeds inline for staticConfig"
