@@ -1,8 +1,56 @@
 # Change Log
 
+## 3.0.0  ![AppVersion: v2.10.5](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.5&color=success&logo=) ![Kubernetes: >= 1.14.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.14.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2023-11-23
+
+* fix: :see_no_evil: allow user to run proxy on priviledged ports
+* fix: :boom: change default traefik port and make it configurable
+* feat: :rocket: release 3.0.0
+* feat: :card_file_box: configmap superseeds inline for staticConfig
+
+### Default value changes
+
+```diff
+diff --git a/traefikee/values.yaml b/traefikee/values.yaml
+index 34b537a..07b4125 100644
+--- a/traefikee/values.yaml
++++ b/traefikee/values.yaml
+@@ -108,8 +108,10 @@ controller:
+ #      key: "static.yml"
+     content: |
+       entrypoints:
++        traefik:
++          address: ":9000"
+         web:
+-          address: ":7000"
++          address: ":7080"
+         websecure:
+           http:
+             tls: {}
+@@ -168,6 +170,8 @@ proxy:
+       cpu: "1000m"
+       memory: "1Gi"
+   ports:
++    - name: traefik
++      port: 9000
+     - name: http
+       port: 7080
+     - name: https
+@@ -244,6 +248,8 @@ proxy:
+       port: traefik
+     initialDelaySeconds: 2
+     periodSeconds: 5
++  securityContext:
++    runAsUser: 65532
+ 
+ #  serviceLabels:
+ #    foo: bar
+```
+
 ## 2.0.0  ![AppVersion: v2.10.5](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.5&color=success&logo=) ![Kubernetes: >= 1.14.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.14.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
-**Release date:** 2023-10-16
+**Release date:** 2023-10-25
 
 * fix: probes and ports on secured deployment
 * fix: don't set plugin registry CLI when it's disabled
@@ -25,7 +73,7 @@
 
 ```diff
 diff --git a/traefikee/values.yaml b/traefikee/values.yaml
-index 68e2a9e..cb5622f 100644
+index 68e2a9e..34b537a 100644
 --- a/traefikee/values.yaml
 +++ b/traefikee/values.yaml
 @@ -5,13 +5,17 @@ cluster: "default"
@@ -59,7 +107,7 @@ index 68e2a9e..cb5622f 100644
    # To disable affinity at all set this value to null
    affinity:
      nodeAffinity:
-@@ -94,10 +100,26 @@ controller:
+@@ -94,10 +100,27 @@ controller:
                    values:
                      - controllers
              topologyKey: "kubernetes.io/hostname"
@@ -75,7 +123,8 @@ index 68e2a9e..cb5622f 100644
 +        web:
 +          address: ":7000"
 +        websecure:
-+          tls: {}
++          http:
++            tls: {}
 +          address: ":7443"
 +      ping: {}
 +      providers:
@@ -87,7 +136,7 @@ index 68e2a9e..cb5622f 100644
  #  serviceLabels:
  #    foo: bar
  #  serviceAnnotations:
-@@ -120,6 +142,16 @@ controller:
+@@ -120,6 +143,16 @@ controller:
  #        secretKeyRef:
  #          name: foo
  #          key: BAR
@@ -104,7 +153,7 @@ index 68e2a9e..cb5622f 100644
  ## Tolerations allow the scheduler to schedule pods with matching taints.
    tolerations: []
  
-@@ -134,12 +166,19 @@ proxy:
+@@ -134,12 +167,19 @@ proxy:
      limits:
        cpu: "1000m"
        memory: "1Gi"
@@ -125,7 +174,7 @@ index 68e2a9e..cb5622f 100644
  # # Specify Static IP of cloud provider LB
  #  loadBalancerIP: "1.2.3.4"
  
-@@ -164,11 +203,47 @@ proxy:
+@@ -164,11 +204,47 @@ proxy:
                    values:
                      - proxies
              topologyKey: "kubernetes.io/hostname"
