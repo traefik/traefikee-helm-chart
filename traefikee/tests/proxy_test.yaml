@@ -3,6 +3,8 @@ templates:
   - proxy/deployment.yaml
 tests:
   - it: should deploy the proxy
+    chart:
+      appVersion: v2.10.5
     asserts:
       - isKind:
           of: Deployment
