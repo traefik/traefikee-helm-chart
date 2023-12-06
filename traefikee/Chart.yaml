@@ -8,7 +8,7 @@ icon: https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enter
 # Because of https://github.com/helm/helm/issues/3810 the pre-release version suffix has to be define.
 # This allows the installation on Kubernetes cluster with a pre-release version (e.g. v1.19.9-gke.1900)
 kubeVersion: ">= 1.14.0-0"
-version: 3.0.0
+version: 3.0.1
 # renovate: image=docker.io/traefik/traefikee
 appVersion: v2.10.6
 type: application
@@ -25,7 +25,4 @@ keywords:
   - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
-    - "fix: :see_no_evil: allow user to run proxy on priviledged ports"
-    - "fix: :boom: change default traefik port and make it configurable"
-    - "feat: :rocket: release 3.0.0"
-    - "feat: :card_file_box: configmap superseeds inline for staticConfig"
+    - "chore: release v3.0.1 with Traefik Enterprise v2.10.6"

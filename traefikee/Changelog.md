@@ -1,13 +1,21 @@
 # Change Log
 
+## 3.0.1  ![AppVersion: v2.10.6](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.6&color=success&logo=) ![Kubernetes: >= 1.14.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.14.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2023-12-04
+
+* chore: release v3.0.1 with Traefik Enterprise v2.10.6
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.6
+
+
 ## 3.0.0  ![AppVersion: v2.10.5](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.5&color=success&logo=) ![Kubernetes: >= 1.14.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.14.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2023-11-23
 
 * fix: :see_no_evil: allow user to run proxy on priviledged ports
 * fix: :boom: change default traefik port and make it configurable
-* feat: :rocket: release 3.0.0
 * feat: :card_file_box: configmap superseeds inline for staticConfig
+* chore(release): :rocket: publish v3.0.0
 
 ### Default value changes
 
