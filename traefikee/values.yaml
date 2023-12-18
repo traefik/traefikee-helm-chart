@@ -17,6 +17,12 @@ initImage:
   repository: busybox
   tag: "1.36.1"
 
+# -- Create a default IngressClass for Traefik
+ingressClass:
+  enabled: false
+  isDefaultClass: false
+  # name: my-custom-class
+
 # log:
 #  level: DEBUG
 #  format:
@@ -120,8 +126,10 @@ controller:
       providers:
         kubernetesIngress:
           allowEmptyServices: true
+          #ingressClass: foo
         kubernetesCRD:
           allowEmptyServices: true
+          #ingressClass: foo
 
 #  serviceLabels:
 #    foo: bar
