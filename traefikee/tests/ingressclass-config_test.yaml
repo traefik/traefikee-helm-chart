@@ -10,6 +10,10 @@ tests:
       - hasDocuments:
           count: 0
   - it: should provide a default IngressClass by default and prefer v1 api
+    set:
+      ingressClass:
+        enabled: true
+        isDefaultClass: true
     asserts:
       - isKind:
           of: IngressClass
@@ -21,6 +25,7 @@ tests:
   - it: should be possible to provide a non-default IngressClass
     set:
       ingressClass:
+        enabled: true
         isDefaultClass: false
     asserts:
       - isKind:
@@ -34,6 +39,10 @@ tests:
     capabilities:
       majorVersion: 1
       minorVersion: 18
+    set:
+      ingressClass:
+        enabled: true
+        isDefaultClass: true
     asserts:
       - isKind:
           of: IngressClass
@@ -44,12 +53,16 @@ tests:
       majorVersion: 1
       minorVersion: 21
       patchVersion: 14-eks-6d3986b
+    set:
+      ingressClass:
+        enabled: true
+        isDefaultClass: true
     asserts:
       - isKind:
           of: IngressClass
       - isAPIVersion:
           of: networking.k8s.io/v1
-  - it: should fail when asking to deploy IngressClass on Traefik < 2.3
+  - it: should fail when asking to deploy IngressClass on Traefik Enterprise < 2.3
     set:
       ingressClass:
         enabled: true
@@ -57,8 +70,11 @@ tests:
       appVersion: v2.1.0
     asserts:
       - failedTemplate:
-          errorMessage: "ERROR: IngressClass cannot be used with Traefik < 2.3.0"
+          errorMessage: "ERROR: IngressClass cannot be used with Traefik Enterprise < 2.3.0"
   - it: should fail when asking to deploy IngressClass on Kubernetes < v1.16
+    set:
+      ingressClass:
+        enabled: true
     capabilities:
       majorVersion: 1
       minorVersion: 15
@@ -71,6 +87,8 @@ tests:
       minorVersion: 19
     set:
       ingressClass:
+        enabled: true
+        isDefaultClass: true
         name: nondefaultname
     asserts:
       - isKind:
