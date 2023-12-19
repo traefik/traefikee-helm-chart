@@ -103,3 +103,10 @@ Generates or load registry token.
   {{- end }}
 {{- printf "%s" $tokenStr | nospace | b64enc }}
 {{- end }}
+
+{{/*
+Set imageVersion from Chart
+*/}}
+{{- define "imageVersion" -}}
+{{ (split "@" (default $.Chart.AppVersion $.Values.image.tag))._0 }}
+{{- end -}}
