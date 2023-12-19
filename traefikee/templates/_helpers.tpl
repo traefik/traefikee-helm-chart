@@ -110,3 +110,10 @@ Set imageVersion from Chart
 {{- define "imageVersion" -}}
 {{ (split "@" (default $.Chart.AppVersion $.Values.image.tag))._0 }}
 {{- end -}}
+
+{{/*
+Allow customization of the ingressClass name.
+*/}}
+{{- define "traefikee.ic-name" -}}
+{{- .Values.ingressClass.name | default (include "traefikee-helm-chart.fullname" .) -}}
+{{- end -}}

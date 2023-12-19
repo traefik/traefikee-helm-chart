@@ -21,7 +21,7 @@ initImage:
 ingressClass:
   enabled: false
   isDefaultClass: false
-  # name: my-custom-class
+  name: 
 
 # log:
 #  level: DEBUG
@@ -126,10 +126,10 @@ controller:
       providers:
         kubernetesIngress:
           allowEmptyServices: true
-          #ingressClass: foo
+          ingressClass:
         kubernetesCRD:
           allowEmptyServices: true
-          #ingressClass: foo
+          ingressClass:
 
 #  serviceLabels:
 #    foo: bar
