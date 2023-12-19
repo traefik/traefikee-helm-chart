@@ -21,7 +21,7 @@ initImage:
 ingressClass:
   enabled: false
   isDefaultClass: false
-  name: 
+  name:
 
 # log:
 #  level: DEBUG
