@@ -126,6 +126,7 @@ controller:
       providers:
         kubernetesIngress:
           allowEmptyServices: true
+          # let it as is or specify you custom ingressClass name if any
           ingressClass:
         kubernetesCRD:
           allowEmptyServices: true
