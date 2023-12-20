@@ -17,7 +17,7 @@ initImage:
   repository: busybox
   tag: "1.36.1"
 
-# -- Create a default IngressClass for Traefik
+# -- To create a default IngressClass for TraefikEE, set `enabled: true` below:
 ingressClass:
   enabled: false
   isDefaultClass: false
