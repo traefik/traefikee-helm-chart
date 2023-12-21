@@ -1,8 +1,50 @@
 # Change Log
 
+## 3.0.2  ![AppVersion: v2.10.7](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.7&color=success&logo=) ![Kubernetes: >= 1.14.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.14.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2023-12-21
+
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.7
+* change chart version following ingressClass add
+* add Ingressclass
+
+### Default value changes
+
+```diff
+diff --git a/traefikee/values.yaml b/traefikee/values.yaml
+index 07b4125..8608fac 100644
+--- a/traefikee/values.yaml
++++ b/traefikee/values.yaml
+@@ -17,6 +17,13 @@ initImage:
+   repository: busybox
+   tag: "1.36.1"
+ 
++# -- To create a default IngressClass for TraefikEE, set `enabled: true` below:
++# It should also be set on k8s providers in static configuration
++ingressClass:
++  enabled: false
++  isDefaultClass: false
++  name:
++
+ # log:
+ #  level: DEBUG
+ #  format:
+@@ -120,8 +127,10 @@ controller:
+       providers:
+         kubernetesIngress:
+           allowEmptyServices: true
++          ingressClass:
+         kubernetesCRD:
+           allowEmptyServices: true
++          ingressClass:
+ 
+ #  serviceLabels:
+ #    foo: bar
+```
+
 ## 3.0.1  ![AppVersion: v2.10.6](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.6&color=success&logo=) ![Kubernetes: >= 1.14.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.14.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
-**Release date:** 2023-12-04
+**Release date:** 2023-12-06
 
 * chore: release v3.0.1 with Traefik Enterprise v2.10.6
 * chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.6

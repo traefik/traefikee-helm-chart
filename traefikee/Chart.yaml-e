@@ -25,6 +25,4 @@ keywords:
   - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
-    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.7"
-    - "change chart version following ingressClass add"
-    - "add Ingressclass"
+    - "chore: release v3.0.1 with Traefik Enterprise v2.10.6"
