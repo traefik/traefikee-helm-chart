@@ -103,3 +103,26 @@ Generates or load registry token.
   {{- end }}
 {{- printf "%s" $tokenStr | nospace | b64enc }}
 {{- end }}
+
+{{/*
+Get version from image tag with regex
+*/}}
+{{- define "traefikee-helm-chart.imageTagVersion" -}}
+{{- if not (empty (.Values.image).tag) -}}
+  {{- regexFind "v[0-9].[0-9].[0-9]" .Values.image.tag -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set imageVersion from Chart
+*/}}
+{{- define "traefikee-helm-chart.imageVersion" -}}
+{{- (split "@" (default $.Chart.AppVersion (include "traefikee-helm-chart.imageTagVersion" .)))._0 -}}
+{{- end -}}
+
+{{/*
+Allow customization of the ingressClass name.
+*/}}
+{{- define "traefikee-helm-chart.ic-name" -}}
+{{- .Values.ingressClass.name | default (include "traefikee-helm-chart.fullname" .) -}}
+{{- end -}}

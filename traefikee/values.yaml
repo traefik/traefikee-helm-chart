@@ -17,6 +17,13 @@ initImage:
   repository: busybox
   tag: "1.36.1"
 
+# -- To create a default IngressClass for TraefikEE, set `enabled: true` below:
+# It should also be set on k8s providers in static configuration
+ingressClass:
+  enabled: false
+  isDefaultClass: false
+  name:
+
 # log:
 #  level: DEBUG
 #  format:
@@ -120,8 +127,10 @@ controller:
       providers:
         kubernetesIngress:
           allowEmptyServices: true
+          ingressClass:
         kubernetesCRD:
           allowEmptyServices: true
+          ingressClass:
 
 #  serviceLabels:
 #    foo: bar
