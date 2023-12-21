@@ -71,6 +71,15 @@ tests:
     asserts:
       - failedTemplate:
           errorMessage: "ERROR: IngressClass cannot be used with Traefik Enterprise < 2.3.0"
+  - it: should fail when asking to deploy IngressClass on Traefik Enterprise < 2.3 from tag values
+    set:
+      ingressClass:
+        enabled: true
+      image:
+        tag: v2.1.0@sha:test-toto
+    asserts:
+      - failedTemplate:
+          errorMessage: "ERROR: IngressClass cannot be used with Traefik Enterprise < 2.3.0"
   - it: should fail when asking to deploy IngressClass on Kubernetes < v1.16
     set:
       ingressClass:
