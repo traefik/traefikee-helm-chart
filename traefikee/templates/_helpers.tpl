@@ -105,15 +105,29 @@ Generates or load registry token.
 {{- end }}
 
 {{/*
+Get version from image tag
+*/}}
+{{- define "traefikee-helm-chart.imageTagVersion" -}}
+{{- if not (empty (.Values.image).tag) -}}
+  {{- if contains "-" .Values.image.tag -}}
+    {{- (split "-" (.Values.image).tag)._0 -}}
+  {{- end -}}
+{{- else -}}
+{{- .Values.image.tag -}}
+{{- end -}}
+{{- end -}}
+
+
+{{/*
 Set imageVersion from Chart
 */}}
-{{- define "imageVersion" -}}
-{{ (split "@" (default $.Chart.AppVersion $.Values.image.tag))._0 }}
+{{- define "traefikee-helm-chart.imageVersion" -}}
+{{- (split "@" (default $.Chart.AppVersion (include "traefikee-helm-chart.imageTagVersion" .)))._0 -}}
 {{- end -}}
 
 {{/*
 Allow customization of the ingressClass name.
 */}}
-{{- define "traefikee.ic-name" -}}
+{{- define "traefikee-helm-chart.ic-name" -}}
 {{- .Values.ingressClass.name | default (include "traefikee-helm-chart.fullname" .) -}}
 {{- end -}}
