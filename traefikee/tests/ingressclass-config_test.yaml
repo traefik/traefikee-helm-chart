@@ -76,7 +76,7 @@ tests:
       ingressClass:
         enabled: true
       image:
-        tag: v2.1.0@sha:test-toto
+        tag: v2.1.0@sha:test-test
     asserts:
       - failedTemplate:
           errorMessage: "ERROR: IngressClass cannot be used with Traefik Enterprise < 2.3.0"
