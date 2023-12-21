@@ -105,18 +105,13 @@ Generates or load registry token.
 {{- end }}
 
 {{/*
-Get version from image tag
+Get version from image tag with regex
 */}}
 {{- define "traefikee-helm-chart.imageTagVersion" -}}
 {{- if not (empty (.Values.image).tag) -}}
-  {{- if contains "-" .Values.image.tag -}}
-    {{- (split "-" (.Values.image).tag)._0 -}}
-  {{- end -}}
-{{- else -}}
-{{- .Values.image.tag -}}
+  {{- regexFind "v[0-9].[0-9].[0-9]" .Values.image.tag -}}
 {{- end -}}
 {{- end -}}
-
 
 {{/*
 Set imageVersion from Chart
