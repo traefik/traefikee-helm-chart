@@ -62,6 +62,7 @@ tests:
       image.tag: "myspecialversion"
       image.pullPolicy: Never
       proxy:
+        suffix: external-proxy
         replicas: 2
         affinity: null
         readinessProbe: null
@@ -73,7 +74,7 @@ tests:
           of: apps/v1
       - equal:
           path: metadata.name
-          value: mysupertraefikee-proxy
+          value: mysupertraefikee-external-proxy
       - equal:
           path: spec.template.spec.containers[0].image
           value: "my.registry/my/repository:myspecialversion"

@@ -53,18 +53,12 @@ registry:
                   values:
                     - registry
             topologyKey: "kubernetes.io/hostname"
-#   serviceLabels:
-#     foo: bar
-#   serviceAnnotations:
-#     foo: bar
-#   statefulSetLabels:
-#     foo: bar
-#   statefulSetAnnotations:
-#     foo: bar
-#   podLabels:
-#     foo: bar
-#   podAnnotations:
-#     foo: bar
+  serviceLabels: {}
+  serviceAnnotations: {}
+  statefulSetLabels: {}
+  statefulSetAnnotations: {}
+  podLabels: {}
+  podAnnotations: {}
 ## Needed if you setup the registry token manually before deploying TraefikEE
 #  manualTokenSecret: true
 #  tokenSecretRef:
@@ -132,31 +126,18 @@ controller:
           allowEmptyServices: true
           ingressClass:
 
-#  serviceLabels:
-#    foo: bar
-#  serviceAnnotations:
-#    foo: bar
-#  statefulSetLabels:
-#    foo: bar
-#  statefulSetAnnotations:
-#    foo: bar
-#  podLabels:
-#    foo: bar
-#  podAnnotations:
-#    foo: bar
-#  additionalArguments:
+  serviceLabels: {}
+  serviceAnnotations: {}
+  statefulSetLabels: {}
+  statefulSetAnnotations: {}
+  podLabels: {}
+  podAnnotations: {}
+  additionalArguments:
 #    - --foo=bar
-#  env:
-#    - name: FOO
-#      value: 1
-#    - name: BAR
-#      valueFrom:
-#        secretKeyRef:
-#          name: foo
-#          key: BAR
+  env:
 # # This example topologySpreadConstraints forces the scheduler to put traefikee controller pods
 # # on nodes where no other traefikee controller pods are scheduled.
-#  topologySpreadConstraints:
+  topologySpreadConstraints:
 #    - labelSelector:
 #        matchLabels:
 #          app: traefikee
@@ -168,6 +149,8 @@ controller:
   tolerations: []
 
 proxy:
+  ## Proxy name is built with cluster name + this suffix.
+  suffix: proxy
   # Can be set to null when using HPA, in order to avoid conflict between HPA
   # and this Chart on replicas.
   replicas: 2

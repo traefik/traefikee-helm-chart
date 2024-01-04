@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.cluster  }}-proxy
+  name: {{ .Values.cluster  }}-{{ .Values.proxy.suffix }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "common.labels" . | nindent 4 }}
