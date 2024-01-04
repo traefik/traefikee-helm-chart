@@ -1,25 +1,28 @@
 suite: internal proxy test
 templates:
-  - proxy/deployment-internal.yaml
+  - proxy/deployment.yaml
 tests:
   - it: should not deploy the additional proxy with default values
     chart:
       appVersion: v2.10.5
     asserts:
       - hasDocuments:
-          count: 0
+          count: 1
   - it: should deploy the additional proxy with example values
     chart:
       appVersion: v2.10.5
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     asserts:
+      - hasDocuments:
+          count: 2
       - isKind:
           of: Deployment
       - isAPIVersion:
           of: apps/v1
       - equal:
           path: metadata.name
-          value: default-proxy-internal
+          value: default-proxyInternal
       - equal:
           path: spec.template.spec.containers[0].image
           value: "docker.io/traefik/traefikee:v2.10.5"
@@ -63,6 +66,7 @@ tests:
             periodSeconds: 5
   - it: should override defaults
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       cluster: "mysupertraefikee"
       image.registry: "my.registry"
@@ -81,7 +85,7 @@ tests:
           of: apps/v1
       - equal:
           path: metadata.name
-          value: mysupertraefikee-proxy-internal
+          value: mysupertraefikee-proxyInternal
       - equal:
           path: spec.template.spec.containers[0].image
           value: "my.registry/my/repository:myspecialversion"
@@ -92,7 +96,7 @@ tests:
           path: spec.template.spec.containers[0].imagePullPolicy
           value: Never
       - hasDocuments:
-          count: 1
+          count: 2
       - isNull:
           path: spec.template.spec.affinity
       - notExists:
@@ -102,6 +106,7 @@ tests:
 
   - it: should provide secure deployment by default
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     asserts:
       - equal:
           path: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation
@@ -120,6 +125,7 @@ tests:
           value: "ALL"
   - it: default ports are set
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     asserts:
       - isKind:
           of: Deployment
@@ -127,7 +133,7 @@ tests:
           of: apps/v1
       - equal:
           path: metadata.name
-          value: default-proxy-internal
+          value: default-proxyInternal
       - equal:
           path: spec.template.spec.containers[0].ports
           value:
@@ -141,6 +147,7 @@ tests:
               name: https
   - it: should set imagePullSecrets correctly
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       imagePullSecrets:
         - name: regcred
@@ -175,6 +182,7 @@ tests:
               memory: "1Gi"
   - it: should be possible to remove resources
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       proxyInternal:
         resources: null
@@ -183,6 +191,7 @@ tests:
           path: spec.template.spec.containers[0].resources
   - it: should set custom resources requests & limits
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       proxyInternal:
         resources:
@@ -204,11 +213,13 @@ tests:
               memory: "150Mi"
   - it: should not set topologySpreadConstraints by default
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     asserts:
       - isNull:
           path: spec.template.spec.topologySpreadConstraints
   - it: should set topologySpreadConstraints
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       proxyInternal:
         topologySpreadConstraints:
@@ -233,11 +244,13 @@ tests:
                 whenUnsatisfiable: DoNotSchedule
   - it: should not set tolerations by default
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     asserts:
       - isNull:
           path: spec.template.spec.tolerations
   - it: should be possible to set tolerations
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       proxyInternal:
         tolerations:
@@ -262,6 +275,7 @@ tests:
             operator: "Destructor"
   - it: should not have replicas when set to
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       proxyInternal:
         replicas: 0
@@ -270,6 +284,7 @@ tests:
           path: spec.replicas
   - it: should not have replicas when set to null
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       proxyInternal:
         replicas: null
@@ -278,11 +293,13 @@ tests:
           path: spec.replicas
   - it: should not set strategy by default
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     asserts:
       - isNull:
           path: spec.strategy
   - it: should be possible to define update strategy
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       proxyInternal:
         strategy:
@@ -311,6 +328,7 @@ tests:
           errorMessage: "ERROR: Cannot set a privileged port on a non-root container"
   - it: should be possible to run proxies as root (to specify elevated ports)
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       proxyInternal:
         ports:
@@ -326,6 +344,7 @@ tests:
             name: http
   - it: should give the rights on data to the right user (default)
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     asserts:
       - equal:
           path: spec.template.spec.initContainers[1].command
@@ -333,6 +352,7 @@ tests:
             ['chown', '-R', '65532:', '/var/lib/traefikee']
   - it: should give the rights on data to the right user
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       proxyInternal:
         securityContext:
@@ -344,6 +364,7 @@ tests:
             [ 'chown', '-R', '0:', '/var/lib/traefikee' ]
   - it: should be possible to change ports of deployments
     values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
     set:
       proxyInternal:
         ports:
