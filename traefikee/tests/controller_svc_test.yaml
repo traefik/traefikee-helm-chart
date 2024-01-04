@@ -1,0 +1,25 @@
+suite: controller service test
+templates:
+  - controller/service.yaml
+tests:
+  - it: should have label selector
+    set:
+      cluster: mysupertraefikee
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: metadata.name
+          value: mysupertraefikee-ctrl-svc
+      - equal:
+          path: spec.selector.app
+          value: traefikee
+      - equal:
+          path: spec.selector.component
+          value: controllers
+      - equal:
+          path: spec.selector.release
+          value: mysupertraefikee
+      

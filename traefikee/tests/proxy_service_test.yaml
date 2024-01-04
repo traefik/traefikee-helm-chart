@@ -66,3 +66,23 @@ tests:
       - equal:
           path: spec.loadBalancerIP
           value: "1.2.3.4"
+  - it: should have label selector
+    set:
+      cluster: mysupertraefikee
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: metadata.name
+          value: mysupertraefikee-proxy-svc
+      - equal:
+          path: spec.selector.app
+          value: traefikee
+      - equal:
+          path: spec.selector.component
+          value: proxies
+      - equal:
+          path: spec.selector.release
+          value: mysupertraefikee
