@@ -306,6 +306,150 @@ proxy:
 #      maxUnavailable: 0
 #      maxSurge: 1
 
+
+## Optional additional proxy deployment.
+## See https://github.com/traefik/traefikee-helm-chart/issues/118 for more details.
+## /!\ Ports needs to be the same on both proxy Deployment and static configuration /!\
+proxy-internal:
+  enabled: false
+  ## Can be set to null when using HPA, in order to avoid conflict between HPA
+  ## and this Chart on replicas.
+  replicas: 2
+  resources:
+    requests:
+      cpu: "400m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+  ports:
+    - name: traefik
+      port: 9000
+    - name: http
+      port: 7080
+    - name: https
+      port: 7443
+  serviceType: LoadBalancer
+  servicePorts:
+    - name: http
+      port: 80
+      targetPort: http
+    - name: https
+      port: 443
+      targetPort: https
+# # Specify Static IP of cloud provider LB
+#  loadBalancerIP: "1.2.3.4"
+
+  # To disable affinity at all set this value to null
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/os
+              operator: In
+              values:
+                - linux
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                    - proxies
+            topologyKey: "kubernetes.io/hostname"
+
+  autoscaling:
+    # -- Create HorizontalPodAutoscaler object.
+    enabled: false
+    # minReplicas: 1
+    # maxReplicas: 10
+    # metrics:
+    # - type: Resource
+    #   resource:
+    #     name: cpu
+    #     target:
+    #       type: Utilization
+    #       averageUtilization: 60
+    # - type: Resource
+    #   resource:
+    #     name: memory
+    #     target:
+    #       type: Utilization
+    #       averageUtilization: 60
+    # behavior:
+    #   scaleDown:
+    #     stabilizationWindowSeconds: 300
+    #     policies:
+    #     - type: Pods
+    #       value: 1
+    #       periodSeconds: 60
+
+## Those probes need for ping to be enabled in static config
+  readinessProbe:
+    httpGet:
+      path: /ping
+      port: traefik
+    initialDelaySeconds: 2
+    periodSeconds: 5
+  livenessProbe:
+    httpGet:
+      path: /ping
+      port: traefik
+    initialDelaySeconds: 2
+    periodSeconds: 5
+  securityContext:
+    runAsUser: 65532
+
+#  serviceLabels:
+#    foo: bar
+#  serviceAnnotations:
+#    foo: bar
+#  deploymentLabels:
+#    foo: bar
+#  deploymentAnnotations:
+#    foo: bar
+#  podLabels:
+#    foo: bar
+#  podAnnotations:
+#    foo: bar
+#  additionalArguments:
+#    - --foo=bar
+#  env:
+#    - name: FOO
+#      value: 1
+#    - name: BAR
+#      valueFrom:
+#        secretKeyRef:
+#          name: foo
+#          key: BAR
+#  # minAvailable or maxUnavailable (default value is maxUnavailable: 1)
+#  podDisruptionBudget:
+#    minAvailable: 1
+#    maxUnavailable: 1
+# terminationGracePeriodSeconds: 30
+# # This example topologySpreadConstraints forces the scheduler to put traefikee proxy pods
+# # on nodes where no other traefikee pods are scheduled.
+#  topologySpreadConstraints:
+#    - labelSelector:
+#        matchLabels:
+#          app: traefikee
+#          component: proxies
+#      maxSkew: 1
+#      topologyKey: kubernetes.io/hostname
+#      whenUnsatisfiable: DoNotSchedule
+## Tolerations allow the scheduler to schedule pods with matching taints.
+  tolerations: []
+#  strategy:
+#    # -- Customize updateStrategy: RollingUpdate or OnDelete
+#    type: RollingUpdate
+#    rollingUpdate:
+#      maxUnavailable: 0
+#      maxSurge: 1
+
 # priorityClassName will be set on all pods.
 priorityClassName: ""
 
