@@ -17,5 +17,6 @@ spec:
   selector:
     app: traefikee
     component: controllers
+    release: {{ .Values.cluster }}
   clusterIP: None
   publishNotReadyAddresses: true

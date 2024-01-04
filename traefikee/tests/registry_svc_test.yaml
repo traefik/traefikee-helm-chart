@@ -1,0 +1,24 @@
+suite: registry service test
+templates:
+  - registry/service.yaml
+tests:
+  - it: should have label selector
+    set:
+      cluster: mysupertraefikee
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: metadata.name
+          value: mysupertraefikee-plugin-registry-svc
+      - equal:
+          path: spec.selector.app
+          value: traefikee
+      - equal:
+          path: spec.selector.component
+          value: registry
+      - equal:
+          path: spec.selector.release
+          value: mysupertraefikee
