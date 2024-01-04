@@ -1,0 +1,28 @@
+
+{{ if .Values.proxyInternal }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.cluster }}-proxyInternal-svc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "common.labels" . | nindent 4 }}
+    {{- with (.Values.proxyInternal).serviceLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with (.Values.proxyInternal).serviceAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.proxyInternal.serviceType | default "LoadBalancer" }}
+  ports: {{ toYaml .Values.proxyInternal.servicePorts | nindent 4 }}
+  {{- if .Values.proxyInternal.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.proxyInternal.loadBalancerIP }}
+  {{- end }}
+  selector:
+    app: traefikee
+    release: {{ .Values.cluster }}
+    component: proxies-internal
+{{ end }}

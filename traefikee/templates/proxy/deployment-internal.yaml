@@ -1,0 +1,191 @@
+{{- if .Values.proxyInternal }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.cluster  }}-proxy-internal
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+    {{- with .Values.proxyInternal.deploymentLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.proxyInternal.deploymentAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- with .Values.proxyInternal.replicas }}
+  replicas: {{ . }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: traefikee
+      release: {{ .Values.cluster }}
+      component: proxies-internal
+  {{- with .Values.proxyInternal.strategy}}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        component: proxies-internal
+        {{- include "common.labels" . | nindent 8 }}
+        {{- with .Values.proxyInternal.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        {{- with .Values.proxyInternal.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.proxyInternal.topologySpreadConstraints }}
+      {{- if (semverCompare "<1.19.0-0" .Capabilities.KubeVersion.Version) }}
+        {{- fail "ERROR: topologySpreadConstraints are supported only on kubernetes >= v1.19" -}}
+      {{- end }}
+      topologySpreadConstraints:
+        {{- tpl (toYaml .Values.proxyInternal.topologySpreadConstraints) . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.proxyInternal.affinity }}
+      affinity:
+        {{- tpl (toYaml .Values.proxyInternal.affinity) . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.proxyInternal.tolerations }}
+      tolerations:
+        {{- tpl (toYaml .Values.proxyInternal.tolerations) . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.proxyInternal.terminationGracePeriodSeconds | default 30 }}
+      automountServiceAccountToken: false
+      initContainers:
+        - name: wait-dns
+          image: {{ template "traefikee-helm-chart.initContainer-image-name" . }}
+          command: ['sh', '-c', 'until nslookup -type=a {{ printf "%s-ctrl-svc.%s" .Values.cluster .Release.Namespace }}.svc.cluster.local; do echo waiting for published dns records; sleep 1; done;']
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 20m
+              memory: 32Mi
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsUser: 65532
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - NET_RAW
+        - name: chown
+          image: {{ template "traefikee-helm-chart.initContainer-image-name" . }}
+          command: ['chown', '-R', '{{.Values.proxyInternal.securityContext.runAsUser}}:', '/var/lib/traefikee']
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 20m
+              memory: 32Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: false
+            runAsUser: 0
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - NET_RAW
+          volumeMounts:
+            - name: {{ .Values.cluster }}-proxy-data
+              mountPath: "/var/lib/traefikee"
+      containers:
+        - name: {{ .Values.cluster }}-proxy
+          image: {{ template "traefikee-helm-chart.image-name" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          {{- with .Values.proxyInternal.env }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: {{ if eq (int .Values.proxyInternal.securityContext.runAsUser) 0 -}}false{{- else -}}true{{- end }}
+            runAsUser: {{ .Values.proxyInternal.securityContext.runAsUser }}
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
+          ports:
+            - containerPort: 8484
+              name: distributed
+          {{- range $port := .Values.proxyInternal.ports }}
+            {{- $containerPort := ($port.targetPort | default $port.port) }}
+            {{- if and (lt (int $containerPort) 1024) (ne (int $.Values.proxyInternal.securityContext.runAsUser) 0) }}
+              {{ fail "ERROR: Cannot set a privileged port on a non-root container" }}
+            {{- end }}
+            - containerPort: {{ $containerPort }}
+              name: {{ $port.name }}
+          {{- end }}
+          {{- with .Values.proxyInternal.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.proxyInternal.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.proxyInternal.resources }}
+          resources:
+            requests:
+              memory: {{ .requests.memory }}
+              cpu: {{ .requests.cpu }}
+            limits:
+              memory: {{ .limits.memory }}
+              cpu: {{ .limits.cpu }}
+          {{- end }}
+          volumeMounts:
+            - name: {{ .Values.cluster }}-proxy-data
+              mountPath: "/var/lib/traefikee"
+            - name: "join-token"
+              mountPath: "/var/run/secrets"
+          command:
+            - "/traefikee"
+            - "proxy"
+            - "--role=ingress"
+            - "--name=$(POD_NAME)"
+            - {{ printf "--discovery.dns.domain=%s-ctrl-svc.$(POD_NAMESPACE)" .Values.cluster }}
+            - "--jointoken.file.path=/var/run/secrets"
+            - "--log.level={{ (.Values.log).level | default "" }}"
+            - "--log.filepath={{ (.Values.log).filepath | default "" }}"
+            - "--log.format={{ (.Values.log).format | default "" }}"
+            {{- with .Values.proxyInternal.additionalArguments }}
+            {{- range . }}
+            - {{ . | quote }}
+            {{- end }}
+            {{- end }}
+      volumes:
+        - name: {{ .Values.cluster }}-proxy-data
+          emptyDir: {}
+        - name: "join-token"
+          secret:
+            secretName: {{ .Values.cluster }}-tokens
+{{- end }}

@@ -311,7 +311,7 @@ proxy:
 ## Dynamic configuration is shared accross the two deployment.
 ## See https://github.com/traefik/traefikee-helm-chart/issues/118 for more details.
 ## /!\ Ports needs to be the same on both proxy Deployment and static configuration /!\
-proxy-internal:
+proxyInternal:
   ## Can be set to null when using HPA, in order to avoid conflict between HPA
   ## and this Chart on replicas.
   replicas: 2
