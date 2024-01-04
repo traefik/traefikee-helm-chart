@@ -22,4 +22,3 @@ tests:
       - equal:
           path: spec.selector.release
           value: mysupertraefikee
-      
