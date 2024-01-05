@@ -1,467 +1,143 @@
-# Default values for Traefik Enterprise
-cluster: "default"
-
-# imagePullSecrets:
-#   - name: regcred
-
-image:
-  registry: docker.io
-  repository: traefik/traefikee
-  # defaults to appVersion
-  tag: ""
-  pullPolicy: IfNotPresent
-
-# Used to run initContainers
-initImage:
-  registry: docker.io
-  repository: busybox
-  tag: "1.36.1"
-
-# -- To create a default IngressClass for TraefikEE, set `enabled: true` below:
-# It should also be set on k8s providers in static configuration
-ingressClass:
-  enabled: false
-  isDefaultClass: false
-  name:
-
-# log:
-#  level: DEBUG
-#  format:
-#  file:
-
-registry:
-  # When disabled, plugins cannot be used
-  enabled: true
-  # To disable affinity at all set this value to null
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-            - key: kubernetes.io/os
-              operator: In
-              values:
-                - linux
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-                - key: component
-                  operator: In
-                  values:
-                    - registry
-            topologyKey: "kubernetes.io/hostname"
-#   serviceLabels:
-#     foo: bar
-#   serviceAnnotations:
-#     foo: bar
-#   statefulSetLabels:
-#     foo: bar
-#   statefulSetAnnotations:
-#     foo: bar
-#   podLabels:
-#     foo: bar
-#   podAnnotations:
-#     foo: bar
-## Needed if you setup the registry token manually before deploying TraefikEE
-#  manualTokenSecret: true
-#  tokenSecretRef:
-#    name: secret
-#    namespace: othernamespace
-## Set the registry token directly in Values
-#  tokenSecret: "NJ00yx60K+Wm1yufuBM6fLq3fVKcv44RvBsVGiH40+U="
-## Tolerations allow the scheduler to schedule pods with matching taints.
-  tolerations: []
-
-
-controller:
-  replicas: 1
-  resources:
-    requests:
-      cpu: "100m"
-      memory: "128Mi"
-    limits:
-      cpu: "1000m"
-      memory: "4Gi"
-
-  # To disable affinity at all set this value to null
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-            - key: kubernetes.io/os
-              operator: In
-              values:
-                - linux
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-                - key: component
-                  operator: In
-                  values:
-                    - controllers
-            topologyKey: "kubernetes.io/hostname"
-  # Static Configuration can be set within values OR
-  # from an external ConfigMap. Not both.
-  staticConfig:
-#    configMap:
-#      name: traefik-config
-#      key: "static.yml"
-    content: |
-      entrypoints:
-        traefik:
-          address: ":9000"
-        web:
-          address: ":7080"
-        websecure:
-          http:
-            tls: {}
-          address: ":7443"
-      ping: {}
-      providers:
-        kubernetesIngress:
-          allowEmptyServices: true
-          ingressClass:
-        kubernetesCRD:
-          allowEmptyServices: true
-          ingressClass:
-
-#  serviceLabels:
-#    foo: bar
-#  serviceAnnotations:
-#    foo: bar
-#  statefulSetLabels:
-#    foo: bar
-#  statefulSetAnnotations:
-#    foo: bar
-#  podLabels:
-#    foo: bar
-#  podAnnotations:
-#    foo: bar
-#  additionalArguments:
-#    - --foo=bar
-#  env:
-#    - name: FOO
-#      value: 1
-#    - name: BAR
-#      valueFrom:
-#        secretKeyRef:
-#          name: foo
-#          key: BAR
-# # This example topologySpreadConstraints forces the scheduler to put traefikee controller pods
-# # on nodes where no other traefikee controller pods are scheduled.
-#  topologySpreadConstraints:
-#    - labelSelector:
-#        matchLabels:
-#          app: traefikee
-#          component: controllers
-#      maxSkew: 1
-#      topologyKey: kubernetes.io/hostname
-#      whenUnsatisfiable: DoNotSchedule
-## Tolerations allow the scheduler to schedule pods with matching taints.
-  tolerations: []
-
-proxy:
-  # Can be set to null when using HPA, in order to avoid conflict between HPA
-  # and this Chart on replicas.
-  replicas: 2
-  resources:
-    requests:
-      cpu: "400m"
-      memory: "256Mi"
-    limits:
-      cpu: "1000m"
-      memory: "1Gi"
-  ports:
-    - name: traefik
-      port: 9000
-    - name: http
-      port: 7080
-    - name: https
-      port: 7443
-  serviceType: LoadBalancer
-  servicePorts:
-    - name: http
-      port: 80
-      targetPort: http
-    - name: https
-      port: 443
-      targetPort: https
-# # Specify Static IP of cloud provider LB
-#  loadBalancerIP: "1.2.3.4"
-
-  # To disable affinity at all set this value to null
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-            - key: kubernetes.io/os
-              operator: In
-              values:
-                - linux
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-                - key: component
-                  operator: In
-                  values:
-                    - proxies
-            topologyKey: "kubernetes.io/hostname"
-
-  autoscaling:
-    # -- Create HorizontalPodAutoscaler object.
-    enabled: false
-    # minReplicas: 1
-    # maxReplicas: 10
-    # metrics:
-    # - type: Resource
-    #   resource:
-    #     name: cpu
-    #     target:
-    #       type: Utilization
-    #       averageUtilization: 60
-    # - type: Resource
-    #   resource:
-    #     name: memory
-    #     target:
-    #       type: Utilization
-    #       averageUtilization: 60
-    # behavior:
-    #   scaleDown:
-    #     stabilizationWindowSeconds: 300
-    #     policies:
-    #     - type: Pods
-    #       value: 1
-    #       periodSeconds: 60
-
-## Those probes need for ping to be enabled in static config
-  readinessProbe:
-    httpGet:
-      path: /ping
-      port: traefik
-    initialDelaySeconds: 2
-    periodSeconds: 5
-  livenessProbe:
-    httpGet:
-      path: /ping
-      port: traefik
-    initialDelaySeconds: 2
-    periodSeconds: 5
-  securityContext:
-    runAsUser: 65532
-
-#  serviceLabels:
-#    foo: bar
-#  serviceAnnotations:
-#    foo: bar
-#  deploymentLabels:
-#    foo: bar
-#  deploymentAnnotations:
-#    foo: bar
-#  podLabels:
-#    foo: bar
-#  podAnnotations:
-#    foo: bar
-#  additionalArguments:
-#    - --foo=bar
-#  env:
-#    - name: FOO
-#      value: 1
-#    - name: BAR
-#      valueFrom:
-#        secretKeyRef:
-#          name: foo
-#          key: BAR
-#  # minAvailable or maxUnavailable (default value is maxUnavailable: 1)
-#  podDisruptionBudget:
-#    minAvailable: 1
-#    maxUnavailable: 1
-# terminationGracePeriodSeconds: 30
-# # This example topologySpreadConstraints forces the scheduler to put traefikee proxy pods
-# # on nodes where no other traefikee pods are scheduled.
-#  topologySpreadConstraints:
-#    - labelSelector:
-#        matchLabels:
-#          app: traefikee
-#          component: proxies
-#      maxSkew: 1
-#      topologyKey: kubernetes.io/hostname
-#      whenUnsatisfiable: DoNotSchedule
-## Tolerations allow the scheduler to schedule pods with matching taints.
-  tolerations: []
-#  strategy:
-#    # -- Customize updateStrategy: RollingUpdate or OnDelete
-#    type: RollingUpdate
-#    rollingUpdate:
-#      maxUnavailable: 0
-#      maxSurge: 1
-
-
-## Optional additional proxy deployment.
+## Example of additional proxy deployment.
 ## Dynamic configuration is shared accross the two deployment.
 ## See https://github.com/traefik/traefikee-helm-chart/issues/118 for more details.
-## /!\ Ports needs to be the same on both proxy Deployment and static configuration /!\
-proxyInternal:
-  ## Can be set to null when using HPA, in order to avoid conflict between HPA
-  ## and this Chart on replicas.
-  replicas: 2
-  resources:
-    requests:
-      cpu: "400m"
-      memory: "256Mi"
-    limits:
-      cpu: "1000m"
-      memory: "1Gi"
-  ports:
-    - name: traefik
-      port: 9000
-    - name: http
-      port: 7080
-    - name: https
-      port: 7443
-  serviceType: LoadBalancer
-  servicePorts:
-    - name: http
-      port: 80
-      targetPort: http
-    - name: https
-      port: 443
-      targetPort: https
-# # Specify Static IP of cloud provider LB
-#  loadBalancerIP: "1.2.3.4"
+additionalProxies:
+  proxy-internal:
+    # Can be set to null when using HPA, in order to avoid conflict between HPA
+    # and this Chart on replicas.
+    replicas: 3
+    resources:
+      requests:
+        cpu: "400m"
+        memory: "256Mi"
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
+    ## /!\ Ports needs to be the same on both proxy Deployment and static configuration /!\
+    ports:
+      - name: traefik
+        port: 9000
+      - name: http
+        port: 7080
+      - name: https
+        port: 7443
+    serviceType: LoadBalancer
+    servicePorts:
+      - name: http
+        port: 80
+        targetPort: http
+      - name: https
+        port: 443
+        targetPort: https
+  # # Specify Static IP of cloud provider LB
+  #  loadBalancerIP: "1.2.3.4"
 
-  # To disable affinity at all set this value to null
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-            - key: kubernetes.io/os
-              operator: In
-              values:
-                - linux
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-                - key: component
-                  operator: In
-                  values:
-                    - proxies
-            topologyKey: "kubernetes.io/hostname"
+    # To disable affinity at all set this value to null
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/os
+                operator: In
+                values:
+                  - linux
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: component
+                    operator: In
+                    values:
+                      - proxies
+              topologyKey: "kubernetes.io/hostname"
 
-  autoscaling:
-    # -- Create HorizontalPodAutoscaler object.
-    enabled: false
-    # minReplicas: 1
-    # maxReplicas: 10
-    # metrics:
-    # - type: Resource
-    #   resource:
-    #     name: cpu
-    #     target:
-    #       type: Utilization
-    #       averageUtilization: 60
-    # - type: Resource
-    #   resource:
-    #     name: memory
-    #     target:
-    #       type: Utilization
-    #       averageUtilization: 60
-    # behavior:
-    #   scaleDown:
-    #     stabilizationWindowSeconds: 300
-    #     policies:
-    #     - type: Pods
-    #       value: 1
-    #       periodSeconds: 60
+    autoscaling:
+      # -- Create HorizontalPodAutoscaler object.
+      enabled: false
+      # minReplicas: 1
+      # maxReplicas: 10
+      # metrics:
+      # - type: Resource
+      #   resource:
+      #     name: cpu
+      #     target:
+      #       type: Utilization
+      #       averageUtilization: 60
+      # - type: Resource
+      #   resource:
+      #     name: memory
+      #     target:
+      #       type: Utilization
+      #       averageUtilization: 60
+      # behavior:
+      #   scaleDown:
+      #     stabilizationWindowSeconds: 300
+      #     policies:
+      #     - type: Pods
+      #       value: 1
+      #       periodSeconds: 60
 
-## Those probes need for ping to be enabled in static config
-  readinessProbe:
-    httpGet:
-      path: /ping
-      port: traefik
-    initialDelaySeconds: 2
-    periodSeconds: 5
-  livenessProbe:
-    httpGet:
-      path: /ping
-      port: traefik
-    initialDelaySeconds: 2
-    periodSeconds: 5
-  securityContext:
-    runAsUser: 65532
+  ## Those probes need for ping to be enabled in static config
+    readinessProbe:
+      httpGet:
+        path: /ping
+        port: traefik
+      initialDelaySeconds: 2
+      periodSeconds: 5
+    livenessProbe:
+      httpGet:
+        path: /ping
+        port: traefik
+      initialDelaySeconds: 2
+      periodSeconds: 5
+    securityContext:
+      runAsUser: 65532
 
-#  serviceLabels:
-#    foo: bar
-#  serviceAnnotations:
-#    foo: bar
-#  deploymentLabels:
-#    foo: bar
-#  deploymentAnnotations:
-#    foo: bar
-#  podLabels:
-#    foo: bar
-#  podAnnotations:
-#    foo: bar
-#  additionalArguments:
-#    - --foo=bar
-#  env:
-#    - name: FOO
-#      value: 1
-#    - name: BAR
-#      valueFrom:
-#        secretKeyRef:
-#          name: foo
-#          key: BAR
-#  # minAvailable or maxUnavailable (default value is maxUnavailable: 1)
-#  podDisruptionBudget:
-#    minAvailable: 1
-#    maxUnavailable: 1
-# terminationGracePeriodSeconds: 30
-# # This example topologySpreadConstraints forces the scheduler to put traefikee proxy pods
-# # on nodes where no other traefikee pods are scheduled.
-#  topologySpreadConstraints:
-#    - labelSelector:
-#        matchLabels:
-#          app: traefikee
-#          component: proxies
-#      maxSkew: 1
-#      topologyKey: kubernetes.io/hostname
-#      whenUnsatisfiable: DoNotSchedule
-## Tolerations allow the scheduler to schedule pods with matching taints.
-  tolerations: []
-#  strategy:
-#    # -- Customize updateStrategy: RollingUpdate or OnDelete
-#    type: RollingUpdate
-#    rollingUpdate:
-#      maxUnavailable: 0
-#      maxSurge: 1
-
-# priorityClassName will be set on all pods.
-priorityClassName: ""
-
-mesh:
-  enabled: false
-  kubedns: false
-  clusterDomain: "cluster.local"
-#  daemonSetLabels:
-#    foo: bar
-#  daemonSetAnnotations:
-#    foo: bar
-#  podLabels:
-#    foo: bar
-#  podAnnotations:
-#    foo: bar
+  #  serviceLabels:
+  #    foo: bar
+  #  serviceAnnotations:
+  #    foo: bar
+  #  deploymentLabels:
+  #    foo: bar
+  #  deploymentAnnotations:
+  #    foo: bar
+  #  podLabels:
+  #    foo: bar
+  #  podAnnotations:
+  #    foo: bar
+  #  additionalArguments:
+  #    - --foo=bar
+  #  env:
+  #    - name: FOO
+  #      value: 1
+  #    - name: BAR
+  #      valueFrom:
+  #        secretKeyRef:
+  #          name: foo
+  #          key: BAR
+  #  # minAvailable or maxUnavailable (default value is maxUnavailable: 1)
+  #  podDisruptionBudget:
+  #    minAvailable: 1
+  #    maxUnavailable: 1
+  # terminationGracePeriodSeconds: 30
+  # # This example topologySpreadConstraints forces the scheduler to put traefikee proxy pods
+  # # on nodes where no other traefikee pods are scheduled.
+  #  topologySpreadConstraints:
+  #    - labelSelector:
+  #        matchLabels:
+  #          app: traefikee
+  #          component: proxies
+  #      maxSkew: 1
+  #      topologyKey: kubernetes.io/hostname
+  #      whenUnsatisfiable: DoNotSchedule
+  ## Tolerations allow the scheduler to schedule pods with matching taints.
+    tolerations: []
+  #  strategy:
+  #    # -- Customize updateStrategy: RollingUpdate or OnDelete
+  #    type: RollingUpdate
+  #    rollingUpdate:
+  #      maxUnavailable: 0
+  #      maxSurge: 1

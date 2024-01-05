@@ -1,4 +1,4 @@
-suite: internal proxy test
+suite: additional proxy test
 templates:
   - proxy/deployment.yaml
 tests:
@@ -22,7 +22,7 @@ tests:
           of: apps/v1
       - equal:
           path: metadata.name
-          value: default-proxyInternal
+          value: default-proxy-internal
       - equal:
           path: spec.template.spec.containers[0].image
           value: "docker.io/traefik/traefikee:v2.10.5"
@@ -73,11 +73,12 @@ tests:
       image.repository: "my/repository"
       image.tag: "myspecialversion"
       image.pullPolicy: Never
-      proxyInternal:
-        replicas: 2
-        affinity: null
-        readinessProbe: null
-        livenessProbe: null
+      additionalProxies:
+        proxy-internal:
+          replicas: 2
+          affinity: null
+          readinessProbe: null
+          livenessProbe: null
     asserts:
       - isKind:
           of: Deployment
@@ -85,7 +86,7 @@ tests:
           of: apps/v1
       - equal:
           path: metadata.name
-          value: mysupertraefikee-proxyInternal
+          value: mysupertraefikee-proxy-internal
       - equal:
           path: spec.template.spec.containers[0].image
           value: "my.registry/my/repository:myspecialversion"
@@ -133,7 +134,7 @@ tests:
           of: apps/v1
       - equal:
           path: metadata.name
-          value: default-proxyInternal
+          value: default-proxy-internal
       - equal:
           path: spec.template.spec.containers[0].ports
           value:
@@ -184,8 +185,9 @@ tests:
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
     set:
-      proxyInternal:
-        resources: null
+      additionalProxies:
+        proxy-internal:
+          resources: null
     asserts:
       - isNull:
           path: spec.template.spec.containers[0].resources
@@ -193,14 +195,15 @@ tests:
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
     set:
-      proxyInternal:
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "50Mi"
-          limits:
-            cpu: "300m"
-            memory: "150Mi"
+      additionalProxies:
+        proxy-internal:
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "50Mi"
+            limits:
+              cpu: "300m"
+              memory: "150Mi"
     asserts:
       - isSubset:
           path: spec.template.spec.containers[0].resources
@@ -221,15 +224,16 @@ tests:
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
     set:
-      proxyInternal:
-        topologySpreadConstraints:
-          - labelSelector:
-              matchLabels:
-                app: traefikee
-                component: proxies
-            maxSkew: 1
-            topologyKey: kubernetes.io/hostname
-            whenUnsatisfiable: DoNotSchedule
+      additionalProxies:
+        proxy-internal:
+          topologySpreadConstraints:
+            - labelSelector:
+                matchLabels:
+                  app: traefikee
+                  component: proxies
+              maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
     asserts:
       - isSubset:
           path: spec.template.spec
@@ -252,14 +256,15 @@ tests:
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
     set:
-      proxyInternal:
-        tolerations:
-          - key: "testkey"
-            operator: "Equal"
-            value: "testvalue"
-            effect: "NoSchedule"
-          - key: "RSA"
-            operator: "Destructor"
+      additionalProxies:
+        proxy-internal:
+          tolerations:
+            - key: "testkey"
+              operator: "Equal"
+              value: "testvalue"
+              effect: "NoSchedule"
+            - key: "RSA"
+              operator: "Destructor"
     asserts:
       - contains:
           path: spec.template.spec.tolerations
@@ -277,8 +282,9 @@ tests:
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
     set:
-      proxyInternal:
-        replicas: 0
+      additionalProxies:
+        proxy-internal:
+          replicas: 0
     asserts:
       - notExists:
           path: spec.replicas
@@ -286,8 +292,9 @@ tests:
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
     set:
-      proxyInternal:
-        replicas: null
+      additionalProxies:
+        proxy-internal:
+          replicas: null
     asserts:
       - notExists:
           path: spec.replicas
@@ -301,12 +308,13 @@ tests:
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
     set:
-      proxyInternal:
-        strategy:
-          type: RollingUpdate
-          rollingUpdate:
-            maxUnavailable: 0
-            maxSurge: 1
+      additionalProxies:
+        proxy-internal:
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxUnavailable: 0
+              maxSurge: 1
     asserts:
       - isSubset:
           path: spec
@@ -319,10 +327,11 @@ tests:
   - it: should fail when using ports < 1024 for non-root users
     values: [ ../values-dual-proxies.yaml ]
     set:
-      proxyInternal:
-        ports:
-          - name: http
-            port: 80
+      additionalProxies:
+        proxy-internal:
+          ports:
+            - name: http
+              port: 80
     asserts:
       - failedTemplate:
           errorMessage: "ERROR: Cannot set a privileged port on a non-root container"
@@ -330,12 +339,13 @@ tests:
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
     set:
-      proxyInternal:
-        ports:
-          - name: http
-            port: 80
-        securityContext:
-          runAsUser: 0
+      additionalProxies:
+        proxy-internal:
+          ports:
+            - name: http
+              port: 80
+          securityContext:
+            runAsUser: 0
     asserts:
       - contains:
           path: spec.template.spec.containers[0].ports
@@ -354,9 +364,10 @@ tests:
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
     set:
-      proxyInternal:
-        securityContext:
-          runAsUser: 0
+      additionalProxies:
+        proxy-internal:
+          securityContext:
+            runAsUser: 0
     asserts:
       - equal:
           path: spec.template.spec.initContainers[1].command
@@ -366,10 +377,11 @@ tests:
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
     set:
-      proxyInternal:
-        ports:
-          - name: https
-            port: 4443
+      additionalProxies:
+        proxy-internal:
+          ports:
+            - name: https
+              port: 4443
     asserts:
       - contains:
           path: spec.template.spec.containers[0].ports

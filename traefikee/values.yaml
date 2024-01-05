@@ -306,6 +306,10 @@ proxy:
 #      maxUnavailable: 0
 #      maxSurge: 1
 
+# Optional additional proxy deployement
+# See values-dual-proxies.yaml for an example
+additionalProxies: {}
+
 # priorityClassName will be set on all pods.
 priorityClassName: ""
 

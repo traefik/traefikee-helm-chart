@@ -1,25 +1,31 @@
-{{ if .Values.proxy.podDisruptionBudget }}
+{{- $proxies := dict "proxy" .Values.proxy }}
+{{- $proxies = merge $proxies .Values.additionalProxies }}
+{{- range $proxyName, $proxy := $proxies }}
+
+{{ if $proxy.podDisruptionBudget }}
 ---
-{{- if semverCompare "<=1.21-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if semverCompare "<1.21.0-0" $.Capabilities.KubeVersion.Version }}
 apiVersion: policy/v1beta1
-{{- else -}}
+{{- else }}
 apiVersion: policy/v1
 {{- end }}
 kind: PodDisruptionBudget
 metadata:
-  name: {{ .Values.cluster }}-proxy
-  namespace: {{ .Release.Namespace }}
+  name: {{ $.Values.cluster }}-{{ $proxyName }}
+  namespace: {{ $.Release.Namespace }}
   labels:
-    {{ include "common.labels" . | nindent 4 }}
+    {{- include "common.labels" $ | nindent 4 }}
 spec:
-  {{ if .Values.proxy.podDisruptionBudget.minAvailable }}
-  minAvailable: {{ .Values.proxy.podDisruptionBudget.minAvailable }}
-  {{ else }}
-  maxUnavailable: {{ .Values.proxy.podDisruptionBudget.maxUnavailable | default 1 }}
-  {{ end }}
+  {{- with $proxy.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ . }}
+  {{- else }}
+  maxUnavailable: {{ $proxy.podDisruptionBudget.maxUnavailable | default 1 }}
+  {{- end }}
   selector:
     matchLabels:
       app: traefikee
       component: proxies
-      release: {{ .Values.cluster }}
-{{ end }}
+      release: {{ $.Values.cluster }}
+{{- end }}
+
+{{- end }}

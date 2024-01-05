@@ -1,14 +1,11 @@
-{{- $proxies := list "proxy" }}
-{{- if .Values.proxyInternal }}
-  {{- $proxies = append $proxies "proxyInternal" }}
-{{- end }}
-{{- range $proxies }}
-{{- $proxy := get $.Values . }}
+{{- $proxies := dict "proxy" .Values.proxy }}
+{{- $proxies = merge $proxies .Values.additionalProxies }}
+{{- range $proxyName, $proxy := $proxies }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $.Values.cluster  }}-{{ . }}
+  name: {{ $.Values.cluster  }}-{{ $proxyName }}
   namespace: {{ $.Release.Namespace }}
   keys: {{ $proxies }}
   labels:

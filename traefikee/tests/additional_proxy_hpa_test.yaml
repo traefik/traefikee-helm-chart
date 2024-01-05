@@ -1,6 +1,6 @@
-suite: proxy internal hpa test
+suite: additional proxy hpa test
 templates:
-  - proxy/hpa-internal.yaml
+  - proxy/hpa.yaml
 values:
   - ../values-dual-proxies.yaml
 tests:
@@ -9,10 +9,11 @@ tests:
       majorVersion: 1
       minorVersion: 23
     set:
-      proxyInternal:
-        autoscaling:
-          enabled: true
-          maxReplicas: 3
+      additionalProxies:
+        proxy-internal:
+          autoscaling:
+            enabled: true
+            maxReplicas: 3
     asserts:
       - isAPIVersion:
           of: autoscaling/v2
@@ -21,27 +22,30 @@ tests:
       majorVersion: 1
       minorVersion: 22
     set:
-      proxyInternal:
-        autoscaling:
-          enabled: true
-          maxReplicas: 3
+      additionalProxies:
+        proxy-internal:
+          autoscaling:
+            enabled: true
+            maxReplicas: 3
     asserts:
       - isAPIVersion:
           of: autoscaling/v2beta2
   - it: should fail without maxReplicas
     set:
-      proxyInternal:
-        autoscaling:
-          enabled: true
+      additionalProxies:
+        proxy-internal:
+          autoscaling:
+            enabled: true
     asserts:
       - failedTemplate:
           errorMessage: "ERROR: maxReplicas is required on HPA"
   - it: should not contains metrics nor behavior when they are not set
     set:
-      proxyInternal:
-        autoscaling:
-          enabled: true
-          maxReplicas: 3
+      additionalProxies:
+        proxy-internal:
+          autoscaling:
+            enabled: true
+            maxReplicas: 3
     asserts:
       - isNull:
           path: spec.metrics
