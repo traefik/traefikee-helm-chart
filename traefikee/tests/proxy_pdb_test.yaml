@@ -1,0 +1,51 @@
+suite: proxy pdb test
+templates:
+  - proxy/pdb.yaml
+tests:
+  - it: should use policy/v1 when k8s >= 1.21
+    capabilities:
+      majorVersion: 1
+      minorVersion: 21
+    set:
+      proxy:
+        podDisruptionBudget:
+          minAvailable: 1
+    asserts:
+      - isAPIVersion:
+          of: policy/v1
+      - equal:
+          path: metadata.name
+          value: default-proxy
+  - it: should use policy/v1beta1 when k8s < 1.21
+    capabilities:
+      majorVersion: 1
+      minorVersion: 20
+    set:
+      proxy:
+        podDisruptionBudget:
+          minAvailable: 1
+    asserts:
+      - isAPIVersion:
+          of: policy/v1beta1
+  - it: should set maxUnavailable
+    set:
+      proxy:
+        podDisruptionBudget:
+          maxUnavailable: 2
+    asserts:
+      - equal:
+          path: spec.maxUnavailable
+          value: 2
+      - isNull:
+          path: spec.minAvailable
+  - it: should set minAvailable
+    set:
+      proxy:
+        podDisruptionBudget:
+          minAvailable: 3
+    asserts:
+      - equal:
+          path: spec.minAvailable
+          value: 3
+      - isNull:
+          path: spec.maxUnavailable
