@@ -9,6 +9,8 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "common.labels" $ | nindent 4 }}
+    component: proxies
+    instance: {{ $proxyName }}
     {{- with ($proxy).serviceLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -26,4 +28,5 @@ spec:
     app: traefikee
     release: {{ $.Values.cluster }}
     component: proxies
+    instance: {{ $proxyName }}
 {{- end }}

@@ -24,8 +24,9 @@ spec:
   selector:
     matchLabels:
       app: traefikee
-      component: proxies
       release: {{ $.Values.cluster }}
+      component: proxies
+      instance: {{ $proxyName }}
 {{- end }}
 
 {{- end }}

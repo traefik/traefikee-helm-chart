@@ -7,9 +7,10 @@ kind: Deployment
 metadata:
   name: {{ $.Values.cluster  }}-{{ $proxyName }}
   namespace: {{ $.Release.Namespace }}
-  keys: {{ $proxies }}
   labels:
     {{- include "common.labels" $ | nindent 4 }}
+    component: proxies
+    instance: {{ $proxyName }}
     {{- with $proxy.deploymentLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -26,6 +27,7 @@ spec:
       app: traefikee
       release: {{ $.Values.cluster }}
       component: proxies
+      instance: {{ $proxyName }}
   {{- with $proxy.strategy}}
   strategy:
     {{- toYaml . | nindent 4 }}
@@ -33,8 +35,9 @@ spec:
   template:
     metadata:
       labels:
+        {{- include "common.labels" $ | nindent 8 }}
         component: proxies
-        {{ include "common.labels" $ | nindent 8 }}
+        instance: {{ $proxyName }}
         {{- with $proxy.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

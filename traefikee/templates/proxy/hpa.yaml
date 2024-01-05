@@ -23,8 +23,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ $.Values.cluster }}-proxy
-
+    name: {{ $.Values.cluster }}-{{ $proxyName }}
 {{- with $proxy.autoscaling.minReplicas }}
   minReplicas: {{ . }}
 {{- end }}
