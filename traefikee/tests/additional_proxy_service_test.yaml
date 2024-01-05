@@ -40,7 +40,7 @@ tests:
           value: NodePort
       - equal:
           path: metadata.name
-          value: default-proxy-internal
+          value: default-proxy-internal-svc
   - it: should set loadbalancerIP
     set:
       additionalProxies:
