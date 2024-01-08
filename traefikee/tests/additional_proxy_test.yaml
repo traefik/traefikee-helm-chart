@@ -104,7 +104,22 @@ tests:
           path: spec.template.spec.containers[0].readinessProbe
       - notExists:
           path: spec.template.spec.containers[0].livenessProbe
-
+  - it: should set expected component label with one proxy
+    asserts:
+      - equal:
+          path: metadata.labels.component
+          value: proxies
+  - it: should set expected component label with two proxies
+    values: [ ../values-dual-proxies.yaml ]
+    asserts:
+      - equal:
+          path: metadata.labels.component
+          value: proxy
+        documentIndex: 0
+      - equal:
+          path: metadata.labels.component
+          value: proxy-internal
+        documentIndex: 1
   - it: should provide secure deployment by default
     values: [ ../values-dual-proxies.yaml ]
     documentIndex: 1
