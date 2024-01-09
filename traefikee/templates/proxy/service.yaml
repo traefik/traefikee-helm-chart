@@ -1,25 +1,30 @@
+{{- $proxies := dict "proxy" .Values.proxy }}
+{{- $proxies = merge $proxies .Values.additionalProxies }}
+{{- range $proxyName, $proxy := $proxies }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.cluster }}-proxy-svc
-  namespace: {{ .Release.Namespace }}
+  name: {{ $.Values.cluster }}-{{ $proxyName }}-svc
+  namespace: {{ $.Release.Namespace }}
   labels:
-    {{ include "common.labels" . | nindent 4 }}
-    {{- with (.Values.proxy).serviceLabels }}
+    {{- include "common.labels" $ | nindent 4 }}
+    component: {{ (eq (len $proxies) 1) | ternary "proxies" $proxyName }}
+    {{- with ($proxy).serviceLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
   annotations:
-    {{- with (.Values.proxy).serviceAnnotations }}
+    {{- with ($proxy).serviceAnnotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  type: {{ .Values.proxy.serviceType | default "LoadBalancer" }}
-  ports: {{ toYaml .Values.proxy.servicePorts | nindent 4 }}
-  {{- if .Values.proxy.loadBalancerIP }}
-  loadBalancerIP: {{ .Values.proxy.loadBalancerIP }}
+  type: {{ $proxy.serviceType | default "LoadBalancer" }}
+  ports: {{ toYaml $proxy.servicePorts | nindent 4 }}
+  {{- with $proxy.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
   {{- end }}
   selector:
     app: traefikee
-    release: {{ .Values.cluster }}
-    component: proxies
+    release: {{ $.Values.cluster }}
+    component: {{ (eq (len $proxies) 1) | ternary "proxies" $proxyName }}
+{{- end }}

@@ -1,0 +1,79 @@
+suite: additional proxy service test
+templates:
+  - proxy/service.yaml
+values:
+  - ../values-dual-proxies.yaml
+tests:
+  - it: should use LoadBalancer by default
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+  - it: should provide http & https port by default
+    asserts:
+      - equal:
+          path: spec.ports
+          value:
+            - name: http
+              port: 80
+              targetPort: http
+            - name: https
+              port: 443
+              targetPort: https
+  - it: should use NodePort
+    set:
+      additionalProxies:
+        proxy-internal:
+          serviceType: NodePort
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: NodePort
+      - equal:
+          path: metadata.name
+          value: default-proxy-internal-svc
+  - it: should set loadbalancerIP
+    set:
+      additionalProxies:
+        proxy-internal:
+          loadBalancerIP: "1.2.3.4"
+          serviceType: LoadBalancer
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+      - equal:
+          path: spec.loadBalancerIP
+          value: "1.2.3.4"
+  - it: should set loadbalancerIP
+    set:
+      additionalProxies:
+        proxy-internal:
+          loadBalancerIP: "1.2.3.4"
+          serviceType: LoadBalancer
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+      - equal:
+          path: spec.loadBalancerIP
+          value: "1.2.3.4"

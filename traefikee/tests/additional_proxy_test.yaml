@@ -1,0 +1,405 @@
+suite: additional proxy test
+templates:
+  - proxy/deployment.yaml
+tests:
+  - it: should not deploy the additional proxy with default values
+    chart:
+      appVersion: v2.10.5
+    asserts:
+      - hasDocuments:
+          count: 1
+  - it: should deploy the additional proxy with example values
+    chart:
+      appVersion: v2.10.5
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    asserts:
+      - hasDocuments:
+          count: 2
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: metadata.name
+          value: default-proxy-internal
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "docker.io/traefik/traefikee:v2.10.5"
+      - equal:
+          path: spec.template.spec.affinity
+          value:
+              nodeAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  nodeSelectorTerms:
+                    - matchExpressions:
+                      - key: kubernetes.io/os
+                        operator: In
+                        values:
+                          - linux
+              podAntiAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    podAffinityTerm:
+                      labelSelector:
+                        matchExpressions:
+                          - key: component
+                            operator: In
+                            values:
+                              - proxies
+                      topologyKey: "kubernetes.io/hostname"
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            httpGet:
+              path: /ping
+              port: traefik
+            initialDelaySeconds: 2
+            periodSeconds: 5
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            httpGet:
+              path: /ping
+              port: traefik
+            initialDelaySeconds: 2
+            periodSeconds: 5
+  - it: should override defaults
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      cluster: "mysupertraefikee"
+      image.registry: "my.registry"
+      image.repository: "my/repository"
+      image.tag: "myspecialversion"
+      image.pullPolicy: Never
+      additionalProxies:
+        proxy-internal:
+          replicas: 2
+          affinity: null
+          readinessProbe: null
+          livenessProbe: null
+    asserts:
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: metadata.name
+          value: mysupertraefikee-proxy-internal
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "my.registry/my/repository:myspecialversion"
+      - equal:
+          path: spec.replicas
+          value: 2
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Never
+      - hasDocuments:
+          count: 2
+      - isNull:
+          path: spec.template.spec.affinity
+      - notExists:
+          path: spec.template.spec.containers[0].readinessProbe
+      - notExists:
+          path: spec.template.spec.containers[0].livenessProbe
+  - it: should set expected component label with one proxy
+    asserts:
+      - equal:
+          path: metadata.labels.component
+          value: proxies
+  - it: should set expected component label with two proxies
+    values: [ ../values-dual-proxies.yaml ]
+    asserts:
+      - equal:
+          path: metadata.labels.component
+          value: proxy
+        documentIndex: 0
+      - equal:
+          path: metadata.labels.component
+          value: proxy-internal
+        documentIndex: 1
+  - it: should provide secure deployment by default
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation
+          value: false
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 65532
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem
+          value: true
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.seccompProfile.type
+          value: "RuntimeDefault"
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.capabilities.drop[0]
+          value: "ALL"
+  - it: default ports are set
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: apps/v1
+      - equal:
+          path: metadata.name
+          value: default-proxy-internal
+      - equal:
+          path: spec.template.spec.containers[0].ports
+          value:
+            - containerPort: 8484
+              name: distributed
+            - containerPort: 9000
+              name: traefik
+            - containerPort: 7080
+              name: http
+            - containerPort: 7443
+              name: https
+  - it: should set imagePullSecrets correctly
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      imagePullSecrets:
+        - name: regcred
+    asserts:
+      - equal:
+          path: spec.template.spec.imagePullSecrets[0].name
+          value: regcred
+  - it: should not set priorityClassName by default
+    values: [ ../values-dual-proxies.yaml ]
+    asserts:
+      - isNull:
+          path: spec.template.spec.priorityClassName
+  - it: should set priorityClassName
+    values: [ ../values-dual-proxies.yaml ]
+    set:
+      priorityClassName: important
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: important
+  - it: should set default resources
+    values: [ ../values-dual-proxies.yaml ]
+    asserts:
+      - isSubset:
+          path: spec.template.spec.containers[0].resources
+          content:
+            requests:
+              cpu: "400m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+  - it: should be possible to remove resources
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      additionalProxies:
+        proxy-internal:
+          resources: null
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].resources
+  - it: should set custom resources requests & limits
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      additionalProxies:
+        proxy-internal:
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "50Mi"
+            limits:
+              cpu: "300m"
+              memory: "150Mi"
+    asserts:
+      - isSubset:
+          path: spec.template.spec.containers[0].resources
+          content:
+            requests:
+              cpu: "100m"
+              memory: "50Mi"
+            limits:
+              cpu: "300m"
+              memory: "150Mi"
+  - it: should not set topologySpreadConstraints by default
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    asserts:
+      - isNull:
+          path: spec.template.spec.topologySpreadConstraints
+  - it: should set topologySpreadConstraints
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      additionalProxies:
+        proxy-internal:
+          topologySpreadConstraints:
+            - labelSelector:
+                matchLabels:
+                  app: traefikee
+                  component: proxies
+              maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+    asserts:
+      - isSubset:
+          path: spec.template.spec
+          content:
+            topologySpreadConstraints:
+              - labelSelector:
+                  matchLabels:
+                    app: traefikee
+                    component: proxies
+                maxSkew: 1
+                topologyKey: kubernetes.io/hostname
+                whenUnsatisfiable: DoNotSchedule
+  - it: should not set tolerations by default
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    asserts:
+      - isNull:
+          path: spec.template.spec.tolerations
+  - it: should be possible to set tolerations
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      additionalProxies:
+        proxy-internal:
+          tolerations:
+            - key: "testkey"
+              operator: "Equal"
+              value: "testvalue"
+              effect: "NoSchedule"
+            - key: "RSA"
+              operator: "Destructor"
+    asserts:
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: "testkey"
+            operator: "Equal"
+            value: "testvalue"
+            effect: "NoSchedule"
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: "RSA"
+            operator: "Destructor"
+  - it: should not have replicas when set to
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      additionalProxies:
+        proxy-internal:
+          replicas: 0
+    asserts:
+      - notExists:
+          path: spec.replicas
+  - it: should not have replicas when set to null
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      additionalProxies:
+        proxy-internal:
+          replicas: null
+    asserts:
+      - notExists:
+          path: spec.replicas
+  - it: should not set strategy by default
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    asserts:
+      - isNull:
+          path: spec.strategy
+  - it: should be possible to define update strategy
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      additionalProxies:
+        proxy-internal:
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxUnavailable: 0
+              maxSurge: 1
+    asserts:
+      - isSubset:
+          path: spec
+          content:
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxUnavailable: 0
+                maxSurge: 1
+  - it: should fail when using ports < 1024 for non-root users
+    values: [ ../values-dual-proxies.yaml ]
+    set:
+      additionalProxies:
+        proxy-internal:
+          ports:
+            - name: http
+              port: 80
+    asserts:
+      - failedTemplate:
+          errorMessage: "ERROR: Cannot set a privileged port on a non-root container"
+  - it: should be possible to run proxies as root (to specify elevated ports)
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      additionalProxies:
+        proxy-internal:
+          ports:
+            - name: http
+              port: 80
+          securityContext:
+            runAsUser: 0
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 80
+            name: http
+  - it: should give the rights on data to the right user (default)
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[1].command
+          value:
+            ['chown', '-R', '65532:', '/var/lib/traefikee']
+  - it: should give the rights on data to the right user
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      additionalProxies:
+        proxy-internal:
+          securityContext:
+            runAsUser: 0
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[1].command
+          value:
+            [ 'chown', '-R', '0:', '/var/lib/traefikee' ]
+  - it: should be possible to change ports of deployments
+    values: [ ../values-dual-proxies.yaml ]
+    documentIndex: 1
+    set:
+      additionalProxies:
+        proxy-internal:
+          ports:
+            - name: https
+              port: 4443
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 4443
+            name: https

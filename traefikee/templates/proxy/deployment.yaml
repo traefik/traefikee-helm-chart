@@ -1,72 +1,76 @@
+{{- $proxies := dict "proxy" .Values.proxy }}
+{{- $proxies = merge $proxies .Values.additionalProxies }}
+{{- range $proxyName, $proxy := $proxies }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.cluster  }}-proxy
-  namespace: {{ .Release.Namespace }}
+  name: {{ $.Values.cluster  }}-{{ $proxyName }}
+  namespace: {{ $.Release.Namespace }}
   labels:
-    {{- include "common.labels" . | nindent 4 }}
-    {{- with .Values.proxy.deploymentLabels }}
+    {{- include "common.labels" $ | nindent 4 }}
+    component: {{ (eq (len $proxies) 1) | ternary "proxies" $proxyName }}
+    {{- with $proxy.deploymentLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
   annotations:
-    {{- with .Values.proxy.deploymentAnnotations }}
+    {{- with $proxy.deploymentAnnotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  {{- with .Values.proxy.replicas }}
+  {{- with $proxy.replicas }}
   replicas: {{ . }}
   {{- end }}
   selector:
     matchLabels:
       app: traefikee
-      release: {{ .Values.cluster }}
-      component: proxies
-  {{- with .Values.proxy.strategy}}
+      release: {{ $.Values.cluster }}
+      component: {{ (eq (len $proxies) 1) | ternary "proxies" $proxyName }}
+  {{- with $proxy.strategy}}
   strategy:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   template:
     metadata:
       labels:
-        component: proxies
-        {{ include "common.labels" . | nindent 8 }}
-        {{- with .Values.proxy.podLabels }}
+        {{- include "common.labels" $ | nindent 8 }}
+        component: {{ (eq (len $proxies) 1) | ternary "proxies" $proxyName }}
+        {{- with $proxy.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       annotations:
-        {{- with .Values.proxy.podAnnotations }}
+        {{- with $proxy.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- if .Values.proxy.topologySpreadConstraints }}
-      {{- if (semverCompare "<1.19.0-0" .Capabilities.KubeVersion.Version) }}
+      {{- if $proxy.topologySpreadConstraints }}
+      {{- if (semverCompare "<1.19.0-0" $.Capabilities.KubeVersion.Version) }}
         {{- fail "ERROR: topologySpreadConstraints are supported only on kubernetes >= v1.19" -}}
       {{- end }}
       topologySpreadConstraints:
-        {{- tpl (toYaml .Values.proxy.topologySpreadConstraints) . | nindent 8 }}
+        {{- tpl (toYaml $proxy.topologySpreadConstraints) $ | nindent 8 }}
       {{- end }}
-      {{- with .Values.imagePullSecrets }}
+      {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.proxy.affinity }}
+      {{- if $proxy.affinity }}
       affinity:
-        {{- tpl (toYaml .Values.proxy.affinity) . | nindent 8 }}
+        {{- tpl (toYaml $proxy.affinity) $ | nindent 8 }}
       {{- end }}
-      {{- if .Values.proxy.tolerations }}
+      {{- if $proxy.tolerations }}
       tolerations:
-        {{- tpl (toYaml .Values.proxy.tolerations) . | nindent 8 }}
+        {{- tpl (toYaml $proxy.tolerations) $ | nindent 8 }}
       {{- end }}
-      {{- with .Values.priorityClassName }}
+      {{- with $.Values.priorityClassName }}
       priorityClassName: {{ . }}
       {{- end }}
-      terminationGracePeriodSeconds: {{ .Values.proxy.terminationGracePeriodSeconds | default 30 }}
+      terminationGracePeriodSeconds: {{ $proxy.terminationGracePeriodSeconds | default 30 }}
       automountServiceAccountToken: false
       initContainers:
         - name: wait-dns
-          image: {{ template "traefikee-helm-chart.initContainer-image-name" . }}
-          command: ['sh', '-c', 'until nslookup -type=a {{ printf "%s-ctrl-svc.%s" .Values.cluster .Release.Namespace }}.svc.cluster.local; do echo waiting for published dns records; sleep 1; done;']
+          image: {{ template "traefikee-helm-chart.initContainer-image-name" $ }}
+          command: ['sh', '-c', 'until nslookup -type=a {{ printf "%s-ctrl-svc.%s" $.Values.cluster $.Release.Namespace }}.svc.cluster.local; do echo waiting for published dns records; sleep 1; done;']
           resources:
             requests:
               cpu: 10m
@@ -83,8 +87,8 @@ spec:
               drop:
                 - NET_RAW
         - name: chown
-          image: {{ template "traefikee-helm-chart.initContainer-image-name" . }}
-          command: ['chown', '-R', '{{.Values.proxy.securityContext.runAsUser}}:', '/var/lib/traefikee']
+          image: {{ template "traefikee-helm-chart.initContainer-image-name" $ }}
+          command: ['chown', '-R', '{{$proxy.securityContext.runAsUser}}:', '/var/lib/traefikee']
           resources:
             requests:
               cpu: 10m
@@ -103,12 +107,12 @@ spec:
               drop:
                 - NET_RAW
           volumeMounts:
-            - name: {{ .Values.cluster }}-proxy-data
+            - name: {{ $.Values.cluster }}-proxy-data
               mountPath: "/var/lib/traefikee"
       containers:
-        - name: {{ .Values.cluster }}-proxy
-          image: {{ template "traefikee-helm-chart.image-name" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: {{ $.Values.cluster }}-proxy
+          image: {{ template "traefikee-helm-chart.image-name" $ }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -118,13 +122,13 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          {{- with .Values.proxy.env }}
+          {{- with $proxy.env }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: {{ if eq (int .Values.proxy.securityContext.runAsUser) 0 -}}false{{- else -}}true{{- end }}
-            runAsUser: {{ .Values.proxy.securityContext.runAsUser }}
+            runAsNonRoot: {{ if eq (int $proxy.securityContext.runAsUser) 0 -}}false{{- else -}}true{{- end }}
+            runAsUser: {{ $proxy.securityContext.runAsUser }}
             readOnlyRootFilesystem: true
             seccompProfile:
               type: RuntimeDefault
@@ -136,23 +140,23 @@ spec:
           ports:
             - containerPort: 8484
               name: distributed
-          {{- range $port := .Values.proxy.ports }}
+          {{- range $port := $proxy.ports }}
             {{- $containerPort := ($port.targetPort | default $port.port) }}
-            {{- if and (lt (int $containerPort) 1024) (ne (int $.Values.proxy.securityContext.runAsUser) 0) }}
+            {{- if and (lt (int $containerPort) 1024) (ne (int $proxy.securityContext.runAsUser) 0) }}
               {{ fail "ERROR: Cannot set a privileged port on a non-root container" }}
             {{- end }}
             - containerPort: {{ $containerPort }}
               name: {{ $port.name }}
           {{- end }}
-          {{- with .Values.proxy.readinessProbe }}
+          {{- with $proxy.readinessProbe }}
           readinessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.proxy.livenessProbe }}
+          {{- with $proxy.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.proxy.resources }}
+          {{- with $proxy.resources }}
           resources:
             requests:
               memory: {{ .requests.memory }}
@@ -162,7 +166,7 @@ spec:
               cpu: {{ .limits.cpu }}
           {{- end }}
           volumeMounts:
-            - name: {{ .Values.cluster }}-proxy-data
+            - name: {{ $.Values.cluster }}-proxy-data
               mountPath: "/var/lib/traefikee"
             - name: "join-token"
               mountPath: "/var/run/secrets"
@@ -171,19 +175,20 @@ spec:
             - "proxy"
             - "--role=ingress"
             - "--name=$(POD_NAME)"
-            - {{ printf "--discovery.dns.domain=%s-ctrl-svc.$(POD_NAMESPACE)" .Values.cluster }}
+            - {{ printf "--discovery.dns.domain=%s-ctrl-svc.$(POD_NAMESPACE)" $.Values.cluster }}
             - "--jointoken.file.path=/var/run/secrets"
-            - "--log.level={{ (.Values.log).level | default "" }}"
-            - "--log.filepath={{ (.Values.log).filepath | default "" }}"
-            - "--log.format={{ (.Values.log).format | default "" }}"
-            {{- with .Values.proxy.additionalArguments }}
+            - "--log.level={{ ($.Values.log).level | default "" }}"
+            - "--log.filepath={{ ($.Values.log).filepath | default "" }}"
+            - "--log.format={{ ($.Values.log).format | default "" }}"
+            {{- with $proxy.additionalArguments }}
             {{- range . }}
             - {{ . | quote }}
             {{- end }}
             {{- end }}
       volumes:
-        - name: {{ .Values.cluster }}-proxy-data
+        - name: {{ $.Values.cluster }}-proxy-data
           emptyDir: {}
         - name: "join-token"
           secret:
-            secretName: {{ .Values.cluster }}-tokens
+            secretName: {{ $.Values.cluster }}-tokens
+{{- end }}
