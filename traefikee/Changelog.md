@@ -1,10 +1,49 @@
 # Change Log
 
+## 3.1.0  ![AppVersion: v2.10.7](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.7&color=success&logo=) ![Kubernetes: >= 1.26.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.26.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2024-01-09
+
+* fix: use cluster name in label selector of service controller
+* fix: enforce kube version requirements
+* feat: 🔧 support storageClassName
+* feat: additional proxy deployment
+* chore(release): publish v3.1.0
+
+### Default value changes
+
+```diff
+diff --git a/traefikee/values.yaml b/traefikee/values.yaml
+index 8608fac..28862c2 100644
+--- a/traefikee/values.yaml
++++ b/traefikee/values.yaml
+@@ -306,6 +306,10 @@ proxy:
+ #      maxUnavailable: 0
+ #      maxSurge: 1
+ 
++# Optional additional proxy deployement
++# See values-dual-proxies.yaml for an example
++additionalProxies: {}
++
+ # priorityClassName will be set on all pods.
+ priorityClassName: ""
+ 
+@@ -321,3 +325,8 @@ mesh:
+ #    foo: bar
+ #  podAnnotations:
+ #    foo: bar
++
++# by default the default storageClassName will be used by controller and registry,
++# but you can specify a custom one here
++volumeClaimTemplates:
++  storageClassName:
+```
+
 ## 3.0.2  ![AppVersion: v2.10.7](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.7&color=success&logo=) ![Kubernetes: >= 1.14.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.14.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
-**Release date:** 2023-12-21
+**Release date:** 2023-12-22
 
-* chore: release v3.0.2 with Traefik Enterprise v2.10.7 and ingressClass
+* chore: release chart 3.0.2
 * chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.7
 * add Ingressclass
 
