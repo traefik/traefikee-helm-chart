@@ -7,7 +7,7 @@ description: |
 icon: https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enterprise-logo.svg
 # Because of https://github.com/helm/helm/issues/3810 the pre-release version suffix has to be define.
 # This allows the installation on Kubernetes cluster with a pre-release version (e.g. v1.19.9-gke.1900)
-kubeVersion: ">= 1.14.0-0"
+kubeVersion: ">= 1.26.0-0"
 version: 3.0.2
 # renovate: image=docker.io/traefik/traefikee
 appVersion: v2.10.7
