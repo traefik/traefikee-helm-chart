@@ -204,6 +204,9 @@ spec:
     - metadata:
         name: plugin-data
       spec:
+        {{- if .Values.volumeClaimTemplates.storageClassName }}
+        storageClassName: {{ .Values.volumeClaimTemplates.storageClassName }}
+        {{- end }}
         accessModes:
           - ReadWriteOnce
         resources:
@@ -419,6 +422,9 @@ spec:
     - metadata:
         name: data
       spec:
+        {{- if .Values.volumeClaimTemplates.storageClassName }}
+        storageClassName: {{ .Values.volumeClaimTemplates.storageClassName }}
+        {{- end }}
         accessModes:
           - ReadWriteOnce
         resources:

@@ -325,3 +325,8 @@ mesh:
 #    foo: bar
 #  podAnnotations:
 #    foo: bar
+
+# by default the default storageClassName will be used by controller and registry,
+# but you can specify a custom one here
+volumeClaimTemplates:
+  storageClassName: ""

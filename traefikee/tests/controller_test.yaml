@@ -543,3 +543,16 @@ tests:
           content:
             key: "RSA"
             operator: "Destructor"
+  - it: should set custom storageClassName on registry & controller
+    set:
+      volumeClaimTemplates:
+        storageClassName: "test"
+    asserts:
+      - equal:
+          path: spec.volumeClaimTemplates[0].spec.storageClassName
+          value: "test"
+        documentIndex: 1
+      - equal:
+          path: spec.volumeClaimTemplates[0].spec.storageClassName
+          value: "test"
+        documentIndex: 2
