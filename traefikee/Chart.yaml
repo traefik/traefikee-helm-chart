@@ -25,8 +25,6 @@ keywords:
   - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
-    - "fix: use cluster name in label selector of service controller"
-    - "fix: enforce kube version requirements"
-    - "feat: 🔧 support storageClassName"
-    - "feat: additional proxy deployment"
-    - "chore(release): publish v3.1.0"
+    - "feat: 🚑️ disable chown on EFS volumes (#125)"
+    - "feat: 🚀 release chart v3.2.0"
+    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.8 (#124)"
