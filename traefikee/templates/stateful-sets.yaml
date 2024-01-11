@@ -95,6 +95,7 @@ spec:
             capabilities:
               drop:
                 - NET_RAW
+        {{- if not .Values.disableChown }}
         - name: chown
           image: {{ template "traefikee-helm-chart.initContainer-image-name" . }}
           command: ['chown', '-R', '65532:', '/var/lib/traefikee', '/var/lib/plugins']
@@ -120,6 +121,7 @@ spec:
               mountPath: "/var/lib/traefikee"
             - name: plugin-data
               mountPath: "/var/lib/plugins"
+        {{- end }}
       containers:
         - name: {{ .Values.cluster }}-plugin-registry
           image: {{ template "traefikee-helm-chart.image-name" . }}
@@ -298,6 +300,7 @@ spec:
             capabilities:
               drop:
                 - NET_RAW
+        {{- if not .Values.disableChown }}
         - name: chown
           image: {{ template "traefikee-helm-chart.initContainer-image-name" . }}
           command: ['chown', '-R', '65532:', '/var/lib/traefikee']
@@ -321,6 +324,7 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/lib/traefikee
+        {{- end }}
       containers:
         - name: {{ .Values.cluster }}-controller
           image: {{ template "traefikee-helm-chart.image-name" . }}
