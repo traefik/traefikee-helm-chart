@@ -1,8 +1,32 @@
 # Change Log
 
+## 3.2.0  ![AppVersion: v2.10.8](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.8&color=success&logo=) ![Kubernetes: >= 1.26.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.26.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2024-01-11
+
+* feat: 🚑️ disable chown on EFS volumes (#125)
+* feat: 🚀 release chart v3.2.0
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.8 (#124)
+
+### Default value changes
+
+```diff
+diff --git a/traefikee/values.yaml b/traefikee/values.yaml
+index 28862c2..296aa7d 100644
+--- a/traefikee/values.yaml
++++ b/traefikee/values.yaml
+@@ -330,3 +330,6 @@ mesh:
+ # but you can specify a custom one here
+ volumeClaimTemplates:
+   storageClassName:
++
++# set it to true if CSI driver don't allow it (e.g EFS)
++disableChown: false
+```
+
 ## 3.1.0  ![AppVersion: v2.10.7](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.7&color=success&logo=) ![Kubernetes: >= 1.26.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.26.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
-**Release date:** 2024-01-09
+**Release date:** 2024-01-10
 
 * fix: use cluster name in label selector of service controller
 * fix: enforce kube version requirements
