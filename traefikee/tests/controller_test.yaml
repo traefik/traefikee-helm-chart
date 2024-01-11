@@ -556,3 +556,33 @@ tests:
           path: spec.volumeClaimTemplates[0].spec.storageClassName
           value: "test"
         documentIndex: 2
+  - it: should add chown init container by default
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.initContainers
+          count: 2
+        documentIndex: 1
+      - lengthEqual:
+          path: spec.template.spec.initContainers
+          count: 2
+        documentIndex: 2
+  - it: should disable chown init container
+    set:
+      disableChown: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: "wait-dns"
+        documentIndex: 1
+      - lengthEqual:
+          path: spec.template.spec.initContainers
+          count: 1
+        documentIndex: 1
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: "wait-dns"
+        documentIndex: 2
+      - lengthEqual:
+          path: spec.template.spec.initContainers
+          count: 1
+        documentIndex: 2

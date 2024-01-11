@@ -330,3 +330,6 @@ mesh:
 # but you can specify a custom one here
 volumeClaimTemplates:
   storageClassName:
+
+# set it to true if CSI driver don't allow it (e.g EFS)
+disableChown: false
