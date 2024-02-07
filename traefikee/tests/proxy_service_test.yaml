@@ -50,11 +50,21 @@ tests:
       - equal:
           path: spec.loadBalancerIP
           value: "1.2.3.4"
-  - it: should set loadbalancerIP
+  - it: should set service spec options
     set:
       proxy:
-        loadBalancerIP: "1.2.3.4"
         serviceType: LoadBalancer
+        clusterIP: "1.2.3.4"
+        externalIPs: [ "1.1.1.1", "2.2.2.2" ]
+        ## One of Cluster or Local
+        externalTrafficPolicy: Cluster
+        ## One of SingleStack, PreferDualStack, or RequireDualStack.
+        ipFamilyPolicy: SingleStack
+        ## List of IP families (e.g. IPv4 and/or IPv6).
+        ipFamilies: [ "IPv4", "IPv6" ]
+        loadBalancerClass: "lb"
+        loadBalancerIP: "5.6.7.8"
+        loadBalancerSourceRanges: [ "3.3.3.3/28", "4.4.4.4/32" ]
     asserts:
       - isKind:
           of: Service
@@ -64,8 +74,29 @@ tests:
           path: spec.type
           value: LoadBalancer
       - equal:
-          path: spec.loadBalancerIP
+          path: spec.clusterIP
           value: "1.2.3.4"
+      - lengthEqual:
+          path: spec.externalIPs
+          count: 2
+      - equal:
+          path: spec.externalTrafficPolicy
+          value: "Cluster"
+      - equal:
+          path: spec.ipFamilyPolicy
+          value: "SingleStack"
+      - lengthEqual:
+          path: spec.ipFamilies
+          count: 2
+      - equal:
+          path: spec.loadBalancerClass
+          value: "lb"
+      - equal:
+          path: spec.loadBalancerIP
+          value: "5.6.7.8"
+      - lengthEqual:
+          path: spec.loadBalancerSourceRanges
+          count: 2
   - it: should have label selector
     set:
       cluster: mysupertraefikee

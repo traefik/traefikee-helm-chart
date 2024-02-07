@@ -20,9 +20,31 @@ metadata:
 spec:
   type: {{ $proxy.serviceType | default "LoadBalancer" }}
   ports: {{ toYaml $proxy.servicePorts | nindent 4 }}
+  {{- with $proxy.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with $proxy.externalIPs }}
+  externalIPs: {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with $proxy.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with $proxy.ipFamilyPolicy }}
+  ipFamilyPolicy: {{ . }}
+  {{- end }}
+  {{- with $proxy.ipFamilies }}
+  ipFamilies: {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with $proxy.loadBalancerClass }}
+  loadBalancerClass: {{ . }}
+  {{- end }}
   {{- with $proxy.loadBalancerIP }}
   loadBalancerIP: {{ . }}
   {{- end }}
+  {{- with $proxy.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml . | nindent 2 }}
+  {{- end }}
+
   selector:
     app: traefikee
     release: {{ $.Values.cluster }}
