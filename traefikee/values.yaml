@@ -114,6 +114,7 @@ controller:
 #      name: traefik-config
 #      key: "static.yml"
     content: |
+      api: {}
       entrypoints:
         traefik:
           address: ":9000"
@@ -310,6 +311,7 @@ proxy:
 ingressRoute:
   dashboard:
     # -- Create an IngressRoute for the dashboard
+    # /!\ This IngressRoute needs `api: {}` to be enabled in static configuration /!\
     enabled: false
     # -- Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)
     annotations: {}
