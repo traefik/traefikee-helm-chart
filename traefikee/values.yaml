@@ -195,8 +195,11 @@ proxy:
       port: 443
       targetPort: https
   ## Service spec options
+  ## /!\ Note: some Service fields are immutable.
+  ## `helm upgrade --force [...]` can be used to replace resources with immutable fields.
   clusterIP:
   externalIPs:
+  ## One of Cluster or Local
   externalTrafficPolicy:
   ## One of SingleStack, PreferDualStack, or RequireDualStack.
   ipFamilyPolicy:
