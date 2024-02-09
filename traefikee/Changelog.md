@@ -1,11 +1,111 @@
 # Change Log
 
+## 3.3.0  ![AppVersion: v2.10.8](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.8&color=success&logo=) ![Kubernetes: >= 1.26.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.26.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2024-02-09
+
+* feat: dashboard ingressroute
+* feat: add missing Service spec fields
+* feat: TLSOption
+* chore(release): publish v3.3.0
+
+### Default value changes
+
+```diff
+diff --git a/traefikee/values.yaml b/traefikee/values.yaml
+index 296aa7d..22a5737 100644
+--- a/traefikee/values.yaml
++++ b/traefikee/values.yaml
+@@ -114,6 +114,7 @@ controller:
+ #      name: traefik-config
+ #      key: "static.yml"
+     content: |
++      api: {}
+       entrypoints:
+         traefik:
+           address: ":9000"
+@@ -193,8 +194,20 @@ proxy:
+     - name: https
+       port: 443
+       targetPort: https
+-# # Specify Static IP of cloud provider LB
+-#  loadBalancerIP: "1.2.3.4"
++  ## Service spec options
++  ## /!\ Note: some Service fields are immutable.
++  ## `helm upgrade --force [...]` can be used to replace resources with immutable fields.
++  clusterIP:
++  externalIPs:
++  ## One of Cluster or Local
++  externalTrafficPolicy:
++  ## One of SingleStack, PreferDualStack, or RequireDualStack.
++  ipFamilyPolicy:
++  ## List of IP families (e.g. IPv4 and/or IPv6).
++  ipFamilies:
++  loadBalancerClass:
++  loadBalancerIP:
++  loadBalancerSourceRanges:
+ 
+   # To disable affinity at all set this value to null
+   affinity:
+@@ -306,6 +319,27 @@ proxy:
+ #      maxUnavailable: 0
+ #      maxSurge: 1
+ 
++## Create an IngressRoute for the dashboard
++ingressRoute:
++  dashboard:
++    # -- Create an IngressRoute for the dashboard
++    # /!\ This IngressRoute needs `api: {}` to be enabled in static configuration /!\
++    enabled: false
++    # -- Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)
++    annotations: {}
++    # -- Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)
++    labels: {}
++    # -- The router match rule used for the dashboard ingressRoute
++    matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
++    # -- Specify the allowed entrypoints to use for the dashboard ingress route, (e.g. traefik, web, websecure).
++    # By default, it's using traefik entrypoint, which is not exposed.
++    # /!\ Do not expose your dashboard without any protection over the internet /!\
++    entryPoints: ["traefik"]
++    # -- Additional ingressRoute middlewares (e.g. for authentication)
++    middlewares: []
++    # -- TLS options (e.g. secret containing certificate)
++    tls: {}
++
+ # Optional additional proxy deployement
+ # See values-dual-proxies.yaml for an example
+ additionalProxies: {}
+@@ -313,6 +347,22 @@ additionalProxies: {}
+ # priorityClassName will be set on all pods.
+ priorityClassName: ""
+ 
++# -- TLS Options are created as TLSOption CRDs
++# https://doc.traefik.io/traefik/https/tls/#tls-options
++# When using `labelSelector`, you'll need to set labels on tlsOption accordingly.
++# Example:
++# tlsOptions:
++#   default:
++#     labels: {}
++#     sniStrict: true
++#     preferServerCipherSuites: true
++#   custom-options:
++#     labels: {}
++#     curvePreferences:
++#       - CurveP521
++#       - CurveP384
++tlsOptions: {}
++
+ mesh:
+   enabled: false
+   kubedns: false
+```
+
 ## 3.2.0  ![AppVersion: v2.10.8](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.8&color=success&logo=) ![Kubernetes: >= 1.26.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.26.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2024-01-11
 
 * feat: 🚑️ disable chown on EFS volumes (#125)
-* feat: 🚀 release chart v3.2.0
+* feat: 🚀 release chart v3.2.0 (#126)
 * chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.8 (#124)
 
 ### Default value changes

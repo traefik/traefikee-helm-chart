@@ -8,7 +8,7 @@ icon: https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enter
 # Because of https://github.com/helm/helm/issues/3810 the pre-release version suffix has to be define.
 # This allows the installation on Kubernetes cluster with a pre-release version (e.g. v1.19.9-gke.1900)
 kubeVersion: ">= 1.26.0-0"
-version: 3.2.0
+version: 3.3.0
 # renovate: image=docker.io/traefik/traefikee
 appVersion: v2.10.8
 type: application
@@ -25,6 +25,7 @@ keywords:
   - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
-    - "feat: 🚑️ disable chown on EFS volumes (#125)"
-    - "feat: 🚀 release chart v3.2.0"
-    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.8 (#124)"
+    - "feat: dashboard ingressroute"
+    - "feat: add missing Service spec fields"
+    - "feat: TLSOption"
+    - "chore(release): publish v3.3.0"
