@@ -194,8 +194,20 @@ proxy:
     - name: https
       port: 443
       targetPort: https
-# # Specify Static IP of cloud provider LB
-#  loadBalancerIP: "1.2.3.4"
+  ## Service spec options
+  ## /!\ Note: some Service fields are immutable.
+  ## `helm upgrade --force [...]` can be used to replace resources with immutable fields.
+  clusterIP:
+  externalIPs:
+  ## One of Cluster or Local
+  externalTrafficPolicy:
+  ## One of SingleStack, PreferDualStack, or RequireDualStack.
+  ipFamilyPolicy:
+  ## List of IP families (e.g. IPv4 and/or IPv6).
+  ipFamilies:
+  loadBalancerClass:
+  loadBalancerIP:
+  loadBalancerSourceRanges:
 
   # To disable affinity at all set this value to null
   affinity:
