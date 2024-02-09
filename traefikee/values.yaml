@@ -335,6 +335,22 @@ additionalProxies: {}
 # priorityClassName will be set on all pods.
 priorityClassName: ""
 
+# -- TLS Options are created as TLSOption CRDs
+# https://doc.traefik.io/traefik/https/tls/#tls-options
+# When using `labelSelector`, you'll need to set labels on tlsOption accordingly.
+# Example:
+# tlsOptions:
+#   default:
+#     labels: {}
+#     sniStrict: true
+#     preferServerCipherSuites: true
+#   custom-options:
+#     labels: {}
+#     curvePreferences:
+#       - CurveP521
+#       - CurveP384
+tlsOptions: {}
+
 mesh:
   enabled: false
   kubedns: false
