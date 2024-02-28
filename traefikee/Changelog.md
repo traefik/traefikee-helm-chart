@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.3.2  ![AppVersion: v2.10.9](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.9&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2024-02-28
+
+* feat: upgrade traefik crds
+* patch: lower K8s version needed
+
+
 ## 3.3.1  ![AppVersion: v2.10.9](https://img.shields.io/static/v1?label=AppVersion&message=v2.10.9&color=success&logo=) ![Kubernetes: >= 1.26.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.26.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2024-02-15
