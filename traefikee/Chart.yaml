@@ -25,5 +25,11 @@ keywords:
   - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
+    - "feat: upgrade traefik crds"
+    - "patch: lower K8s version needed"
     - "chore(release): publish v3.3.1"
     - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.10.9"
+    - "feat: dashboard ingressroute"
+    - "feat: add missing Service spec fields"
+    - "feat: TLSOption"
+    - "chore(release): publish v3.3.0"
