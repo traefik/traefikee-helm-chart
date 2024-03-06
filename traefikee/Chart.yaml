@@ -10,7 +10,7 @@ icon: https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enter
 kubeVersion: ">= 1.23.0-0"
 version: 3.3.2
 # renovate: image=docker.io/traefik/traefikee
-appVersion: v2.10.9
+appVersion: v2.11.0
 type: application
 home: https://traefik.io/traefik-enterprise/
 maintainers:
