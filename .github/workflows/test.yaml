@@ -24,3 +24,8 @@ jobs:
 
       - name: Test Chart
         run: make test
+
+      - name: Test Changelog Artifacthub annotation
+        run: |
+          changes=$(grep '"' traefikee/Chart.yaml | wc -l)
+          test $changes -gt 1
