@@ -27,4 +27,3 @@ annotations:
   artifacthub.io/changes: |
     - chore(release): publish v3.3.2
     - chore(deps): update docker.io/traefik/traefikee docker tag to v2.11.0
-
