@@ -1,8 +1,9 @@
 .PHONY: lint test
 
 # Used for Helm Chart
-IMAGE_HELM_UNITTEST=docker.io/helmunittest/helm-unittest:3.13.3-0.4.0
 IMAGE_CHART_TESTING=quay.io/helmpack/chart-testing:v3.10.1
+IMAGE_HELM_CHANGELOG=ghcr.io/traefik/helm-changelog:v0.3.0
+IMAGE_HELM_UNITTEST=docker.io/helmunittest/helm-unittest:3.13.3-0.4.0
 
 traefikee/tests/__snapshot__:
 	@mkdir traefikee/tests/__snapshot__
@@ -15,6 +16,6 @@ lint:
 
 changelog:
 	@echo "== Updating Changelogs..."
-	@docker run ${DOCKER_ARGS} --env GIT_SAFE_DIR="true" -it --rm -v $(CURDIR):/data ghcr.io/mloiseleur/helm-changelog:v0.0.3
+	@docker run ${DOCKER_ARGS} --env GIT_SAFE_DIR="true" -it --rm -v $(CURDIR):/data $(IMAGE_HELM_CHANGELOG)
 	@./hack/changelog.sh
 	@echo "== Updating finished"
