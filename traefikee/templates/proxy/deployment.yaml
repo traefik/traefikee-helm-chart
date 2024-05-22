@@ -86,6 +86,7 @@ spec:
             capabilities:
               drop:
                 - NET_RAW
+        {{- if not $.Values.disableChown }}
         - name: chown
           image: {{ template "traefikee-helm-chart.initContainer-image-name" $ }}
           command: ['chown', '-R', '{{$proxy.securityContext.runAsUser}}:', '/var/lib/traefikee']
@@ -109,6 +110,7 @@ spec:
           volumeMounts:
             - name: {{ $.Values.cluster }}-proxy-data
               mountPath: "/var/lib/traefikee"
+        {{- end }}
       containers:
         - name: {{ $.Values.cluster }}-proxy
           image: {{ template "traefikee-helm-chart.image-name" $ }}
