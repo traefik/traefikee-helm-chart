@@ -56,7 +56,7 @@ registry:
 
   securityContext:
     capabilities:
-      drop: [ "ALL" ]
+      drop: ["ALL"]
 
 #   serviceLabels:
 #     foo: bar
@@ -115,7 +115,7 @@ controller:
 
   securityContext:
     capabilities:
-      drop: [ "ALL" ]
+      drop: ["ALL"]
 
   # Static Configuration can be set within values OR
   # from an external ConfigMap. Not both.
@@ -220,7 +220,6 @@ proxy:
   loadBalancerSourceRanges:
 
 
-
   # To disable affinity at all set this value to null
   affinity:
     nodeAffinity:
@@ -285,7 +284,7 @@ proxy:
   securityContext:
     runAsUser: 65532
     capabilities:
-      drop: [ "ALL" ]
+      drop: ["ALL"]
 
 #  serviceLabels:
 #    foo: bar
