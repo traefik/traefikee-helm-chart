@@ -135,10 +135,7 @@ spec:
             seccompProfile:
               type: RuntimeDefault
             capabilities:
-              drop:
-                - ALL
-              add:
-                - NET_BIND_SERVICE
+              {{- toYaml $proxy.securityContext.capabilities | nindent 14 }}
           ports:
             - containerPort: 8484
               name: distributed

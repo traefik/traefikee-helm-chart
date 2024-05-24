@@ -95,6 +95,8 @@ additionalProxies:
       periodSeconds: 5
     securityContext:
       runAsUser: 65532
+      capabilities:
+        drop: ["ALL"]
 
   #  serviceLabels:
   #    foo: bar

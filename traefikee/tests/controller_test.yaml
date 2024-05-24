@@ -251,7 +251,6 @@ tests:
               type: "RuntimeDefault"
             capabilities:
               drop: ["ALL"]
-              add: ["NET_BIND_SERVICE"]
       - documentIndex: 2
         equal:
           path: spec.template.spec.containers[0].securityContext
@@ -263,7 +262,6 @@ tests:
               type: "RuntimeDefault"
             capabilities:
               drop: ["ALL"]
-              add: ["NET_BIND_SERVICE"]
 
   - it: should deploy only the controller when registry is disabled
     set:

@@ -53,6 +53,11 @@ registry:
                   values:
                     - registry
             topologyKey: "kubernetes.io/hostname"
+
+  securityContext:
+    capabilities:
+      drop: [ "ALL" ]
+
 #   serviceLabels:
 #     foo: bar
 #   serviceAnnotations:
@@ -107,6 +112,11 @@ controller:
                   values:
                     - controllers
             topologyKey: "kubernetes.io/hostname"
+
+  securityContext:
+    capabilities:
+      drop: [ "ALL" ]
+
   # Static Configuration can be set within values OR
   # from an external ConfigMap. Not both.
   staticConfig:
@@ -209,6 +219,8 @@ proxy:
   loadBalancerIP:
   loadBalancerSourceRanges:
 
+
+
   # To disable affinity at all set this value to null
   affinity:
     nodeAffinity:
@@ -272,6 +284,8 @@ proxy:
     periodSeconds: 5
   securityContext:
     runAsUser: 65532
+    capabilities:
+      drop: [ "ALL" ]
 
 #  serviceLabels:
 #    foo: bar
@@ -381,5 +395,5 @@ mesh:
 volumeClaimTemplates:
   storageClassName:
 
-# set it to true if CSI driver don't allow it (e.g EFS)
+# Set it to true if your CSI driver don't allow (or need) it (e.g EFS)
 disableChown: false

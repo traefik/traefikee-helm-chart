@@ -147,10 +147,7 @@ spec:
             seccompProfile:
               type: RuntimeDefault
             capabilities:
-              drop:
-                - ALL
-              add:
-                - NET_BIND_SERVICE
+              {{- toYaml .Values.registry.securityContext.capabilities | nindent 14 }}
           ports:
             - containerPort: 6443
               name: https
@@ -358,10 +355,7 @@ spec:
             seccompProfile:
               type: RuntimeDefault
             capabilities:
-              drop:
-                - ALL
-              add:
-                - NET_BIND_SERVICE
+              {{- toYaml .Values.controller.securityContext.capabilities | nindent 14 }}
           ports:
             - containerPort: 4242
               name: control-port
