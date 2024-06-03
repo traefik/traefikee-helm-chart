@@ -1,12 +1,78 @@
 # Change Log
 
+## 4.0.0  ![AppVersion: v2.11.2](https://img.shields.io/static/v1?label=AppVersion&message=v2.11.2&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2024-05-31
+
+* fix: 🐛 apply disableChown also on proxy
+* feat(security)!: ✨ 🔒️ capabilities are droppped by default and can be set if needed
+* chore(release): 🚀 publish v4.0.0
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.11.2
+
+### Default value changes
+
+```diff
+diff --git a/traefikee/values.yaml b/traefikee/values.yaml
+index 22a5737..48c54a7 100644
+--- a/traefikee/values.yaml
++++ b/traefikee/values.yaml
+@@ -53,6 +53,11 @@ registry:
+                   values:
+                     - registry
+             topologyKey: "kubernetes.io/hostname"
++
++  securityContext:
++    capabilities:
++      drop: ["ALL"]
++
+ #   serviceLabels:
+ #     foo: bar
+ #   serviceAnnotations:
+@@ -107,6 +112,11 @@ controller:
+                   values:
+                     - controllers
+             topologyKey: "kubernetes.io/hostname"
++
++  securityContext:
++    capabilities:
++      drop: ["ALL"]
++
+   # Static Configuration can be set within values OR
+   # from an external ConfigMap. Not both.
+   staticConfig:
+@@ -209,6 +219,7 @@ proxy:
+   loadBalancerIP:
+   loadBalancerSourceRanges:
+ 
++
+   # To disable affinity at all set this value to null
+   affinity:
+     nodeAffinity:
+@@ -272,6 +283,8 @@ proxy:
+     periodSeconds: 5
+   securityContext:
+     runAsUser: 65532
++    capabilities:
++      drop: ["ALL"]
+ 
+ #  serviceLabels:
+ #    foo: bar
+@@ -381,5 +394,5 @@ mesh:
+ volumeClaimTemplates:
+   storageClassName:
+ 
+-# set it to true if CSI driver don't allow it (e.g EFS)
++# Set it to true if your CSI driver don't allow (or need) it (e.g EFS)
+ disableChown: false
+```
+
 ## 3.4.1  ![AppVersion: v2.11.1](https://img.shields.io/static/v1?label=AppVersion&message=v2.11.1&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2024-04-26
 
+* chore: improve, lint and doc release process
 * chore(release): 🚀 publish v3.4.1
 * chore(deps): update docker.io/traefik/traefikee docker tag to v2.11.1
-* chore: improve, lint and doc release process
 
 
 ## 3.4.0  ![AppVersion: v2.11.0](https://img.shields.io/static/v1?label=AppVersion&message=v2.11.0&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
@@ -78,13 +144,13 @@ index 296aa7d..22a5737 100644
 +  loadBalancerClass:
 +  loadBalancerIP:
 +  loadBalancerSourceRanges:
-
+ 
    # To disable affinity at all set this value to null
    affinity:
 @@ -306,6 +319,27 @@ proxy:
  #      maxUnavailable: 0
  #      maxSurge: 1
-
+ 
 +## Create an IngressRoute for the dashboard
 +ingressRoute:
 +  dashboard:
@@ -112,7 +178,7 @@ index 296aa7d..22a5737 100644
 @@ -313,6 +347,22 @@ additionalProxies: {}
  # priorityClassName will be set on all pods.
  priorityClassName: ""
-
+ 
 +# -- TLS Options are created as TLSOption CRDs
 +# https://doc.traefik.io/traefik/https/tls/#tls-options
 +# When using `labelSelector`, you'll need to set labels on tlsOption accordingly.
@@ -178,14 +244,14 @@ index 8608fac..28862c2 100644
 @@ -306,6 +306,10 @@ proxy:
  #      maxUnavailable: 0
  #      maxSurge: 1
-
+ 
 +# Optional additional proxy deployement
 +# See values-dual-proxies.yaml for an example
 +additionalProxies: {}
 +
  # priorityClassName will be set on all pods.
  priorityClassName: ""
-
+ 
 @@ -321,3 +325,8 @@ mesh:
  #    foo: bar
  #  podAnnotations:
@@ -215,7 +281,7 @@ index 07b4125..8608fac 100644
 @@ -17,6 +17,13 @@ initImage:
    repository: busybox
    tag: "1.36.1"
-
+ 
 +# -- To create a default IngressClass for TraefikEE, set `enabled: true` below:
 +# It should also be set on k8s providers in static configuration
 +ingressClass:
@@ -234,7 +300,7 @@ index 07b4125..8608fac 100644
          kubernetesCRD:
            allowEmptyServices: true
 +          ingressClass:
-
+ 
  #  serviceLabels:
  #    foo: bar
 ```
@@ -290,7 +356,7 @@ index 34b537a..07b4125 100644
      periodSeconds: 5
 +  securityContext:
 +    runAsUser: 65532
-
+ 
  #  serviceLabels:
  #    foo: bar
 ```
@@ -325,7 +391,7 @@ index 68e2a9e..34b537a 100644
 +++ b/traefikee/values.yaml
 @@ -5,13 +5,17 @@ cluster: "default"
  #   - name: regcred
-
+ 
  image:
 -  name: traefik/traefikee
 +  registry: docker.io
@@ -342,12 +408,12 @@ index 68e2a9e..34b537a 100644
 +  registry: docker.io
 +  repository: busybox
 +  tag: "1.36.1"
-
+ 
  # log:
  #  level: DEBUG
 @@ -19,6 +23,8 @@ image:
  #  file:
-
+ 
  registry:
 +  # When disabled, plugins cannot be used
 +  enabled: true
@@ -399,7 +465,7 @@ index 68e2a9e..34b537a 100644
 +#      whenUnsatisfiable: DoNotSchedule
  ## Tolerations allow the scheduler to schedule pods with matching taints.
    tolerations: []
-
+ 
 @@ -134,12 +167,19 @@ proxy:
      limits:
        cpu: "1000m"
@@ -420,7 +486,7 @@ index 68e2a9e..34b537a 100644
 +      targetPort: https
  # # Specify Static IP of cloud provider LB
  #  loadBalancerIP: "1.2.3.4"
-
+ 
 @@ -164,11 +204,47 @@ proxy:
                    values:
                      - proxies
@@ -494,7 +560,7 @@ index 0b939a6..68e2a9e 100644
 +++ b/traefikee/values.yaml
 @@ -124,6 +124,8 @@ controller:
    tolerations: []
-
+ 
  proxy:
 +  # Can be set to null when using HPA, in order to avoid conflict between HPA
 +  # and this Chart on replicas.
@@ -511,7 +577,7 @@ index 0b939a6..68e2a9e 100644
 +#    rollingUpdate:
 +#      maxUnavailable: 0
 +#      maxSurge: 1
-
+ 
  # priorityClassName will be set on all pods.
  priorityClassName: ""
 ```
@@ -549,8 +615,8 @@ index eb83307..0b939a6 100644
  #  tokenSecret: "NJ00yx60K+Wm1yufuBM6fLq3fVKcv44RvBsVGiH40+U="
 +## Tolerations allow the scheduler to schedule pods with matching taints.
 +  tolerations: []
-
-
+ 
+ 
  controller:
 @@ -118,6 +120,8 @@ controller:
  #        secretKeyRef:
@@ -558,7 +624,7 @@ index eb83307..0b939a6 100644
  #          key: BAR
 +## Tolerations allow the scheduler to schedule pods with matching taints.
 +  tolerations: []
-
+ 
  proxy:
    replicas: 2
 @@ -200,6 +204,8 @@ proxy:
@@ -567,7 +633,7 @@ index eb83307..0b939a6 100644
  #      whenUnsatisfiable: DoNotSchedule
 +## Tolerations allow the scheduler to schedule pods with matching taints.
 +  tolerations: []
-
+ 
  # priorityClassName will be set on all pods.
  priorityClassName: ""
 ```
@@ -591,7 +657,7 @@ index 26cd9f5..eb83307 100644
        port: 443
 +# # Specify Static IP of cloud provider LB
 +#  loadBalancerIP: "1.2.3.4"
-
+ 
    # To disable affinity at all set this value to null
    affinity:
 ```
@@ -623,7 +689,7 @@ index d9be1d1..26cd9f5 100644
 +#      maxSkew: 1
 +#      topologyKey: kubernetes.io/hostname
 +#      whenUnsatisfiable: DoNotSchedule
-
+ 
  # priorityClassName will be set on all pods.
  priorityClassName: ""
 ```
@@ -650,7 +716,7 @@ index 382108b..d9be1d1 100644
 --- a/traefikee/values.yaml
 +++ b/traefikee/values.yaml
 @@ -63,6 +63,14 @@ registry:
-
+ 
  controller:
    replicas: 1
 +  resources:
@@ -665,7 +731,7 @@ index 382108b..d9be1d1 100644
    affinity:
      nodeAffinity:
 @@ -113,6 +121,13 @@ controller:
-
+ 
  proxy:
    replicas: 2
 +  resources:
@@ -681,7 +747,7 @@ index 382108b..d9be1d1 100644
 @@ -174,6 +189,9 @@ proxy:
  #    maxUnavailable: 1
  # terminationGracePeriodSeconds: 30
-
+ 
 +# priorityClassName will be set on all pods.
 +priorityClassName: ""
 +
@@ -731,7 +797,7 @@ index de3f006..382108b 100644
 +## Set the registry token directly in Values
 +#  tokenSecret: "NJ00yx60K+Wm1yufuBM6fLq3fVKcv44RvBsVGiH40+U="
 +
-
+ 
  controller:
    replicas: 1
 ```
@@ -752,7 +818,7 @@ index 9ea43c5..de3f006 100644
 @@ -18,7 +18,29 @@ image:
  #  format:
  #  file:
-
+ 
 -# registry:
 +registry:
 +  # To disable affinity at all set this value to null
@@ -781,7 +847,7 @@ index 9ea43c5..de3f006 100644
  #     foo: bar
  #   serviceAnnotations:
 @@ -35,6 +57,27 @@ image:
-
+ 
  controller:
    replicas: 1
 +  # To disable affinity at all set this value to null
@@ -857,7 +923,7 @@ index 26169fd..9ea43c5 100644
  #    minAvailable: 1
  #    maxUnavailable: 1
 +# terminationGracePeriodSeconds: 30
-
+ 
  mesh:
    enabled: false
 ```
@@ -889,7 +955,7 @@ index 636d86b..26169fd 100644
 +  initContainer:
 +    name: busybox
 +    tag: "1.31.1"
-
+ 
  # log:
  #  level: DEBUG
 ```
@@ -936,7 +1002,7 @@ index bc72689..636d86b 100644
 +#  podDisruptionBudget:
 +#    minAvailable: 1
 +#    maxUnavailable: 1
-
+ 
  mesh:
    enabled: false
 ```
@@ -957,7 +1023,7 @@ index 7f0493f..bc72689 100644
 @@ -1,6 +1,9 @@
  # Default values for Traefik Enterprise
  cluster: "default"
-
+ 
 +# imagePullSecrets:
 +#   - name: regcred
 +
@@ -998,7 +1064,7 @@ index 04e81c7..7f0493f 100644
 +#        secretKeyRef:
 +#          name: foo
 +#          key: BAR
-
+ 
  proxy:
    replicas: 2
 @@ -78,7 +84,13 @@ proxy:
@@ -1013,7 +1079,7 @@ index 04e81c7..7f0493f 100644
 +#        secretKeyRef:
 +#          name: foo
 +#          key: BAR
-
+ 
  mesh:
    enabled: false
 ```
@@ -1037,7 +1103,7 @@ index 8cf39b4..04e81c7 100644
  #    - --foo=bar
 +#  env:
 +#    foo: bar
-
+ 
  proxy:
    replicas: 2
 @@ -75,6 +77,8 @@ proxy:
@@ -1046,7 +1112,7 @@ index 8cf39b4..04e81c7 100644
  #    - --foo=bar
 +#  env:
 +#    foo: bar
-
+ 
  mesh:
    enabled: false
 ```
@@ -1151,7 +1217,7 @@ index a16de7f..8cf39b4 100644
 @@ -1,27 +1,90 @@
  # Default values for Traefik Enterprise
  cluster: "default"
-
+ 
 -registry:
 -  token: ""
 +image:
@@ -1159,7 +1225,7 @@ index a16de7f..8cf39b4 100644
 +  # defaults to appVersion
 +  tag: ""
 +  pullPolicy: IfNotPresent
-
+ 
 -proxy:
 -  image:
 -    name: traefik/traefikee
@@ -1238,7 +1304,7 @@ index a16de7f..8cf39b4 100644
 +#    foo: bar
 +#  additionalArguments:
 +#    - --foo=bar
-
+ 
  mesh:
    enabled: false
    kubedns: false
@@ -1290,7 +1356,7 @@ index 1e61b18..a16de7f 100644
 @@ -1,6 +1,9 @@
  # Default values for Traefik Enterprise
  cluster: "default"
-
+ 
 +registry:
 +  token: ""
 +
@@ -1372,7 +1438,7 @@ index 0ba2f26..1e61b18 100644
    proxies: 2
    controllers: 1
    staticConfig:
--#    configMap:
+-#    configMap: 
 +#    configMap:
  #    configMapKey: "static.yaml"
    ports:
@@ -1400,7 +1466,7 @@ proxy:
   proxies: 2
   controllers: 1
   staticConfig:
-#    configMap:
+#    configMap: 
 #    configMapKey: "static.yaml"
   ports:
     - name: http
