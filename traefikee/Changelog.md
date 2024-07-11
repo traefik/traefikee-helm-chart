@@ -1,8 +1,16 @@
 # Change Log
 
+## 4.0.1  ![AppVersion: v2.11.3](https://img.shields.io/static/v1?label=AppVersion&message=v2.11.3&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2024-07-11
+
+* chore(release): 🚀 publish v4.0.1
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.11.3
+
+
 ## 4.0.0  ![AppVersion: v2.11.2](https://img.shields.io/static/v1?label=AppVersion&message=v2.11.2&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
-**Release date:** 2024-05-31
+**Release date:** 2024-06-03
 
 * fix: 🐛 apply disableChown also on proxy
 * feat(security)!: ✨ 🔒️ capabilities are droppped by default and can be set if needed
