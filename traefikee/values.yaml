@@ -15,7 +15,7 @@ image:
 initImage:
   registry: docker.io
   repository: busybox
-  tag: "1.36.1"
+  tag: "1.37.0"
 
 # -- To create a default IngressClass for TraefikEE, set `enabled: true` below:
 # It should also be set on k8s providers in static configuration
