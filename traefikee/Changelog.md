@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.0.5  ![AppVersion: v2.11.7](https://img.shields.io/static/v1?label=AppVersion&message=v2.11.7&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2024-10-04
+
+* chore(release): 🚀 publish v4.0.5
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.11.7
+
 ## 4.0.4  ![AppVersion: v2.11.6](https://img.shields.io/static/v1?label=AppVersion&message=v2.11.6&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2024-10-02
