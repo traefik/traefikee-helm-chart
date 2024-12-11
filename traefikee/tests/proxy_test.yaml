@@ -326,3 +326,11 @@ tests:
           content:
             containerPort: 4443
             name: https
+  - it: should be possible to make proxy wait for the plugin registry
+    set:
+      proxy:
+        enablePluginWait: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[1].command
+          value: ['sh', '-c', "until timeout 2 nc default-plugin-registry-svc.NAMESPACE.svc.cluster.local 443 &> /dev/null; do echo waiting for plugin-registry; sleep 2; done"]
