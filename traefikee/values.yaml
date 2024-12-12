@@ -268,7 +268,7 @@ proxy:
     #       periodSeconds: 60
 
 ## Enable init container to wait for plugin registry to be ready
-  # enablePluginWait: false
+  enablePluginWait: false
 
 
 ## Those probes need for ping to be enabled in static config
