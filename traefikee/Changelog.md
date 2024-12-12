@@ -1,5 +1,41 @@
 # Change Log
 
+## 4.2.0  ![AppVersion: v2.12.1](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.1&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2024-12-12
+
+* feat: :sparkles: make proxy wait for plugin registry
+* chore(release): publish v4.2.0
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.1
+
+### Default value changes
+
+```diff
+diff --git a/traefikee/values.yaml b/traefikee/values.yaml
+index 12154b9..4d75cd3 100644
+--- a/traefikee/values.yaml
++++ b/traefikee/values.yaml
+@@ -219,7 +219,6 @@ proxy:
+   loadBalancerIP:
+   loadBalancerSourceRanges:
+ 
+-
+   # To disable affinity at all set this value to null
+   affinity:
+     nodeAffinity:
+@@ -268,6 +267,10 @@ proxy:
+     #       value: 1
+     #       periodSeconds: 60
+ 
++## Enable init container to wait for plugin registry to be ready
++  enablePluginWait: false
++
++
+ ## Those probes need for ping to be enabled in static config
+   readinessProbe:
+     httpGet:
+```
+
 ## 4.1.0  ![AppVersion: v2.12.0](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.0&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2024-11-29
