@@ -86,6 +86,26 @@ spec:
             capabilities:
               drop:
                 - NET_RAW
+        {{- if $proxy.enablePluginWait | default false }}
+        - name: wait-for-registry
+          image: {{ template "traefikee-helm-chart.initContainer-image-name" $ }}
+          command: ['sh', '-c', "until timeout 2 nc {{ printf "%s-plugin-registry-svc.%s" $.Values.cluster $.Release.Namespace }}.svc.cluster.local 443 &> /dev/null; do echo waiting for plugin-registry; sleep 2; done"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 20m
+              memory: 32Mi
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsUser: 65532
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - NET_RAW
+        {{- end }}
         {{- if not $.Values.disableChown }}
         - name: chown
           image: {{ template "traefikee-helm-chart.initContainer-image-name" $ }}
