@@ -1,8 +1,15 @@
 # Change Log
 
+## 4.2.1  ![AppVersion: v2.12.2](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.2&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2025-02-13
+
+* chore(release): publish v4.2.1
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.2
+
 ## 4.2.0  ![AppVersion: v2.12.1](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.1&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
-**Release date:** 2024-12-12
+**Release date:** 2024-12-16
 
 * feat: :sparkles: make proxy wait for plugin registry
 * chore(release): publish v4.2.0
