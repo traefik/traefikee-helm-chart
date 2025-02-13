@@ -8,7 +8,7 @@ icon: https://doc.traefik.io/traefik-enterprise/assets/images/logo-traefik-enter
 # Because of https://github.com/helm/helm/issues/3810 the pre-release version suffix has to be define.
 # This allows the installation on Kubernetes cluster with a pre-release version (e.g. v1.19.9-gke.1900)
 kubeVersion: ">= 1.23.0-0"
-version: 4.2.0
+version: 4.2.1
 # renovate: image=docker.io/traefik/traefikee
 appVersion: v2.12.2
 type: application
@@ -25,6 +25,5 @@ keywords:
   - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
-    - "feat: :sparkles: make proxy wait for plugin registry"
-    - "chore(release): publish v4.2.0"
-    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.1"
+    - "chore(release): publish v4.2.1"
+    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.2"
