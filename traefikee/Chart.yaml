@@ -25,5 +25,5 @@ keywords:
   - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
-    - "chore(release): publish v4.2.3"
-    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.4"
+    - "chore(release): publish v4.2.4"
+    - "[fix] - privilege escalation proxy init-container"
