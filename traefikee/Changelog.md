@@ -1,11 +1,18 @@
 # Change Log
 
+## 4.2.5  ![AppVersion: v2.12.5](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.5&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2025-08-07
+
+* chore(release): publish v4.2.5
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.5
+
 ## 4.2.4  ![AppVersion: v2.12.4](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.4&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2025-07-08
 
-* chore(release): publish v4.2.4
 * [fix] - privilege escalation proxy init-container
+* Prep newrelease
 
 
 ## 4.2.3  ![AppVersion: v2.12.4](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.4&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
