@@ -1,5 +1,13 @@
 # Change Log
 
+## 4.2.6  ![AppVersion: v2.12.6](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.6&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2026-01-22
+
+* chore(release): publish v4.2.6
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.6
+
+
 ## 4.2.5  ![AppVersion: v2.12.5](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.5&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2025-08-07
