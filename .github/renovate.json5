@@ -1,13 +1,8 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
   extends: [
-    ':semanticCommitTypeAll(chore)',
-    ':ignoreModulesAndTests',
-    ':dependencyDashboard',
-    'group:monorepos',
-    'group:recommended',
-    'replacements:all',
-    'workarounds:all',
+    'config:recommended',
+    'helpers:pinGitHubActionDigests',
   ],
   hostRules: [
     {
