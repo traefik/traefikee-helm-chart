@@ -2,7 +2,7 @@
 
 # Used for Helm Chart
 IMAGE_CHART_TESTING=quay.io/helmpack/chart-testing:v3.14.0
-IMAGE_HELM_CHANGELOG=ghcr.io/traefik/helm-changelog:v0.3.0
+IMAGE_HELM_CHANGELOG=ghcr.io/traefik/helm-changelog:v1.0.0
 IMAGE_HELM_UNITTEST=docker.io/helmunittest/helm-unittest:3.17.1-0.7.2
 
 traefikee/tests/__snapshot__:
