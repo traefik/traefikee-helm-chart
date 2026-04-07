@@ -53,7 +53,6 @@ jobs:
         uses: renovatebot/github-action@0b17c4eb901eca44d018fb25744a50a74b2042df # v46.1.4
         with:
           configurationFile: .github/renovate.json5
-          renovate-version: full
           token: ${{ steps.get_token.outputs.token }}
         env:
             LOG_LEVEL: 'info'
