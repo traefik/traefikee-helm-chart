@@ -25,5 +25,5 @@ keywords:
   - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
-    - "chore(release): publish v4.2.6"
-    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.6"
+    - "chore(release): publish v4.2.7"
+    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.7"
