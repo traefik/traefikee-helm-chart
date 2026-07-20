@@ -25,5 +25,7 @@ keywords:
   - traefik-enterprise
 annotations:
   artifacthub.io/changes: |
-    - "chore(release): publish v4.2.8"
-    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.8"
+    - "chore(release): publish v4.2.9"
+    - "chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.9"
+    - "chore(deps): update docker.io/busybox docker tag to v1.38.0"
+    - "Update CRDs to v0.19.0"

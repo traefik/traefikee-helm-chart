@@ -1,8 +1,35 @@
 # Change Log
 
+## 4.2.9  ![AppVersion: v2.12.9](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.9&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2026-07-20
+
+* chore(release): publish v4.2.9
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.9
+* chore(deps): update docker.io/busybox docker tag to v1.38.0
+* Update CRDs to v0.19.0
+
+### Default value changes
+
+```diff
+diff --git a/traefikee/values.yaml b/traefikee/values.yaml
+index 4d75cd3..4f5d391 100644
+--- a/traefikee/values.yaml
++++ b/traefikee/values.yaml
+@@ -15,7 +15,7 @@ image:
+ initImage:
+   registry: docker.io
+   repository: busybox
+-  tag: "1.37.0"
++  tag: "1.38.0"
+ 
+ # -- To create a default IngressClass for TraefikEE, set `enabled: true` below:
+ # It should also be set on k8s providers in static configuration
+```
+
 ## 4.2.8  ![AppVersion: v2.12.8](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.8&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
-**Release date:** 2026-06-22
+**Release date:** 2026-06-23
 
 * chore(release): publish v4.2.8
 * chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.8
