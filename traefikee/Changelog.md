@@ -12,10 +12,10 @@
 
 **Release date:** 2026-07-20
 
+* chore(release): publish v4.2.9
 * chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.9
 * chore(deps): update docker.io/busybox docker tag to v1.38.0
 * Update CRDs to v0.19.0
-* Prep v4.2.9
 
 ### Default value changes
 
