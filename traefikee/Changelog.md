@@ -1,11 +1,19 @@
 # Change Log
 
+## 4.2.12  ![AppVersion: v2.12.12](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.12&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2026-10-23
+
+* chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.12
+* Update chart
+
+
 ## 4.2.11  ![AppVersion: v2.12.11](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.11&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2026-10-07
 
+* chore(release): publish v4.2.11
 * chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.11
-* Update Chart
 
 
 ## 4.2.10  ![AppVersion: v2.12.10](https://img.shields.io/static/v1?label=AppVersion&message=v2.12.10&color=success&logo=) ![Kubernetes: >= 1.23.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D+1.23.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
@@ -23,6 +31,7 @@
 * chore(deps): update docker.io/traefik/traefikee docker tag to v2.12.9
 * chore(deps): update docker.io/busybox docker tag to v1.38.0
 * Update CRDs to v0.19.0
+* Prep v4.2.9
 
 ### Default value changes
 
